@@ -26,11 +26,12 @@ export default function HeroSection({
         {featuredImage?.blobUrl && (
           <div className="hero-img-wrapper relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.12)] rounded-[3px] transition-all duration-400 cursor-pointer">
             <Image
-              src={featuredImage.blobUrl}
+              src={featuredImage.hqBlobUrl || featuredImage.blobUrl}
               alt={featuredImage.altText || "Featured sports photograph by Eli Larson"}
               width={featuredImage.width || 800}
               height={featuredImage.height || 533}
               priority
+              quality={95}
               className="w-full h-auto block"
             />
           </div>

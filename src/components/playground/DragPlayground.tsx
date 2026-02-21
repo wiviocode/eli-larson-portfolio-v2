@@ -100,7 +100,7 @@ export default function DragPlayground({
 
     // Cap image count on mobile to keep things smooth
     const MAX_PHOTOS = isSmall ? 24 : isMobile ? 40 : 500;
-    const maxPx = isSmall ? 55 : isMobile ? 70 : 110;
+    const maxPx = isSmall ? 73 : isMobile ? 93 : 147;
 
     const capped = photoData.slice(0, MAX_PHOTOS);
     const images = capped.map((d) => ({
@@ -347,15 +347,15 @@ export default function DragPlayground({
       {/* Overlay UI — doubled sizes */}
       <div className="pg-overlay-header">
         <Link href="/" className="pg-back-link">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </Link>
         <div>
-          <h2 className="text-[clamp(40px,6vw,72px)] text-white leading-none" style={{ fontFamily: "'Instrument Serif', serif" }}>
+          <h2 className="text-[clamp(27px,4vw,48px)] text-white leading-none" style={{ fontFamily: "'Instrument Serif', serif" }}>
             Explore<span className="text-brand">.</span>
           </h2>
-          <div className="text-[18px] font-bold uppercase tracking-[.2em] text-white/25 mt-2">
+          <div className="text-[12px] font-bold uppercase tracking-[.2em] text-white/25 mt-1.5">
             Drag &amp; throw — {photoData.length} photos
           </div>
         </div>
