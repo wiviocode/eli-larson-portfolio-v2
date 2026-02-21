@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import "photoswipe/style.css";
 
 interface PlaygroundPhoto {
   src: string;
@@ -26,6 +27,7 @@ interface PhotoState {
   dragging: boolean;
   driftVx: number;
   driftVy: number;
+  dataIndex: number; // index into photoData for lightbox
 }
 
 /** Scale original dimensions so the longest side = maxPx */
@@ -50,6 +52,8 @@ export default function DragPlayground({
   const initializedRef = useRef(false);
   const offRef = useRef({ x: 0, y: 0 });
   const lastRef = useRef({ mx: 0, my: 0, t: 0 });
+  const dragMovedRef = useRef(false);
+  const lightboxRef = useRef<{ destroy: () => void } | null>(null);
 
   const updateBounds = useCallback(() => {
     const rect = playgroundRef.current?.getBoundingClientRect();
@@ -58,6 +62,32 @@ export default function DragPlayground({
       cachedBoundsRef.current.h = rect.height;
     }
   }, []);
+
+  // Initialize PhotoSwipe lightbox
+  useEffect(() => {
+    let lb: { init: () => void; destroy: () => void } | null = null;
+    async function initLightbox() {
+      const PhotoSwipeLightbox = (await import("photoswipe/lightbox")).default;
+      const PhotoSwipe = (await import("photoswipe")).default;
+      lb = new PhotoSwipeLightbox({
+        dataSource: photoData.map((p) => ({
+          src: p.src,
+          w: p.w,
+          h: p.h,
+        })),
+        pswpModule: PhotoSwipe,
+        bgOpacity: 0.85,
+        padding: { top: 20, bottom: 20, left: 20, right: 20 },
+        showHideAnimationType: "fade",
+        showAnimationDuration: 300,
+        hideAnimationDuration: 200,
+      });
+      lb.init();
+      lightboxRef.current = lb;
+    }
+    if (photoData.length > 0) initLightbox();
+    return () => { lb?.destroy(); };
+  }, [photoData]);
 
   useEffect(() => {
     const playground = playgroundRef.current;
@@ -68,21 +98,26 @@ export default function DragPlayground({
     const isMobile = window.innerWidth <= 768;
     const isSmall = window.innerWidth <= 480;
 
-    // Scale photos to thumbnails — fit longest edge to maxPx
-    const maxPx = isSmall ? 110 : isMobile ? 140 : 220;
+    // Half-sized thumbnails for perf — small enough to see everything
+    const maxPx = isSmall ? 55 : isMobile ? 70 : 110;
 
     const images = photoData.map((d) => ({
       ...d,
-      ...thumbSize(d.w, d.h, maxPx + Math.random() * 40),
+      ...thumbSize(d.w, d.h, maxPx + Math.random() * 20),
     }));
 
-    const POWER_THRESHOLD = isMobile ? 12 : 18;
+    // Much harder to throw — higher thresholds
+    const POWER_THRESHOLD = isMobile ? 25 : 35;
+    // Heavier friction — velocity multiplied by this each frame
+    const FRICTION = 0.92;
+    // Lower velocity capture — makes throws feel heavier
+    const VEL_SCALE = 8;
 
     function initPlayground() {
       updateBounds();
       const pW = cachedBoundsRef.current.w;
       const pH = cachedBoundsRef.current.h;
-      const pad = 20;
+      const pad = 10;
 
       images.forEach((data, i) => {
         const div = document.createElement("div");
@@ -90,34 +125,30 @@ export default function DragPlayground({
         div.style.width = data.w + "px";
         div.style.height = data.h + "px";
         if (data.color) div.style.backgroundColor = data.color;
-        div.innerHTML = `<img src="${data.src}" alt="" loading="lazy" decoding="async"><div class="p-label">${data.label}</div><div class="p-border"></div>${i % 5 === 0 ? `<div class="grab-hint">${grabSVG}</div>` : ""}`;
+        // Only add grab hint to every 8th photo
+        div.innerHTML = `<img src="${data.src}" alt="" loading="lazy" decoding="async"><div class="p-border"></div>${i % 8 === 0 ? `<div class="grab-hint">${grabSVG}</div>` : ""}`;
         canvas!.appendChild(div);
 
-        // Scatter across the viewport with some padding
+        // Scatter randomly
         const x = pad + Math.random() * Math.max(0, pW - data.w - pad * 2);
         const y = pad + Math.random() * Math.max(0, pH - data.h - pad * 2);
         const rotation = (Math.random() - 0.5) * 16;
 
-        div.style.left = x + "px";
-        div.style.top = y + "px";
-        div.style.transform = `rotate(${rotation}deg)`;
+        // Use GPU-composited transform for position + rotation
+        div.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
         div.style.zIndex = String(i + 2);
 
-        const driftVx = (Math.random() - 0.5) * 0.25;
-        const driftVy = (Math.random() - 0.5) * 0.25;
+        const driftVx = (Math.random() - 0.5) * 0.15;
+        const driftVy = (Math.random() - 0.5) * 0.15;
 
         photosRef.current.push({
           el: div,
-          x,
-          y,
-          vx: driftVx,
-          vy: driftVy,
-          w: data.w,
-          h: data.h,
-          rotation,
-          dragging: false,
-          driftVx,
-          driftVy,
+          x, y,
+          vx: driftVx, vy: driftVy,
+          w: data.w, h: data.h,
+          rotation, dragging: false,
+          driftVx, driftVy,
+          dataIndex: i,
         });
       });
 
@@ -138,11 +169,19 @@ export default function DragPlayground({
       setTimeout(() => s.remove(), 500);
     }
 
+    function openLightbox(index: number) {
+      const lb = lightboxRef.current as { loadAndOpen: (i: number) => void; destroy: () => void } | null;
+      if (lb && 'loadAndOpen' in lb) {
+        lb.loadAndOpen(index);
+      }
+    }
+
     function onDown(cx: number, cy: number, e?: Event) {
       const pr = playground!.getBoundingClientRect();
       const px = cx - pr.left;
       const py = cy - pr.top;
       const photos = photosRef.current;
+      dragMovedRef.current = false;
       for (let i = photos.length - 1; i >= 0; i--) {
         const p = photos[i];
         if (px >= p.x && px <= p.x + p.w && py >= p.y && py <= p.y + p.h) {
@@ -165,23 +204,28 @@ export default function DragPlayground({
       const dt = dragTargetRef.current;
       if (!dt) return;
       if (e?.preventDefault) e.preventDefault();
+      dragMovedRef.current = true;
       const pr = playground!.getBoundingClientRect();
       const px = cx - pr.left;
       const py = cy - pr.top;
       const now = Date.now();
       const elapsed = Math.max(1, now - lastRef.current.t);
-      dt.vx = ((px - lastRef.current.mx) / elapsed) * 16;
-      dt.vy = ((py - lastRef.current.my) / elapsed) * 16;
+      dt.vx = ((px - lastRef.current.mx) / elapsed) * VEL_SCALE;
+      dt.vy = ((py - lastRef.current.my) / elapsed) * VEL_SCALE;
       dt.x = px - offRef.current.x;
       dt.y = py - offRef.current.y;
-      dt.el.style.left = dt.x + "px";
-      dt.el.style.top = dt.y + "px";
+      dt.el.style.transform = `translate(${dt.x}px, ${dt.y}px) rotate(${dt.rotation}deg)`;
       lastRef.current = { mx: px, my: py, t: now };
     }
 
     function onUp() {
       const dt = dragTargetRef.current;
       if (dt) {
+        // Click detection — if barely moved, open lightbox
+        if (!dragMovedRef.current) {
+          openLightbox(dt.dataIndex);
+        }
+
         const speed = Math.hypot(dt.vx, dt.vy);
         if (speed > POWER_THRESHOLD) {
           powerThrowsRef.current++;
@@ -218,42 +262,26 @@ export default function DragPlayground({
         const p = photos[i];
         if (p.dragging) continue;
 
-        if (Math.abs(p.vx) < 0.3 && Math.abs(p.vy) < 0.3) {
+        // Drift when nearly stopped
+        if (Math.abs(p.vx) < 0.2 && Math.abs(p.vy) < 0.2) {
           p.vx = p.driftVx;
           p.vy = p.driftVy;
         }
 
-        p.vx *= 0.97;
-        p.vy *= 0.97;
+        p.vx *= FRICTION;
+        p.vy *= FRICTION;
         p.x += p.vx;
         p.y += p.vy;
-        p.rotation += p.vx * 0.06;
+        p.rotation += p.vx * 0.04;
 
-        if (p.x < 0) {
-          p.x = 0;
-          p.vx *= -0.5;
-          p.driftVx *= -1;
-        }
-        if (p.x + p.w > pW) {
-          p.x = pW - p.w;
-          p.vx *= -0.5;
-          p.driftVx *= -1;
-        }
-        if (p.y < 0) {
-          p.y = 0;
-          p.vy *= -0.4;
-          p.driftVy *= -1;
-        }
-        if (p.y + p.h > pH) {
-          p.y = pH - p.h;
-          p.vy *= -0.4;
-          p.vx *= 0.95;
-          p.driftVy *= -1;
-        }
+        // Wall bounce
+        if (p.x < 0) { p.x = 0; p.vx *= -0.3; p.driftVx *= -1; }
+        if (p.x + p.w > pW) { p.x = pW - p.w; p.vx *= -0.3; p.driftVx *= -1; }
+        if (p.y < 0) { p.y = 0; p.vy *= -0.3; p.driftVy *= -1; }
+        if (p.y + p.h > pH) { p.y = pH - p.h; p.vy *= -0.3; p.vx *= 0.9; p.driftVy *= -1; }
 
-        p.el.style.left = p.x + "px";
-        p.el.style.top = p.y + "px";
-        p.el.style.transform = `rotate(${p.rotation}deg)`;
+        // Single GPU-composited transform update (not left/top)
+        p.el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.rotation}deg)`;
       }
       animIdRef.current = requestAnimationFrame(animate);
     }
@@ -274,9 +302,7 @@ export default function DragPlayground({
     playground.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", onUp);
-    playground.addEventListener("touchstart", handleTouchStart, {
-      passive: false,
-    });
+    playground.addEventListener("touchstart", handleTouchStart, { passive: false });
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
     document.addEventListener("touchend", onUp);
 
@@ -288,7 +314,7 @@ export default function DragPlayground({
     };
     window.addEventListener("resize", handleResize);
 
-    // Init immediately — fullscreen so always visible
+    // Init immediately
     updateBounds();
     initPlayground();
     animIdRef.current = requestAnimationFrame(animate);
@@ -307,18 +333,18 @@ export default function DragPlayground({
 
   return (
     <div className="playground-fullscreen" ref={playgroundRef}>
-      {/* Minimal overlay UI */}
+      {/* Overlay UI — doubled sizes */}
       <div className="pg-overlay-header">
         <Link href="/" className="pg-back-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </Link>
         <div>
-          <h2 className="text-[clamp(20px,3vw,36px)] text-white leading-none" style={{ fontFamily: "'Instrument Serif', serif" }}>
+          <h2 className="text-[clamp(40px,6vw,72px)] text-white leading-none" style={{ fontFamily: "'Instrument Serif', serif" }}>
             Explore<span className="text-brand">.</span>
           </h2>
-          <div className="text-[9px] font-bold uppercase tracking-[.2em] text-white/25 mt-1">
+          <div className="text-[18px] font-bold uppercase tracking-[.2em] text-white/25 mt-2">
             Drag &amp; throw — {photoData.length} photos
           </div>
         </div>
@@ -326,7 +352,7 @@ export default function DragPlayground({
       <div className="pg-canvas" ref={canvasRef} aria-hidden="true" />
       {photoData.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center z-10">
-          <p className="text-white/40 text-sm">
+          <p className="text-white/40 text-lg">
             Upload photos in the{" "}
             <Link href="/admin" className="text-brand underline">
               admin panel

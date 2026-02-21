@@ -187,10 +187,10 @@ main {
   top: 0;
   left: 0;
   z-index: 100;
-  padding: 24px 28px;
+  padding: 32px 36px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 20px;
   pointer-events: auto;
 }
 .pg-back-link {
@@ -209,13 +209,16 @@ main {
 }
 .p-photo {
   position: absolute;
+  left: 0;
+  top: 0;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
   will-change: transform;
   transition: box-shadow 0.3s;
+  border-radius: 2px;
 }
 .p-photo.active {
   cursor: grabbing;
