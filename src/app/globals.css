@@ -52,22 +52,23 @@ body {
   }
 }
 
-/* ====== MASONRY ====== */
+/* ====== GALLERY GRID ====== */
 .masonry {
-  columns: 1;
-  column-gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
   padding: 0 40px;
   max-width: 1300px;
   margin: 0 auto;
 }
 @media (min-width: 768px) {
   .masonry {
-    columns: 2;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 @media (min-width: 1024px) {
   .masonry {
-    columns: 3;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -105,13 +106,11 @@ body {
 
 /* ====== P-CARD ====== */
 .p-card {
-  break-inside: avoid;
   overflow: hidden;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   position: relative;
   border-radius: 3px;
-  margin-bottom: 12px;
   display: block;
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.4s;
@@ -337,22 +336,15 @@ body {
 @media (max-width: 1024px) {
   .masonry {
     padding: 0 24px;
-    column-gap: 10px;
-  }
-  .p-card {
-    margin-bottom: 10px;
+    gap: 10px;
   }
 }
 
 /* ====== MOBILE ====== */
 @media (max-width: 768px) {
   .masonry {
-    columns: 2;
     padding: 0 16px;
-    column-gap: 8px;
-  }
-  .p-card {
-    margin-bottom: 8px;
+    gap: 8px;
   }
   .playground {
     height: 70vh;
@@ -366,7 +358,6 @@ body {
 /* ====== SMALL MOBILE ====== */
 @media (max-width: 480px) {
   .masonry {
-    columns: 1;
     padding: 0 16px;
   }
   .playground {
