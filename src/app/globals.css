@@ -395,6 +395,15 @@ main {
   transform: translateY(0);
 }
 
+/* ====== IMAGE FADE-IN ====== */
+.img-fade {
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+.img-fade.loaded {
+  opacity: 1;
+}
+
 /* ====== VIDEO BADGE ====== */
 .video-badge {
   position: absolute;

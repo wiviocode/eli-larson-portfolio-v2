@@ -12,10 +12,14 @@ export default function GalleryItem({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const w = item.width || 1200;
+  const h = item.height || 800;
+
   if (item.type === "video") {
     return (
       <div
         className="p-card"
+        style={{ aspectRatio: `${w}/${h}` }}
         onClick={() => onVideoClick?.(item.videoEmbedUrl || "")}
         onMouseEnter={() => videoRef.current?.play()}
         onMouseLeave={() => {
@@ -33,7 +37,7 @@ export default function GalleryItem({
               muted
               playsInline
               loop
-              className="w-full h-auto block"
+              className="w-full h-full block object-cover"
               poster={item.videoThumbnailUrl}
             />
             <div className="video-badge">Video</div>
@@ -44,7 +48,7 @@ export default function GalleryItem({
             <img
               src={item.videoThumbnailUrl || "/placeholder.jpg"}
               alt={item.altText || "Video thumbnail"}
-              className="w-full h-auto block"
+              className="w-full h-full block object-cover"
             />
             <div className="video-badge">Video</div>
           </>
@@ -56,9 +60,10 @@ export default function GalleryItem({
   return (
     <a
       className="p-card"
+      style={{ aspectRatio: `${w}/${h}`, background: "#e8e8e8" }}
       href={item.blobUrl || "#"}
-      data-pswp-width={item.width || 1200}
-      data-pswp-height={item.height || 800}
+      data-pswp-width={w}
+      data-pswp-height={h}
       target="_blank"
       rel="noreferrer"
     >
@@ -66,10 +71,12 @@ export default function GalleryItem({
       <img
         src={item.blobUrl || ""}
         alt={item.altText || "Photo"}
-        width={600}
-        height={Math.round(600 * ((item.height || 800) / (item.width || 1200)))}
+        width={w}
+        height={h}
         loading="lazy"
         decoding="async"
+        className="img-fade"
+        onLoad={(e) => e.currentTarget.classList.add("loaded")}
       />
     </a>
   );
