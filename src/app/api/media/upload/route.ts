@@ -1,17 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
-import { put } from "@vercel/blob";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 
 export async function POST(req: NextRequest) {
-  const formData = await req.formData();
-  const file = formData.get("file") as File;
+  const body = (await req.json()) as HandleUploadBody;
 
-  if (!file) {
-    return NextResponse.json({ error: "No file provided" }, { status: 400 });
+  try {
+    const jsonResponse = await handleUpload({
+      body,
+      request: req,
+      onBeforeGenerateToken: async () => {
+        return {
+          allowedContentTypes: [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/gif",
+            "image/avif",
+          ],
+          maximumSizeInBytes: 50 * 1024 * 1024, // 50MB
+        };
+      },
+      onUploadCompleted: async () => {
+        // Could do post-processing here
+      },
+    });
+
+    return NextResponse.json(jsonResponse);
+  } catch (error) {
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 400 }
+    );
   }
-
-  const blob = await put(file.name, file, {
-    access: "public",
-  });
-
-  return NextResponse.json({ url: blob.url, pathname: blob.pathname });
 }

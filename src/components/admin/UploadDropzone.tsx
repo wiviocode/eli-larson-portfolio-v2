@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { upload as blobUpload } from "@vercel/blob/client";
 
 function getImageDimensions(
   file: File
@@ -40,20 +41,18 @@ export default function UploadDropzone({
         try {
           const dims = await getImageDimensions(file);
 
-          const formData = new FormData();
-          formData.append("file", file);
-          const uploadRes = await fetch("/api/media/upload", {
-            method: "POST",
-            body: formData,
+          // Client upload — streams directly to Blob storage, no 4.5MB limit
+          const blob = await blobUpload(file.name, file, {
+            access: "public",
+            handleUploadUrl: "/api/media/upload",
           });
-          const { url } = await uploadRes.json();
 
           await fetch("/api/media", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               type: "photo",
-              blobUrl: url,
+              blobUrl: blob.url,
               fileName: file.name,
               width: dims.width,
               height: dims.height,
