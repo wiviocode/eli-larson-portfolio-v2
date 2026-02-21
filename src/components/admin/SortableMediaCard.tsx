@@ -72,11 +72,11 @@ export default function SortableMediaCard({
           <img
             src={thumbnailUrl}
             alt={label}
-            className="w-full aspect-[4/3] object-cover block"
+            className="w-full h-auto object-cover block"
             draggable={false}
           />
         ) : (
-          <div className="w-full aspect-[4/3] bg-[#f0f0f0] flex items-center justify-center text-[#ccc] text-xs">
+          <div className="w-full aspect-video bg-[#f0f0f0] flex items-center justify-center text-[#ccc] text-xs">
             No preview
           </div>
         )}

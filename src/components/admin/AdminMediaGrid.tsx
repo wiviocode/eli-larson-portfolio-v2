@@ -81,7 +81,7 @@ export default function AdminMediaGrid({
         items={items.map((i) => i.id)}
         strategy={rectSortingStrategy}
       >
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="masonry" style={{ padding: 0 }}>
           {items.map((item, index) => (
             <SortableMediaCard
               key={item.id}
