@@ -98,20 +98,22 @@ export default function DragPlayground({
     const isMobile = window.innerWidth <= 768;
     const isSmall = window.innerWidth <= 480;
 
-    // Half-sized thumbnails for perf — small enough to see everything
+    // Cap image count on mobile to keep things smooth
+    const MAX_PHOTOS = isSmall ? 24 : isMobile ? 40 : 500;
     const maxPx = isSmall ? 55 : isMobile ? 70 : 110;
 
-    const images = photoData.map((d) => ({
+    const capped = photoData.slice(0, MAX_PHOTOS);
+    const images = capped.map((d) => ({
       ...d,
       ...thumbSize(d.w, d.h, maxPx + Math.random() * 20),
     }));
 
     // Much harder to throw — higher thresholds
     const POWER_THRESHOLD = isMobile ? 25 : 35;
-    // Heavier friction — velocity multiplied by this each frame
     const FRICTION = 0.92;
-    // Lower velocity capture — makes throws feel heavier
     const VEL_SCALE = 8;
+    // Skip DOM updates when total movement is sub-pixel
+    const MIN_MOVE = 0.5;
 
     function initPlayground() {
       updateBounds();
@@ -119,15 +121,22 @@ export default function DragPlayground({
       const pH = cachedBoundsRef.current.h;
       const pad = 10;
 
+      // Stagger image loading — create DOM with color placeholders first,
+      // then load actual images in batches to avoid slamming the network
+      const BATCH = isMobile ? 6 : 12;
+
       images.forEach((data, i) => {
         const div = document.createElement("div");
         div.className = "p-photo";
         div.style.width = data.w + "px";
         div.style.height = data.h + "px";
         if (data.color) div.style.backgroundColor = data.color;
-        // Only add grab hint to every 8th photo
-        div.innerHTML = `<img src="${data.src}" alt="" loading="lazy" decoding="async"><div class="p-border"></div>${i % 8 === 0 ? `<div class="grab-hint">${grabSVG}</div>` : ""}`;
+        div.innerHTML = `<img alt="" decoding="async"><div class="p-border"></div>${i % 8 === 0 ? `<div class="grab-hint">${grabSVG}</div>` : ""}`;
         canvas!.appendChild(div);
+
+        // Load image in staggered batches
+        const img = div.querySelector("img")!;
+        setTimeout(() => { img.src = data.src; }, Math.floor(i / BATCH) * 150);
 
         // Scatter randomly
         const x = pad + Math.random() * Math.max(0, pW - data.w - pad * 2);
@@ -280,7 +289,9 @@ export default function DragPlayground({
         if (p.y < 0) { p.y = 0; p.vy *= -0.3; p.driftVy *= -1; }
         if (p.y + p.h > pH) { p.y = pH - p.h; p.vy *= -0.3; p.vx *= 0.9; p.driftVy *= -1; }
 
-        // Single GPU-composited transform update (not left/top)
+        // Skip DOM update if movement is sub-pixel (big perf win at scale)
+        if (Math.abs(p.vx) < MIN_MOVE && Math.abs(p.vy) < MIN_MOVE) continue;
+
         p.el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.rotation}deg)`;
       }
       animIdRef.current = requestAnimationFrame(animate);
