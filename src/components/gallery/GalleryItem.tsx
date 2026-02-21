@@ -76,6 +76,7 @@ export default function GalleryItem({
         loading="lazy"
         decoding="async"
         className="img-fade"
+        ref={(el) => { if (el?.complete) el.classList.add("loaded"); }}
         onLoad={(e) => e.currentTarget.classList.add("loaded")}
       />
     </a>
