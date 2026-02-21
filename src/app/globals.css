@@ -21,7 +21,7 @@ body {
 }
 
 /* ====== FONT UTILITIES ====== */
-.font-serif {
+.font-display {
   font-family: var(--font-instrument-serif), "Instrument Serif", serif;
   font-weight: 400;
   font-synthesis: none;

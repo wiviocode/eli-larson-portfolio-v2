@@ -6,7 +6,7 @@ export default function Header() {
       <nav className="max-w-[1300px] mx-auto px-10 py-[18px] flex items-center justify-between max-lg:px-6 max-lg:py-3.5 max-md:px-4 max-md:py-3">
         <Link
           href="/"
-          className="font-serif text-[28px] text-[#111] no-underline relative inline-block group max-md:text-[22px]"
+          className="font-display text-[28px] text-[#111] no-underline relative inline-block group max-md:text-[22px]"
         >
           Eli Larson<span className="text-brand">.</span>
           <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
