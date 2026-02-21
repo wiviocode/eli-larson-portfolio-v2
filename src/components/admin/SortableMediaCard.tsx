@@ -35,82 +35,79 @@ export default function SortableMediaCard({
     <div
       ref={setNodeRef}
       style={style}
-      className="relative bg-white rounded-lg overflow-hidden shadow-sm border border-black/[.06] group"
+      className="p-card group !cursor-grab active:!cursor-grabbing"
+      {...attributes}
+      {...listeners}
     >
-      {/* Drag handle */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="absolute top-2 left-2 z-10 w-6 h-6 bg-black/50 rounded flex items-center justify-center cursor-grab opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 12 12"
-          fill="white"
+      {/* Action buttons overlay */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        {/* Featured star — always visible when featured */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFeatured(item.id, item.isFeatured);
+          }}
+          className={`pointer-events-auto absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+            item.isFeatured
+              ? "bg-brand text-white shadow-lg"
+              : "bg-black/60 text-white/60 opacity-0 group-hover:opacity-100"
+          }`}
+          title={item.isFeatured ? "Remove featured" : "Set as featured"}
         >
-          <circle cx="4" cy="2" r="1" />
-          <circle cx="8" cy="2" r="1" />
-          <circle cx="4" cy="6" r="1" />
-          <circle cx="8" cy="6" r="1" />
-          <circle cx="4" cy="10" r="1" />
-          <circle cx="8" cy="10" r="1" />
-        </svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+        </button>
+
+        {/* Delete button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(item.id);
+          }}
+          className="pointer-events-auto absolute bottom-2 right-2 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white/60 hover:bg-brand hover:text-white transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
+          title="Delete"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Sort order badge */}
+        <div className="pointer-events-none absolute top-2 left-2 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white text-[9px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+          {item.sortOrder + 1}
+        </div>
       </div>
 
-      {/* Featured star */}
-      <button
-        onClick={() => onToggleFeatured(item.id, item.isFeatured)}
-        className={`absolute top-2 right-2 z-10 w-6 h-6 rounded flex items-center justify-center transition-all cursor-pointer ${
-          item.isFeatured
-            ? "bg-brand text-white"
-            : "bg-black/50 text-white/60 opacity-0 group-hover:opacity-100"
-        }`}
-        title={item.isFeatured ? "Remove featured" : "Set as featured"}
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-      </button>
-
-      {/* Delete */}
-      <button
-        onClick={() => onDelete(item.id)}
-        className="absolute bottom-2 right-2 z-10 w-6 h-6 bg-black/50 rounded flex items-center justify-center text-white/60 hover:bg-brand hover:text-white transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
-        title="Delete"
-      >
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
-      </button>
-
-      {/* Thumbnail */}
-      <div className="aspect-square bg-[#f0f0f0]">
-        {thumbnailUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={thumbnailUrl}
-            alt={item.altText || ""}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-[#ccc] text-xs">
-            No preview
-          </div>
-        )}
-      </div>
+      {/* Image — natural aspect ratio, matching public gallery */}
+      {thumbnailUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={thumbnailUrl}
+          alt={item.altText || ""}
+          className="w-full h-auto block"
+          draggable={false}
+        />
+      ) : (
+        <div className="w-full aspect-video bg-[#f0f0f0] flex items-center justify-center text-[#ccc] text-xs">
+          No preview
+        </div>
+      )}
 
       {/* Video badge */}
-      {item.type === "video" && (
-        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
-          Video
+      {item.type === "video" && <div className="video-badge">Video</div>}
+
+      {/* Featured label */}
+      {item.isFeatured && (
+        <div className="absolute bottom-0 left-0 bg-brand text-white px-3 py-1 text-[9px] font-extrabold uppercase tracking-[.15em]">
+          Featured
         </div>
       )}
     </div>

@@ -73,7 +73,11 @@ export default function AdminMediaGrid({
         items={items.map((i) => i.id)}
         strategy={rectSortingStrategy}
       >
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {/* Matches public gallery: 3 cols desktop, 2 tablet, 1 mobile */}
+        <div className="gallery-label max-w-[1300px] mx-auto pb-6 text-[10px] font-extrabold uppercase tracking-[.25em] text-brand">
+          Gallery Preview
+        </div>
+        <div className="masonry" style={{ padding: 0 }}>
           {items.map((item) => (
             <SortableMediaCard
               key={item.id}
