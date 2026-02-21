@@ -67,23 +67,26 @@ main {
   }
 }
 
-/* ====== GALLERY GRID ====== */
+/* ====== GALLERY GRID (Pinterest-style masonry) ====== */
 .masonry {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  columns: 1;
+  column-gap: 12px;
   padding: 0 40px;
   max-width: 1300px;
   margin: 0 auto;
 }
+.masonry > * {
+  break-inside: avoid;
+  margin-bottom: 12px;
+}
 @media (min-width: 768px) {
   .masonry {
-    grid-template-columns: repeat(2, 1fr);
+    columns: 2;
   }
 }
 @media (min-width: 1024px) {
   .masonry {
-    grid-template-columns: repeat(3, 1fr);
+    columns: 3;
   }
 }
 
@@ -351,7 +354,7 @@ main {
 @media (max-width: 1024px) {
   .masonry {
     padding: 0 24px;
-    gap: 10px;
+    column-gap: 10px;
   }
 }
 
@@ -359,7 +362,7 @@ main {
 @media (max-width: 768px) {
   .masonry {
     padding: 0 16px;
-    gap: 8px;
+    column-gap: 8px;
   }
   .playground {
     height: 70vh;
