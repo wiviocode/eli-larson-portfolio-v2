@@ -15,10 +15,10 @@ export default function HeroSection({
           >
             Eli Larson<span className="text-brand">.</span>
           </h1>
-          <div className="text-xs font-semibold uppercase tracking-[.2em] text-[#666] mt-5 max-md:text-[11px] max-md:tracking-[.15em] max-md:mt-3.5">
+          <div className="text-xs font-bold uppercase tracking-[.2em] text-[#666] mt-5 max-md:text-[11px] max-md:tracking-[.15em] max-md:mt-3.5">
             Sports Photography &amp; Videography
           </div>
-          <div className="text-[11px] text-[#999] mt-2 tracking-[.1em]">
+          <div className="text-[11px] font-semibold text-[#999] mt-2 tracking-[.1em]">
             Lincoln, NE
           </div>
         </div>
