@@ -11,7 +11,8 @@ export default function HeroSection({
       <div className="max-w-[1300px] mx-auto px-10 pt-20 pb-10 grid grid-cols-2 gap-10 items-center max-lg:px-6 max-lg:pt-15 max-lg:pb-8 max-lg:gap-6 max-md:grid-cols-1 max-md:px-4 max-md:pt-10 max-md:pb-6 max-md:gap-5">
         <div>
           <h1
-            className="hero-title font-display text-[clamp(48px,8vw,110px)] leading-[.9] text-[#111] max-md:text-[clamp(40px,12vw,64px)]"
+            className="hero-title text-[clamp(48px,8vw,110px)] leading-[.9] text-[#111] max-md:text-[clamp(40px,12vw,64px)]"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             Eli Larson<span className="text-brand">.</span>
           </h1>

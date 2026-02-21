@@ -39,7 +39,7 @@ export default function AdminLogin() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm bg-white/5 border border-white/10 rounded-lg p-8"
       >
-        <h1 className="font-display text-3xl text-white mb-2">
+        <h1 className="text-3xl text-white mb-2" style={{ fontFamily: "'Instrument Serif', serif" }}>
           Admin<span className="text-brand">.</span>
         </h1>
         <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mb-8">

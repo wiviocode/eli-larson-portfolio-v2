@@ -53,7 +53,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-[#fafafa]">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-black/[.08] px-6 py-4 flex items-center justify-between">
-        <h1 className="font-display text-xl">
+        <h1 className="text-xl" style={{ fontFamily: "'Instrument Serif', serif" }}>
           Admin Panel<span className="text-brand">.</span>
         </h1>
         <div className="flex items-center gap-4">

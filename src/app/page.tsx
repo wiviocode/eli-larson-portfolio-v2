@@ -7,6 +7,8 @@ import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { asc, eq } from "drizzle-orm";
 
+export const dynamic = "force-dynamic";
+
 async function getData() {
   try {
     const items = await db

@@ -6,6 +6,8 @@ import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { asc } from "drizzle-orm";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Explore | Eli Larson",
 };
@@ -44,7 +46,7 @@ export default async function ExplorePage() {
           <div className="playground flex items-center justify-center">
             <div className="pg-header">
               <div>
-                <h2 className="font-display text-[clamp(24px,4vw,48px)] text-white">
+                <h2 className="text-[clamp(24px,4vw,48px)] text-white" style={{ fontFamily: "'Instrument Serif', serif" }}>
                   Explore
                 </h2>
                 <div className="text-[10px] font-bold uppercase tracking-[.2em] text-white/30 mt-1.5">
