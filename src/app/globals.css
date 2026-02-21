@@ -143,30 +143,37 @@ main {
   outline-offset: 4px;
 }
 
-/* ====== PLAYGROUND ====== */
-.playground {
-  position: relative;
-  background-color: #111;
-  background-image: linear-gradient(
-      rgba(255, 255, 255, 0.05) 1px,
-      transparent 1px
-    ),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
+/* ====== PLAYGROUND (fullscreen immersive) ====== */
+.playground-fullscreen {
+  position: fixed;
+  inset: 0;
+  background-color: #0a0a0a;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(227,22,22,.03) 0%, transparent 70%),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
   overflow: hidden;
-  height: 80vh;
+  z-index: 0;
 }
-.pg-header {
+.pg-overlay-header {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  z-index: 10;
-  padding: 32px 40px;
+  z-index: 100;
+  padding: 24px 28px;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  pointer-events: none;
+  align-items: center;
+  gap: 14px;
+  pointer-events: auto;
+}
+.pg-back-link {
+  color: rgba(255,255,255,.4);
+  transition: color .2s;
+  display: flex;
+}
+.pg-back-link:hover {
+  color: #E31616;
 }
 .pg-canvas {
   width: 100%;
@@ -228,7 +235,7 @@ main {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   }
 }
-.playground.shake {
+.playground-fullscreen.shake {
   animation: pg-shake 0.3s ease-out;
 }
 @keyframes pg-shake {
@@ -308,14 +315,9 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  opacity: 1;
   animation: grab-pulse 2.5s ease-in-out infinite;
   pointer-events: none;
-}
-.p-photo:nth-child(1) .grab-hint,
-.p-photo:nth-child(4) .grab-hint,
-.p-photo:nth-child(7) .grab-hint {
-  opacity: 1;
 }
 .p-photo.touched .grab-hint {
   display: none;
@@ -364,12 +366,8 @@ main {
     padding: 0 16px;
     column-gap: 8px;
   }
-  .playground {
-    height: 70vh;
-    min-height: 400px;
-  }
-  .pg-header {
-    padding: 20px 16px;
+  .pg-overlay-header {
+    padding: 16px;
   }
 }
 
@@ -377,10 +375,6 @@ main {
 @media (max-width: 480px) {
   .masonry {
     padding: 0 16px;
-  }
-  .playground {
-    height: 60vh;
-    min-height: 350px;
   }
 }
 
