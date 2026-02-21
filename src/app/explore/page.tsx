@@ -24,6 +24,7 @@ async function getPhotos() {
         label: i.altText || i.fileName || "Photo",
         w: i.width || 400,
         h: i.height || 300,
+        color: i.dominantColor || null,
       }));
   } catch {
     return [];

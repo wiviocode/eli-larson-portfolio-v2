@@ -60,7 +60,7 @@ export default function GalleryItem({
   return (
     <a
       className="p-card"
-      style={{ aspectRatio: `${w}/${h}`, background: "#e8e8e8" }}
+      style={{ aspectRatio: `${w}/${h}`, background: item.dominantColor || "#e8e8e8" }}
       href={item.blobUrl || "#"}
       data-pswp-width={w}
       data-pswp-height={h}

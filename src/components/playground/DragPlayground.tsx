@@ -8,6 +8,7 @@ interface PlaygroundPhoto {
   label: string;
   w: number;
   h: number;
+  color?: string | null;
 }
 
 const grabSVG =
@@ -88,6 +89,7 @@ export default function DragPlayground({
         div.className = "p-photo";
         div.style.width = data.w + "px";
         div.style.height = data.h + "px";
+        if (data.color) div.style.backgroundColor = data.color;
         div.innerHTML = `<img src="${data.src}" alt="" loading="lazy" decoding="async"><div class="p-label">${data.label}</div><div class="p-border"></div>${i % 5 === 0 ? `<div class="grab-hint">${grabSVG}</div>` : ""}`;
         canvas!.appendChild(div);
 
