@@ -18,13 +18,21 @@ import SortableMediaCard from "./SortableMediaCard";
 export default function AdminMediaGrid({
   items,
   setItems,
+  selected,
+  onToggleSelect,
   onDelete,
   onToggleFeatured,
+  onSendToTop,
+  onSendToBottom,
 }: {
   items: MediaItem[];
   setItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
+  selected: Set<number>;
+  onToggleSelect: (id: number) => void;
   onDelete: (id: number) => void;
   onToggleFeatured: (id: number, current: boolean) => void;
+  onSendToTop: (id: number) => void;
+  onSendToBottom: (id: number) => void;
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -73,17 +81,19 @@ export default function AdminMediaGrid({
         items={items.map((i) => i.id)}
         strategy={rectSortingStrategy}
       >
-        {/* Matches public gallery: 3 cols desktop, 2 tablet, 1 mobile */}
-        <div className="gallery-label max-w-[1300px] mx-auto pb-6 text-[10px] font-extrabold uppercase tracking-[.25em] text-brand">
-          Gallery Preview
-        </div>
-        <div className="masonry" style={{ padding: 0 }}>
-          {items.map((item) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {items.map((item, index) => (
             <SortableMediaCard
               key={item.id}
               item={item}
+              index={index}
+              total={items.length}
+              isSelected={selected.has(item.id)}
+              onToggleSelect={onToggleSelect}
               onDelete={onDelete}
               onToggleFeatured={onToggleFeatured}
+              onSendToTop={onSendToTop}
+              onSendToBottom={onSendToBottom}
             />
           ))}
         </div>

@@ -143,6 +143,32 @@ main {
   outline-offset: 4px;
 }
 
+/* Hover label */
+.card-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 12px 10px;
+  background: linear-gradient(transparent, rgba(0,0,0,.5));
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .25s, transform .25s;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.p-card:hover .card-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* ====== PLAYGROUND (fullscreen immersive) ====== */
 .playground-fullscreen {
   position: fixed;
