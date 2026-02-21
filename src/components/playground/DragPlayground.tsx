@@ -339,7 +339,7 @@ export default function DragPlayground({
     <div className="playground" ref={playgroundRef}>
       <div className="pg-header">
         <div>
-          <h2 className="font-[family-name:var(--font-instrument-serif)] text-[clamp(24px,4vw,48px)] text-white">
+          <h2 className="font-serif text-[clamp(24px,4vw,48px)] text-white">
             Explore
           </h2>
           <div className="text-[10px] font-bold uppercase tracking-[.2em] text-white/30 mt-1.5">

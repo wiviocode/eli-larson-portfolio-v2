@@ -80,7 +80,7 @@ export default function AddVideoModal({
         onSubmit={handleSubmit}
         className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl"
       >
-        <h2 className="font-[family-name:var(--font-instrument-serif)] text-xl mb-4">
+        <h2 className="font-serif text-xl mb-4">
           Add Video<span className="text-brand">.</span>
         </h2>
 

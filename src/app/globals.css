@@ -20,6 +20,11 @@ body {
   max-width: 100%;
 }
 
+/* ====== FONT UTILITIES ====== */
+.font-serif {
+  font-family: var(--font-instrument-serif), "Instrument Serif", serif;
+}
+
 /* ====== HERO UNDERLINE ====== */
 @keyframes line-in {
   to {

@@ -2,7 +2,7 @@ export default function AboutSection() {
   return (
     <div className="bg-[#111] text-white overflow-hidden">
       <div className="max-w-[1300px] mx-auto px-10 pt-[100px] pb-[60px] max-lg:px-6 max-lg:pt-[60px] max-lg:pb-10 max-md:px-4 max-md:pt-[60px] max-md:pb-8">
-        <blockquote className="font-[family-name:var(--font-instrument-serif)] text-[clamp(36px,6vw,80px)] leading-[1.05] text-white">
+        <blockquote className="font-serif text-[clamp(36px,6vw,80px)] leading-[1.05] text-white">
           Capturing Moments<br />
           That <span className="text-brand">Matter</span>.
         </blockquote>
@@ -49,7 +49,7 @@ export default function AboutSection() {
           </p>
           <a
             href="mailto:eli.s.landerson@gmail.com"
-            className="font-[family-name:var(--font-instrument-serif)] text-[22px] text-brand no-underline relative inline-block max-md:text-[18px]
+            className="font-serif text-[22px] text-brand no-underline relative inline-block max-md:text-[18px]
               after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-brand"
           >
             eli.s.landerson@gmail.com
