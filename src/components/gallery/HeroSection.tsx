@@ -12,7 +12,10 @@ export default function HeroSection({
         <div>
           <h1
             className="hero-title text-[clamp(48px,8vw,110px)] leading-[.9] text-[#111] max-md:text-[clamp(40px,12vw,64px)]"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
+            style={{
+              fontFamily: "'Instrument Serif', serif",
+              WebkitTextStroke: "1.5px #111",
+            }}
           >
             Eli Larson<span className="text-brand">.</span>
           </h1>
