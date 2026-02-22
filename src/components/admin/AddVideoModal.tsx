@@ -34,6 +34,7 @@ export default function AddVideoModal({
   onAdded: () => void;
 }) {
   const [url, setUrl] = useState("");
+  const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -56,9 +57,9 @@ export default function AddVideoModal({
           type: "video",
           videoEmbedUrl: info.embedUrl,
           videoThumbnailUrl: info.thumbnailUrl,
-          width: 1920,
+          width: 1350,
           height: 1080,
-          altText: "Video",
+          altText: title.trim() || "Untitled",
         }),
       });
       onAdded();
@@ -89,12 +90,20 @@ export default function AddVideoModal({
         )}
 
         <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Video title"
+          className="w-full border border-black/10 rounded px-4 py-3 text-sm placeholder-[#ccc] focus:outline-none focus:border-brand transition-colors mb-3"
+          autoFocus
+        />
+
+        <input
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="Paste YouTube or Vimeo URL"
           className="w-full border border-black/10 rounded px-4 py-3 text-sm placeholder-[#ccc] focus:outline-none focus:border-brand transition-colors"
-          autoFocus
         />
 
         <div className="flex justify-end gap-3 mt-4">

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
+import { createPortal } from "react-dom";
 
 function getEmbedUrl(url: string): string | null {
   // YouTube
@@ -8,12 +9,12 @@ function getEmbedUrl(url: string): string | null {
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/
   );
   if (ytMatch) {
-    return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+    return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=0&playsinline=1`;
   }
 
   // Vimeo
   const vimeoMatch = url.match(
-    /(?:vimeo\.com\/)(\d+)/
+    /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/
   );
   if (vimeoMatch) {
     return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
@@ -22,55 +23,83 @@ function getEmbedUrl(url: string): string | null {
   return null;
 }
 
+function isDirectVideoUrl(url: string): boolean {
+  return /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url) || url.includes("blob.vercel-storage.com");
+}
+
 export default function VideoLightbox({
   videoUrl,
+  blobUrl,
   onClose,
 }: {
   videoUrl: string;
+  blobUrl?: string | null;
   onClose: () => void;
 }) {
   const embedUrl = getEmbedUrl(videoUrl);
+  const directUrl = !embedUrl && blobUrl ? blobUrl : (!embedUrl && isDirectVideoUrl(videoUrl) ? videoUrl : null);
+  const [visible, setVisible] = useState(false);
+  const [closing, setClosing] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => onClose(), 300);
+  }, [onClose]);
 
   const handleEsc = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
     },
-    [onClose]
+    [handleClose]
   );
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", handleEsc);
+    requestAnimationFrame(() => setVisible(true));
     return () => {
       document.body.style.overflow = "";
       document.removeEventListener("keydown", handleEsc);
     };
   }, [handleEsc]);
 
-  if (!embedUrl) return null;
+  if (!embedUrl && !directUrl) return null;
 
-  return (
+  const lightbox = (
     <div
-      className="fixed inset-0 z-[1000] bg-black/80 flex items-center justify-center"
-      onClick={onClose}
+      className="video-lightbox-backdrop"
+      style={{ opacity: visible && !closing ? 1 : 0 }}
+      onClick={handleClose}
     >
       <div
-        className="relative w-[90vw] max-w-[900px] aspect-video"
+        className="video-lightbox-content"
+        style={{
+          opacity: visible && !closing ? 1 : 0,
+          transform: visible && !closing ? "scale(1)" : "scale(0.92)",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute -top-10 right-0 text-white text-2xl font-bold hover:text-brand transition-colors cursor-pointer"
-        >
+        <button onClick={handleClose} className="video-lightbox-close">
           &times;
         </button>
-        <iframe
-          src={embedUrl}
-          className="w-full h-full rounded"
-          allow="autoplay; fullscreen"
-          allowFullScreen
-        />
+        {embedUrl ? (
+          <iframe
+            src={embedUrl}
+            className="video-lightbox-player"
+            allow="autoplay; fullscreen"
+            allowFullScreen
+          />
+        ) : (
+          <video
+            src={directUrl!}
+            className="video-lightbox-player"
+            controls
+            autoPlay
+          />
+        )}
       </div>
     </div>
   );
+
+  return createPortal(lightbox, document.body);
 }

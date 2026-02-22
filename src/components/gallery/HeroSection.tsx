@@ -27,7 +27,7 @@ export default function HeroSection({
           </div>
         </div>
         {featuredImage?.blobUrl && (
-          <div className="hero-img-wrapper relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.12)] rounded-[3px] transition-all duration-400 cursor-pointer">
+          <div className="hero-img-wrapper relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.12)] rounded-[3px] transition-all duration-400 cursor-default">
             <Image
               src={featuredImage.hqBlobUrl || featuredImage.blobUrl}
               alt={featuredImage.altText || "Featured sports photograph by Eli Larson"}
@@ -40,7 +40,7 @@ export default function HeroSection({
           </div>
         )}
         {!featuredImage?.blobUrl && (
-          <div className="hero-img-wrapper relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.12)] rounded-[3px] transition-all duration-400 cursor-pointer">
+          <div className="hero-img-wrapper relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.12)] rounded-[3px] transition-all duration-400 cursor-default">
             <div className="bg-[#ddd] w-full aspect-[3/2] flex items-center justify-center text-[#999] text-sm">
               Upload a featured photo in the admin panel
             </div>

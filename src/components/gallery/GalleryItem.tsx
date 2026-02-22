@@ -17,42 +17,59 @@ export default function GalleryItem({
   onVideoClick,
 }: {
   item: MediaItem;
-  onVideoClick?: (url: string) => void;
+  onVideoClick?: (embedUrl: string, blobUrl?: string | null) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const playPromise = useRef<Promise<void> | null>(null);
 
   const w = item.width || 1200;
   const h = item.height || 800;
   const label = item.altText || cleanFileName(item.fileName);
+  const hasDirectVideo = !!item.blobUrl;
+  const thumbnail = item.videoThumbnailUrl || null;
 
   if (item.type === "video") {
     return (
       <div
         className="p-card group"
         style={{ aspectRatio: `${w}/${h}` }}
-        onClick={() => onVideoClick?.(item.videoEmbedUrl || "")}
-        onMouseEnter={() => videoRef.current?.play()}
+        onClick={() => onVideoClick?.(item.videoEmbedUrl || "", item.blobUrl)}
+        onMouseEnter={() => {
+          if (videoRef.current && hasDirectVideo) {
+            playPromise.current = videoRef.current.play();
+          }
+        }}
         onMouseLeave={() => {
-          if (videoRef.current) {
-            videoRef.current.pause();
-            videoRef.current.currentTime = 0;
+          if (videoRef.current && hasDirectVideo) {
+            const p = playPromise.current;
+            if (p) {
+              p.then(() => {
+                videoRef.current?.pause();
+                if (videoRef.current) videoRef.current.currentTime = 0;
+              }).catch(() => {});
+              playPromise.current = null;
+            } else {
+              videoRef.current.pause();
+              videoRef.current.currentTime = 0;
+            }
           }
         }}
       >
-        {item.videoThumbnailUrl ? (
+        {hasDirectVideo ? (
           <video
             ref={videoRef}
             src={item.blobUrl || undefined}
             muted
             playsInline
             loop
+            preload="metadata"
             className="w-full h-full block object-cover"
-            poster={item.videoThumbnailUrl}
+            poster={thumbnail || undefined}
           />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={item.videoThumbnailUrl || "/placeholder.jpg"}
+            src={thumbnail || ""}
             alt={label}
             className="w-full h-full block object-cover"
           />

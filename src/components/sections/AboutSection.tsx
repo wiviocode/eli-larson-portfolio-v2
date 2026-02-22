@@ -14,8 +14,8 @@ export default function AboutSection() {
           </h3>
           <p className="text-white/50 text-[10px] font-bold leading-[2] uppercase tracking-[.15em]">
             Over five years in sports media. Currently a Creative Media
-            Assistant for the Huskers athletic program, capturing athletic
-            intensity and emotion.
+            Assistant for Nebraska Men&apos;s Basketball and Social Media
+            Manager for Nebraska Track & Field.
           </p>
         </div>
         <div>
@@ -55,6 +55,11 @@ export default function AboutSection() {
           >
             eli.s.landerson@gmail.com
           </a>
+          <p className="text-white/50 text-[10px] font-bold uppercase tracking-[.15em] mt-3">
+            <a href="tel:+14029755981" className="text-white/50 no-underline transition-colors duration-300 hover:text-brand">
+              +1 (402) 975-5981
+            </a>
+          </p>
           <div className="mt-4 flex gap-3.5 items-center">
             <a
               href="https://www.instagram.com/strike_lnk/"

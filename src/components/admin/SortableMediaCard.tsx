@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { MediaItem } from "@/db/schema";
@@ -23,6 +24,7 @@ export default function SortableMediaCard({
   onToggleFeatured,
   onSendToTop,
   onSendToBottom,
+  onUpdateAltText,
 }: {
   item: MediaItem;
   index: number;
@@ -33,6 +35,7 @@ export default function SortableMediaCard({
   onToggleFeatured: (id: number, current: boolean) => void;
   onSendToTop: (id: number) => void;
   onSendToBottom: (id: number) => void;
+  onUpdateAltText: (id: number, altText: string) => void;
 }) {
   const {
     attributes,
@@ -43,6 +46,10 @@ export default function SortableMediaCard({
     isDragging,
   } = useSortable({ id: item.id });
 
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -52,6 +59,20 @@ export default function SortableMediaCard({
   const thumbnailUrl =
     item.type === "video" ? item.videoThumbnailUrl : item.blobUrl;
   const label = item.altText || cleanFileName(item.fileName);
+
+  function startEditing() {
+    setEditValue(label);
+    setEditing(true);
+    setTimeout(() => inputRef.current?.select(), 0);
+  }
+
+  function saveEdit() {
+    const trimmed = editValue.trim();
+    if (trimmed && trimmed !== label) {
+      onUpdateAltText(item.id, trimmed);
+    }
+    setEditing(false);
+  }
 
   return (
     <div
@@ -136,9 +157,29 @@ export default function SortableMediaCard({
       {/* Info bar */}
       <div className="px-2.5 py-2 flex items-center justify-between gap-1">
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] font-semibold text-[#333] truncate" title={label}>
-            {label}
-          </div>
+          {editing ? (
+            <input
+              ref={inputRef}
+              type="text"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={saveEdit}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") saveEdit();
+                if (e.key === "Escape") setEditing(false);
+              }}
+              className="text-[10px] font-semibold text-[#333] w-full border border-brand/40 rounded px-1 py-0.5 outline-none focus:border-brand"
+              autoFocus
+            />
+          ) : (
+            <div
+              className="text-[10px] font-semibold text-[#333] truncate cursor-text hover:text-brand transition-colors"
+              title="Double-click to edit"
+              onDoubleClick={startEditing}
+            >
+              {label}
+            </div>
+          )}
           <div className="text-[9px] text-[#aaa] font-medium">
             #{index + 1} of {total}
           </div>
@@ -146,6 +187,18 @@ export default function SortableMediaCard({
 
         {/* Action buttons */}
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          {/* Edit title */}
+          <button
+            onClick={startEditing}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="w-6 h-6 flex items-center justify-center rounded text-[#999] hover:text-[#111] hover:bg-black/5 transition-colors cursor-pointer"
+            title="Edit title"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+            </svg>
+          </button>
+
           {/* Send to top */}
           <button
             onClick={() => onSendToTop(item.id)}

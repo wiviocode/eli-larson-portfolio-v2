@@ -18,9 +18,23 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Eli Larson — Sports Photography & Videography",
+  metadataBase: new URL("https://www.eli-larson.com"),
+  title: {
+    default: "Eli Larson — Sports Photography & Videography",
+    template: "%s — Eli Larson",
+  },
   description:
-    "Sports photography and videography by Eli Larson. Capturing athletic intensity for the Huskers and beyond. Lincoln, NE.",
+    "Sports photography and videography by Eli Larson. Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field. Lincoln, NE.",
+  openGraph: {
+    title: "Eli Larson — Sports Photography & Videography",
+    description:
+      "Sports photography and videography by Eli Larson. Lincoln, NE.",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({
@@ -30,18 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${instrumentSerif.variable} ${inter.variable}`}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+      <head />
       <body className="antialiased">
         {children}
         <Analytics />

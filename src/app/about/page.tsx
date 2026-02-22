@@ -4,14 +4,16 @@ import Footer from "@/components/layout/Footer";
 import AboutSection from "@/components/sections/AboutSection";
 
 export const metadata: Metadata = {
-  title: "About | Eli Larson",
+  title: "About",
+  description:
+    "About Eli Larson — Media Assistant for Nebraska Men's Basketball, Social Media Manager for Nebraska Track & Field, and freelance sports photographer. Lincoln, NE.",
 };
 
 export default function AboutPage() {
   return (
     <>
-      <Header />
-      <main className="pt-[60px]">
+      <Header variant="dark" />
+      <main className="pt-[60px] bg-[#111]">
         <AboutSection />
 
         {/* Resume Content */}
@@ -27,7 +29,7 @@ export default function AboutPage() {
                 <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
                   <div>
                     <h4 className="text-[13px] font-bold uppercase tracking-[.1em] text-white">
-                      Creative Media Assistant
+                      Media Assistant & Photographer — Men&apos;s Basketball
                     </h4>
                     <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mt-1">
                       University of Nebraska Athletics (Huskers)
@@ -39,10 +41,40 @@ export default function AboutPage() {
                 </div>
                 <ul className="list-none space-y-2 mt-4">
                   {[
-                    "Capture high-quality photography and videography for Husker athletics across multiple sports",
+                    "Capture high-quality photography and videography for Nebraska Men's Basketball",
                     "Create engaging content for social media platforms reaching 500K+ followers",
                     "Collaborate with creative directors on game day content strategy",
                     "Edit and deliver time-sensitive content during live events",
+                  ].map((item) => (
+                    <li
+                      key={item}
+                      className="text-white/40 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mb-10">
+                <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
+                  <div>
+                    <h4 className="text-[13px] font-bold uppercase tracking-[.1em] text-white">
+                      Social Media Manager — Track & Field
+                    </h4>
+                    <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mt-1">
+                      University of Nebraska Athletics (Huskers)
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-[.15em] text-white/30">
+                    2023 — Present
+                  </span>
+                </div>
+                <ul className="list-none space-y-2 mt-4">
+                  {[
+                    "Manage social media accounts for Nebraska Track & Field",
+                    "Plan and execute content strategy across platforms",
+                    "Produce photo and video content for meets and events",
                   ].map((item) => (
                     <li
                       key={item}
@@ -96,11 +128,11 @@ export default function AboutPage() {
                     University of Nebraska–Lincoln
                   </h4>
                   <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mt-1">
-                    Sports Media & Communication
+                    Advertising & Public Relations
                   </p>
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-[.15em] text-white/30">
-                  2021 — 2025
+                  2024 — 2028
                 </span>
               </div>
             </div>

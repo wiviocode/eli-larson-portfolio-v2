@@ -7,7 +7,7 @@ import VideoLightbox from "./VideoLightbox";
 import GalleryItem from "./GalleryItem";
 
 export default function MasonryGrid({ items }: { items: MediaItem[] }) {
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoState, setVideoState] = useState<{ embedUrl: string; blobUrl?: string | null } | null>(null);
 
   return (
     <>
@@ -17,12 +17,16 @@ export default function MasonryGrid({ items }: { items: MediaItem[] }) {
           <GalleryItem
             key={item.id}
             item={item}
-            onVideoClick={(url) => setVideoUrl(url)}
+            onVideoClick={(embedUrl, blobUrl) => setVideoState({ embedUrl, blobUrl })}
           />
         ))}
       </div>
-      {videoUrl && (
-        <VideoLightbox videoUrl={videoUrl} onClose={() => setVideoUrl(null)} />
+      {videoState && (
+        <VideoLightbox
+          videoUrl={videoState.embedUrl}
+          blobUrl={videoState.blobUrl}
+          onClose={() => setVideoState(null)}
+        />
       )}
     </>
   );

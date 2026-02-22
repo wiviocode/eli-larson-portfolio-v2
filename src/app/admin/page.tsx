@@ -86,6 +86,19 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleUpdateAltText(id: number, altText: string) {
+    const res = await fetch(`/api/media/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ altText }),
+    });
+    if (res.ok) {
+      setItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, altText } : i))
+      );
+    }
+  }
+
   async function handleSendToTop(id: number) {
     const idx = items.findIndex((i) => i.id === id);
     if (idx <= 0) return;
@@ -208,6 +221,7 @@ export default function AdminDashboard() {
             onToggleFeatured={handleToggleFeatured}
             onSendToTop={handleSendToTop}
             onSendToBottom={handleSendToBottom}
+            onUpdateAltText={handleUpdateAltText}
           />
         )}
       </div>
