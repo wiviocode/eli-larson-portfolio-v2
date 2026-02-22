@@ -20,12 +20,6 @@ export default function Header() {
             Work
           </Link>
           <Link
-            href="/explore"
-            className="text-xs font-semibold text-[#111] no-underline uppercase tracking-[.1em] transition-colors duration-300 hover:text-brand max-md:text-[11px] max-md:tracking-[.06em]"
-          >
-            Explore
-          </Link>
-          <Link
             href="/about"
             className="text-xs font-semibold text-[#111] no-underline uppercase tracking-[.1em] transition-colors duration-300 hover:text-brand max-md:text-[11px] max-md:tracking-[.06em]"
           >
