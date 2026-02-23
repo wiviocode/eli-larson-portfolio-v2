@@ -7,6 +7,18 @@ export default function AboutSection() {
           That <span className="text-brand">Matter</span>.
         </blockquote>
       </div>
+      {/* Headshot */}
+      <div className="max-w-[1300px] mx-auto px-10 pb-12 max-lg:px-6 max-md:px-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/eli-headshot.jpeg"
+          alt="Eli Larson"
+          width={640}
+          height={640}
+          className="w-[280px] h-[280px] rounded-full object-cover max-md:w-[200px] max-md:h-[200px]"
+        />
+      </div>
+
       <div className="max-w-[1300px] mx-auto px-10 pt-12 pb-[100px] grid grid-cols-3 gap-10 border-t border-white/[.06] max-lg:px-6 max-lg:pt-10 max-lg:pb-[60px] max-lg:gap-8 max-md:grid-cols-1 max-md:px-4 max-md:pt-8 max-md:pb-[60px] max-md:gap-8">
         <div>
           <h3 className="about-col-heading text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-4">

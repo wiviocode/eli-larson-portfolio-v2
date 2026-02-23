@@ -87,6 +87,7 @@ export default function GalleryItem({
       href={item.blobUrl || "#"}
       data-pswp-width={w}
       data-pswp-height={h}
+      data-pswp-caption={label}
       target="_blank"
       rel="noreferrer"
     >
