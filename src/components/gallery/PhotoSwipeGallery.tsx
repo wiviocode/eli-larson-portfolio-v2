@@ -9,7 +9,8 @@ export default function PhotoSwipeGallery({
   galleryId: string;
 }) {
   useEffect(() => {
-    let lightbox: { init: () => void; destroy: () => void } | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let lightbox: any = null;
 
     async function init() {
       const PhotoSwipeLightbox = (await import("photoswipe/lightbox")).default;
