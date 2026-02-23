@@ -1,21 +1,18 @@
 export default function AboutSection() {
   return (
     <div className="bg-[#111] text-white overflow-hidden">
-      <div className="max-w-[1300px] mx-auto px-10 pt-[100px] pb-[60px] max-lg:px-6 max-lg:pt-[60px] max-lg:pb-10 max-md:px-4 max-md:pt-[60px] max-md:pb-8">
-        <blockquote className="text-[clamp(36px,6vw,80px)] leading-[1.05] text-white" style={{ fontFamily: "'Instrument Serif', serif" }}>
+      <div className="max-w-[1300px] mx-auto px-10 pt-[100px] pb-[60px] flex items-end gap-12 max-lg:px-6 max-lg:pt-[60px] max-lg:pb-10 max-lg:gap-8 max-md:flex-col max-md:items-start max-md:px-4 max-md:pt-[60px] max-md:pb-8 max-md:gap-6">
+        <blockquote className="text-[clamp(36px,6vw,80px)] leading-[1.05] text-white flex-1" style={{ fontFamily: "'Instrument Serif', serif" }}>
           Capturing Moments<br />
           That <span className="text-brand">Matter</span>.
         </blockquote>
-      </div>
-      {/* Headshot */}
-      <div className="max-w-[1300px] mx-auto px-10 pb-12 max-lg:px-6 max-md:px-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/eli-headshot.jpeg"
           alt="Eli Larson"
           width={640}
           height={640}
-          className="w-[280px] h-[280px] rounded-full object-cover max-md:w-[200px] max-md:h-[200px]"
+          className="w-[260px] h-[260px] rounded-lg object-cover shrink-0 max-lg:w-[200px] max-lg:h-[200px] max-md:w-full max-md:h-auto max-md:max-w-[320px] max-md:aspect-square"
         />
       </div>
 

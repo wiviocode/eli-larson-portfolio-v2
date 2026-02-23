@@ -46,8 +46,10 @@ export default function PhotoSwipeGallery({
               right: "0",
               textAlign: "center",
               color: "#fff",
-              fontSize: "14px",
-              fontWeight: "500",
+              fontSize: "9px",
+              fontWeight: "700",
+              textTransform: "uppercase",
+              letterSpacing: ".12em",
               textShadow: "0 1px 3px rgba(0,0,0,0.6)",
               pointerEvents: "none",
             });
