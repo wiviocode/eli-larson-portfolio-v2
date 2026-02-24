@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
             "image/gif",
             "image/avif",
           ],
-          maximumSizeInBytes: 50 * 1024 * 1024, // 50MB
+          maximumSizeInBytes: 200 * 1024 * 1024, // 200MB
         };
       },
       onUploadCompleted: async () => {

@@ -12,6 +12,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState(false);
+  const [fixingColors, setFixingColors] = useState(false);
 
   const fetchItems = useCallback(async () => {
     try {
@@ -163,6 +164,25 @@ export default function AdminDashboard() {
             Media Library — {items.length} items
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                setFixingColors(true);
+                try {
+                  const res = await fetch("/api/media/fix-colors", { method: "POST" });
+                  const result = await res.json();
+                  alert(`Fixed ${result.fixed} of ${result.total} missing colors`);
+                  fetchItems();
+                } catch {
+                  alert("Failed to fix colors");
+                } finally {
+                  setFixingColors(false);
+                }
+              }}
+              disabled={fixingColors}
+              className="text-[10px] font-bold uppercase tracking-[.15em] bg-white text-[#666] px-4 py-2 rounded border border-black/10 hover:border-[#111] transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {fixingColors ? "Fixing..." : "Fix Colors"}
+            </button>
             <button
               onClick={() => setShowVideoModal(true)}
               className="text-[10px] font-bold uppercase tracking-[.15em] bg-[#111] text-white px-4 py-2 rounded hover:bg-brand transition-colors cursor-pointer"
