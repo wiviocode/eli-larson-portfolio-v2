@@ -27,7 +27,17 @@ export default function GenerateCaptionModal({
       const res = await fetch("/api/media/generate-caption", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl, note: note.trim() || undefined }),
+        body: JSON.stringify({
+          imageUrl,
+          note: note.trim() || undefined,
+          metadata: {
+            fileName: item.fileName,
+            width: item.width,
+            height: item.height,
+            altText: item.altText,
+            createdAt: item.createdAt,
+          },
+        }),
       });
       if (!res.ok) {
         const data = await res.json();

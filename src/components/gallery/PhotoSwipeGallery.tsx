@@ -51,9 +51,8 @@ export default function PhotoSwipeGallery({
               textTransform: "uppercase",
               letterSpacing: ".12em",
               pointerEvents: "none",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
             });
 
             const update = () => {
