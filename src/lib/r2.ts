@@ -17,6 +17,8 @@ const s3 = new S3Client({
     accessKeyId: process.env.R2_ACCESS_KEY_ID!,
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
   },
+  requestChecksumCalculation: "WHEN_REQUIRED",
+  responseChecksumValidation: "WHEN_REQUIRED",
 });
 
 /** Generate a presigned PUT URL for direct browser upload (30min expiry) */
@@ -29,7 +31,10 @@ export async function createPresignedUpload(
     Key: key,
     ContentType: contentType,
   });
-  return getSignedUrl(s3, command, { expiresIn: 1800 });
+  return getSignedUrl(s3, command, {
+    expiresIn: 1800,
+    signableHeaders: new Set(["content-type"]),
+  });
 }
 
 /** Upload a buffer to R2 and return the public URL */
