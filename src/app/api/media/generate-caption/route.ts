@@ -27,7 +27,7 @@ Metadata:
 - If EXIF or file metadata includes a date, use it as the photo date. Do not mention camera settings.
 - Use the filename for clues about the subject if helpful.
 
-Output ONLY the raw caption text. No quotes, no markdown, no labels.`;
+CRITICAL: Your final output must be ONLY the caption text itself — one paragraph, no preamble, no reasoning, no questions, no commentary, no "Let me search" narration, no markdown. If you cannot verify a detail, write the best caption you can with what you know. Never ask clarifying questions — just write the caption.`;
 
 const EXAMPLES = `
 Example 1: "Nebraska Cornhuskers freshman forward Braden Frager dribbles a basketball as his shadow is cast across a tunnel wall at Pinnacle Bank Arena in Lincoln, Neb., on Sunday, Dec. 7, 2025. Nebraska defeated Creighton 71-50, extending the Cornhuskers' unbeaten record to 9-0 with their 13th consecutive victory."
@@ -124,12 +124,13 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-    // Extract just the text blocks from the response (skip search tool use/result blocks)
-    const caption = response.content
+    // With web search, Claude outputs multiple text blocks — early ones are
+    // reasoning/search commentary, the last one is the actual caption.
+    const textBlocks = response.content
       .filter((block): block is Anthropic.TextBlock => block.type === "text")
-      .map((block) => block.text)
-      .join("")
-      .trim();
+      .map((block) => block.text.trim())
+      .filter((t) => t.length > 0);
+    const caption = textBlocks[textBlocks.length - 1] || "";
 
     return NextResponse.json({ caption });
   } catch (error) {
