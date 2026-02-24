@@ -124,13 +124,23 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-    // With web search, Claude outputs multiple text blocks — early ones are
-    // reasoning/search commentary, the last one is the actual caption.
-    const textBlocks = response.content
+    // With web search, the response has text blocks interleaved with search
+    // tool_use/result blocks. Collect only text blocks after the last search
+    // result — that's the final caption. If no searches, take all text.
+    const blocks = response.content;
+    let lastSearchIdx = -1;
+    for (let i = blocks.length - 1; i >= 0; i--) {
+      if (blocks[i].type === "web_search_tool_result") {
+        lastSearchIdx = i;
+        break;
+      }
+    }
+    const caption = blocks
+      .slice(lastSearchIdx + 1)
       .filter((block): block is Anthropic.TextBlock => block.type === "text")
       .map((block) => block.text.trim())
-      .filter((t) => t.length > 0);
-    const caption = textBlocks[textBlocks.length - 1] || "";
+      .filter((t) => t.length > 0)
+      .join(" ");
 
     return NextResponse.json({ caption });
   } catch (error) {
