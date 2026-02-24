@@ -103,6 +103,7 @@ export default function GalleryItem({
         className="img-fade"
         ref={(el) => { if (el?.complete) el.classList.add("loaded"); }}
         onLoad={(e) => e.currentTarget.classList.add("loaded")}
+        onError={(e) => { e.currentTarget.style.display = "none"; }}
       />
       <div className="card-label">{label}</div>
     </a>

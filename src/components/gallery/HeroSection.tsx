@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import type { MediaItem } from "@/db/schema";
 
@@ -6,6 +9,9 @@ export default function HeroSection({
 }: {
   featuredImage?: MediaItem | null;
 }) {
+  const [imgError, setImgError] = useState(false);
+  const showImage = featuredImage?.blobUrl && !imgError;
+
   return (
     <section className="pt-20">
       <div className="max-w-[1300px] mx-auto px-10 pt-20 pb-10 grid grid-cols-2 gap-10 items-center max-lg:px-6 max-lg:pt-15 max-lg:pb-8 max-lg:gap-6 max-md:grid-cols-1 max-md:px-4 max-md:pt-10 max-md:pb-6 max-md:gap-5">
@@ -26,20 +32,21 @@ export default function HeroSection({
             Lincoln, NE
           </div>
         </div>
-        {featuredImage?.blobUrl && (
+        {showImage && (
           <div className="hero-img-wrapper relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.12)] rounded-[3px] transition-all duration-400 cursor-default">
             <Image
-              src={featuredImage.hqBlobUrl || featuredImage.blobUrl}
+              src={featuredImage.hqBlobUrl || featuredImage.blobUrl!}
               alt={featuredImage.altText || "Featured sports photograph by Eli Larson"}
               width={featuredImage.width || 800}
               height={featuredImage.height || 533}
               priority
               quality={95}
               className="w-full h-auto block"
+              onError={() => setImgError(true)}
             />
           </div>
         )}
-        {!featuredImage?.blobUrl && (
+        {!showImage && (
           <div className="hero-img-wrapper relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.12)] rounded-[3px] transition-all duration-400 cursor-default">
             <div className="bg-[#ddd] w-full aspect-[3/2] flex items-center justify-center text-[#999] text-sm">
               Upload a featured photo in the admin panel
