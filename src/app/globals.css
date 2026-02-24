@@ -161,8 +161,8 @@ main {
   right: 0;
   padding: 24px 12px 10px;
   background: linear-gradient(transparent, rgba(0,0,0,.5));
-  color: #fff;
-  font-size: 9px;
+  color: #fff !important;
+  font-size: 9px !important;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .12em;

@@ -24,7 +24,8 @@ export default function GalleryItem({
 
   const w = item.width || 1200;
   const h = item.height || 800;
-  const label = item.altText || cleanFileName(item.fileName);
+  const label = item.caption || item.altText || cleanFileName(item.fileName);
+  const altLabel = item.altText || cleanFileName(item.fileName);
   const hasDirectVideo = !!item.blobUrl;
   const thumbnail = item.videoThumbnailUrl || null;
 
@@ -70,7 +71,7 @@ export default function GalleryItem({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={thumbnail || ""}
-            alt={label}
+            alt={altLabel}
             className="w-full h-full block object-cover"
           />
         )}
@@ -94,7 +95,7 @@ export default function GalleryItem({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={item.blobUrl || ""}
-        alt={label}
+        alt={altLabel}
         width={w}
         height={h}
         loading="lazy"

@@ -46,7 +46,7 @@ export default function PhotoSwipeGallery({
               padding: "24px 12px 10px",
               background: "linear-gradient(transparent, rgba(0,0,0,.5))",
               color: "#fff",
-              fontSize: "9px",
+              fontSize: "12px",
               fontWeight: "700",
               textTransform: "uppercase",
               letterSpacing: ".12em",

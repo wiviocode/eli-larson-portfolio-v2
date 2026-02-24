@@ -17,6 +17,7 @@ export const mediaItems = pgTable("media_items", {
   width: integer("width"),
   height: integer("height"),
   altText: text("alt_text"),
+  caption: text("caption"),
   dominantColor: text("dominant_color"),
   hqBlobUrl: text("hq_blob_url"),
   isFeatured: boolean("is_featured").default(false).notNull(),
