@@ -28,6 +28,7 @@ export default function PhotoSwipeGallery({
         arrowPrev: false,
         arrowNext: false,
         zoom: false,
+        tapAction: "close",
       });
 
       // Add overlay bar caption with red top border

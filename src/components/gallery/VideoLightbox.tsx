@@ -79,7 +79,7 @@ export default function VideoLightbox({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={handleClose} className="video-lightbox-close">
+        <button onClick={handleClose} className="video-lightbox-close" aria-label="Close video">
           &times;
         </button>
         {embedUrl ? (

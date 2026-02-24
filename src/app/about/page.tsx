@@ -7,6 +7,15 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "About Eli Larson — Media Assistant for Nebraska Men's Basketball, Social Media Manager for Nebraska Track & Field, and freelance sports photographer. Lincoln, NE.",
+  openGraph: {
+    title: "About — Eli Larson",
+    description:
+      "Media Assistant for Nebraska Men's Basketball, Social Media Manager for Nebraska Track & Field, and freelance sports photographer. Lincoln, NE.",
+    type: "profile",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function AboutPage() {
@@ -48,7 +57,7 @@ export default function AboutPage() {
                   ].map((item) => (
                     <li
                       key={item}
-                      className="text-white/40 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
+                      className="text-white/60 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
                     >
                       {item}
                     </li>
@@ -78,7 +87,7 @@ export default function AboutPage() {
                   ].map((item) => (
                     <li
                       key={item}
-                      className="text-white/40 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
+                      className="text-white/60 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
                     >
                       {item}
                     </li>
@@ -108,7 +117,7 @@ export default function AboutPage() {
                   ].map((item) => (
                     <li
                       key={item}
-                      className="text-white/40 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
+                      className="text-white/60 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
                     >
                       {item}
                     </li>
@@ -179,7 +188,7 @@ export default function AboutPage() {
                 ].map((award) => (
                   <li
                     key={award}
-                    className="text-white/40 text-[10px] font-bold uppercase tracking-[.15em]"
+                    className="text-white/60 text-[10px] font-bold uppercase tracking-[.15em]"
                   >
                     {award}
                   </li>

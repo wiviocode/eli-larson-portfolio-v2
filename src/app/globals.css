@@ -178,6 +178,12 @@ main {
   opacity: 1;
   transform: translateY(0);
 }
+@media (hover: none) {
+  .card-label {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* ====== HOVER ====== */
 @media (hover: hover) {
@@ -275,6 +281,11 @@ main {
 }
 .video-lightbox-close:hover {
   color: #E31616;
+}
+.video-lightbox-close:focus-visible {
+  outline: 2px solid #E31616;
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 @media (max-width: 768px) {

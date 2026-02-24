@@ -42,7 +42,7 @@ export default function AboutSection() {
             ].map((skill) => (
               <li
                 key={skill}
-                className="text-white/40 text-[10px] font-bold uppercase tracking-[.15em] mb-2"
+                className="text-white/60 text-[10px] font-bold uppercase tracking-[.15em] mb-2"
               >
                 {skill}
               </li>
@@ -75,7 +75,7 @@ export default function AboutSection() {
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
-              className="text-brand transition-opacity duration-300 hover:opacity-60"
+              className="text-brand transition-opacity duration-300 hover:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-sm"
             >
               <svg
                 width="20"
@@ -91,7 +91,7 @@ export default function AboutSection() {
               target="_blank"
               rel="noreferrer"
               aria-label="LinkedIn"
-              className="text-brand transition-opacity duration-300 hover:opacity-60"
+              className="text-brand transition-opacity duration-300 hover:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-sm"
             >
               <svg
                 width="20"
