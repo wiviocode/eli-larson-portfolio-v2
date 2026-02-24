@@ -9,7 +9,7 @@ function getEmbedUrl(url: string): string | null {
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/
   );
   if (ytMatch) {
-    return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=0&playsinline=1`;
+    return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=0&playsinline=1&controls=1&showinfo=0`;
   }
 
   // Vimeo

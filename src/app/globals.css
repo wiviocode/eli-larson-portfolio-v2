@@ -287,18 +287,28 @@ main {
   }
 }
 
-/* ====== VIDEO BADGE ====== */
-.video-badge {
+/* ====== VIDEO PLAY BUTTON ====== */
+.video-play-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.7);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  width: 56px;
+  height: 56px;
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
-  padding: 2px 8px;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  border-radius: 2px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 5;
+  transition: transform 0.2s ease, background 0.2s ease;
+  pointer-events: none;
+}
+.video-play-btn svg {
+  margin-left: 3px;
+}
+.p-card:hover .video-play-btn {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: rgba(227, 22, 22, 0.85);
 }

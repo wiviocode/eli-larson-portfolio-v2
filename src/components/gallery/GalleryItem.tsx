@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type { MediaItem } from "@/db/schema";
 
 function cleanFileName(name: string | null) {
@@ -21,6 +21,7 @@ export default function GalleryItem({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playPromise = useRef<Promise<void> | null>(null);
+  const [thumbRatio, setThumbRatio] = useState<string | null>(null);
 
   const w = item.width || 1200;
   const h = item.height || 800;
@@ -33,7 +34,7 @@ export default function GalleryItem({
     return (
       <div
         className="p-card group"
-        style={{ aspectRatio: `${w}/${h}` }}
+        style={{ aspectRatio: thumbRatio || `${w}/${h}` }}
         onClick={() => onVideoClick?.(item.videoEmbedUrl || "", item.blobUrl)}
         onMouseEnter={() => {
           if (videoRef.current && hasDirectVideo) {
@@ -66,6 +67,12 @@ export default function GalleryItem({
             preload="metadata"
             className="w-full h-full block object-cover"
             poster={thumbnail || undefined}
+            onLoadedMetadata={(e) => {
+              const v = e.currentTarget;
+              if (v.videoWidth && v.videoHeight) {
+                setThumbRatio(`${v.videoWidth}/${v.videoHeight}`);
+              }
+            }}
           />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
@@ -73,9 +80,19 @@ export default function GalleryItem({
             src={thumbnail || ""}
             alt={altLabel}
             className="w-full h-full block object-cover"
+            onLoad={(e) => {
+              const img = e.currentTarget;
+              if (img.naturalWidth && img.naturalHeight) {
+                setThumbRatio(`${img.naturalWidth}/${img.naturalHeight}`);
+              }
+            }}
           />
         )}
-        <div className="video-badge">Video</div>
+        <div className="video-play-btn" aria-label="Play video">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
         <div className="card-label">{label}</div>
       </div>
     );
