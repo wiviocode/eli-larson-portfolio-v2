@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { upload as blobUpload } from "@vercel/blob/client";
 
 function getImageDimensions(
   file: File
@@ -41,18 +40,42 @@ export default function UploadDropzone({
         try {
           const dims = await getImageDimensions(file);
 
-          // Client upload — streams directly to Blob storage, no 4.5MB limit
-          const blob = await blobUpload(file.name, file, {
-            access: "public",
-            handleUploadUrl: "/api/media/upload",
+          // 1. Get presigned URL from our API
+          const uploadRes = await fetch("/api/media/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              fileName: file.name,
+              contentType: file.type,
+              size: file.size,
+            }),
           });
 
+          if (!uploadRes.ok) {
+            const err = await uploadRes.json();
+            throw new Error(err.error || "Failed to get upload URL");
+          }
+
+          const { presignedUrl, objectKey } = await uploadRes.json();
+
+          // 2. PUT file directly to R2
+          const putRes = await fetch(presignedUrl, {
+            method: "PUT",
+            headers: { "Content-Type": file.type },
+            body: file,
+          });
+
+          if (!putRes.ok) {
+            throw new Error(`R2 upload failed: ${putRes.status}`);
+          }
+
+          // 3. Create media item with the R2 object key
           await fetch("/api/media", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               type: "photo",
-              blobUrl: blob.url,
+              rawObjectKey: objectKey,
               fileName: file.name,
               width: dims.width,
               height: dims.height,

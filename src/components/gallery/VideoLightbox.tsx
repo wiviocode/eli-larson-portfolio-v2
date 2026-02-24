@@ -24,7 +24,7 @@ function getEmbedUrl(url: string): string | null {
 }
 
 function isDirectVideoUrl(url: string): boolean {
-  return /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url) || url.includes("blob.vercel-storage.com");
+  return /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url);
 }
 
 export default function VideoLightbox({

@@ -3,16 +3,16 @@ import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { asc, max } from "drizzle-orm";
 import sharp from "sharp";
-import { put, del } from "@vercel/blob";
+import { fetchBuffer, uploadBuffer, deleteByUrl, publicUrl } from "@/lib/r2";
+import { randomUUID } from "crypto";
 
 const MAX_DIMENSION = 2400;
 const WEBP_QUALITY = 82;
 const HQ_MAX_DIMENSION = 4096;
 const HQ_WEBP_QUALITY = 95;
 
-async function optimizePhoto(originalUrl: string) {
-  const res = await fetch(originalUrl);
-  const originalBuffer = Buffer.from(await res.arrayBuffer());
+async function optimizePhoto(rawObjectKey: string) {
+  const originalBuffer = await fetchBuffer(rawObjectKey);
 
   const metadata = await sharp(originalBuffer).metadata();
   const origW = metadata.width || 1200;
@@ -50,19 +50,21 @@ async function optimizePhoto(originalUrl: string) {
     .stats();
   const dominantColor = `#${dominant.r.toString(16).padStart(2, "0")}${dominant.g.toString(16).padStart(2, "0")}${dominant.b.toString(16).padStart(2, "0")}`;
 
-  // Upload both versions
-  const filename = originalUrl.split("/").pop()?.replace(/\.[^.]+$/, "") || "photo";
-  const [stdBlob, hqBlob] = await Promise.all([
-    put(`${filename}.webp`, stdBuffer, { access: "public", contentType: "image/webp" }),
-    put(`${filename}-hq.webp`, hqBuffer, { access: "public", contentType: "image/webp" }),
+  // Upload both versions to R2
+  const id = randomUUID();
+  const [stdUrl, hqUrl] = await Promise.all([
+    uploadBuffer(`photos/${id}.webp`, stdBuffer, "image/webp"),
+    uploadBuffer(`photos/${id}-hq.webp`, hqBuffer, "image/webp"),
   ]);
 
-  // Delete original
-  try { await del(originalUrl); } catch { /* ignore */ }
+  // Delete raw upload
+  try {
+    await deleteByUrl(publicUrl(rawObjectKey));
+  } catch { /* ignore */ }
 
   return {
-    blobUrl: stdBlob.url,
-    hqBlobUrl: hqBlob.url,
+    blobUrl: stdUrl,
+    hqBlobUrl: hqUrl,
     width,
     height,
     dominantColor,
@@ -91,9 +93,12 @@ export async function POST(req: NextRequest) {
 
   let finalValues = { ...body, sortOrder: nextOrder };
 
-  if (body.type === "photo" && body.blobUrl) {
+  // Remove rawObjectKey from the DB values — it's only used for processing
+  delete finalValues.rawObjectKey;
+
+  if (body.type === "photo" && body.rawObjectKey) {
     try {
-      const optimized = await optimizePhoto(body.blobUrl);
+      const optimized = await optimizePhoto(body.rawObjectKey);
       finalValues = {
         ...finalValues,
         blobUrl: optimized.blobUrl,
@@ -103,10 +108,11 @@ export async function POST(req: NextRequest) {
         dominantColor: optimized.dominantColor,
       };
     } catch (err) {
-      console.error("Photo optimization failed, using original:", err);
+      console.error("Photo optimization failed, using raw upload:", err);
+      // Fall back to raw upload URL
+      finalValues.blobUrl = publicUrl(body.rawObjectKey);
       try {
-        const res = await fetch(body.blobUrl);
-        const buf = Buffer.from(await res.arrayBuffer());
+        const buf = await fetchBuffer(body.rawObjectKey);
         const { dominant } = await sharp(buf).resize(64, 64, { fit: "cover" }).stats();
         finalValues.dominantColor = `#${dominant.r.toString(16).padStart(2, "0")}${dominant.g.toString(16).padStart(2, "0")}${dominant.b.toString(16).padStart(2, "0")}`;
       } catch { /* ignore */ }

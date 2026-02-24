@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { del } from "@vercel/blob";
+import { deleteByUrl } from "@/lib/r2";
 
 export async function PUT(
   req: NextRequest,
@@ -47,13 +47,12 @@ export async function DELETE(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Delete blob if exists
+  // Delete both standard and HQ blobs (skips non-R2 URLs gracefully)
   if (item.blobUrl) {
-    try {
-      await del(item.blobUrl);
-    } catch {
-      // Blob may already be deleted
-    }
+    try { await deleteByUrl(item.blobUrl); } catch { /* ignore */ }
+  }
+  if (item.hqBlobUrl) {
+    try { await deleteByUrl(item.hqBlobUrl); } catch { /* ignore */ }
   }
 
   await db.delete(mediaItems).where(eq(mediaItems.id, parseInt(id)));
