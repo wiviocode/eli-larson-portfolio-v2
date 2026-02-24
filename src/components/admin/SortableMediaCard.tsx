@@ -25,6 +25,7 @@ export default function SortableMediaCard({
   onSendToTop,
   onSendToBottom,
   onUpdateAltText,
+  onGenerateCaption,
 }: {
   item: MediaItem;
   index: number;
@@ -36,6 +37,7 @@ export default function SortableMediaCard({
   onSendToTop: (id: number) => void;
   onSendToBottom: (id: number) => void;
   onUpdateAltText: (id: number, altText: string) => void;
+  onGenerateCaption: (id: number) => void;
 }) {
   const {
     attributes,
@@ -183,10 +185,28 @@ export default function SortableMediaCard({
           <div className="text-[9px] text-[#aaa] font-medium">
             #{index + 1} of {total}
           </div>
+          {item.caption && (
+            <div className="text-[9px] text-[#aaa] truncate" title={item.caption}>
+              {item.caption}
+            </div>
+          )}
         </div>
 
         {/* Action buttons */}
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          {/* Generate caption */}
+          <button
+            onClick={() => onGenerateCaption(item.id)}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="w-6 h-6 flex items-center justify-center rounded text-[#999] hover:text-[#111] hover:bg-black/5 transition-colors cursor-pointer"
+            title="Generate caption"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z" />
+              <path d="M18 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z" />
+            </svg>
+          </button>
+
           {/* Edit title */}
           <button
             onClick={startEditing}

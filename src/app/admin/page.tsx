@@ -5,10 +5,12 @@ import type { MediaItem } from "@/db/schema";
 import UploadDropzone from "@/components/admin/UploadDropzone";
 import AdminMediaGrid from "@/components/admin/AdminMediaGrid";
 import AddVideoModal from "@/components/admin/AddVideoModal";
+import GenerateCaptionModal from "@/components/admin/GenerateCaptionModal";
 
 export default function AdminDashboard() {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [captionItemId, setCaptionItemId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState(false);
@@ -96,6 +98,19 @@ export default function AdminDashboard() {
     if (res.ok) {
       setItems((prev) =>
         prev.map((i) => (i.id === id ? { ...i, altText } : i))
+      );
+    }
+  }
+
+  async function handleSaveCaption(id: number, caption: string) {
+    const res = await fetch(`/api/media/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ caption }),
+    });
+    if (res.ok) {
+      setItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, caption } : i))
       );
     }
   }
@@ -242,6 +257,7 @@ export default function AdminDashboard() {
             onSendToTop={handleSendToTop}
             onSendToBottom={handleSendToBottom}
             onUpdateAltText={handleUpdateAltText}
+            onGenerateCaption={(id) => setCaptionItemId(id)}
           />
         )}
       </div>
@@ -253,6 +269,18 @@ export default function AdminDashboard() {
           onAdded={fetchItems}
         />
       )}
+
+      {/* Caption Modal */}
+      {captionItemId !== null && (() => {
+        const captionItem = items.find((i) => i.id === captionItemId);
+        return captionItem ? (
+          <GenerateCaptionModal
+            item={captionItem}
+            onClose={() => setCaptionItemId(null)}
+            onSave={handleSaveCaption}
+          />
+        ) : null;
+      })()}
     </div>
   );
 }

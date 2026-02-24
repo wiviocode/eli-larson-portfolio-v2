@@ -25,6 +25,7 @@ export default function AdminMediaGrid({
   onSendToTop,
   onSendToBottom,
   onUpdateAltText,
+  onGenerateCaption,
 }: {
   items: MediaItem[];
   setItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
@@ -35,6 +36,7 @@ export default function AdminMediaGrid({
   onSendToTop: (id: number) => void;
   onSendToBottom: (id: number) => void;
   onUpdateAltText: (id: number, altText: string) => void;
+  onGenerateCaption: (id: number) => void;
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -97,6 +99,7 @@ export default function AdminMediaGrid({
               onSendToTop={onSendToTop}
               onSendToBottom={onSendToBottom}
               onUpdateAltText={onUpdateAltText}
+              onGenerateCaption={onGenerateCaption}
             />
           ))}
         </div>
