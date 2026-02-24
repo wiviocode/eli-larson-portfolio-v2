@@ -298,6 +298,22 @@ main {
   }
 }
 
+/* ====== VIDEO BADGE ====== */
+.video-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #E31616;
+  color: #fff;
+  padding: 2px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+  z-index: 5;
+}
+
 /* ====== VIDEO PLAY BUTTON ====== */
 .video-play-btn {
   position: absolute;
