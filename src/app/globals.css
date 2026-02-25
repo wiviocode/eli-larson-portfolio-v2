@@ -79,25 +79,24 @@ main {
 
 /* ====== GALLERY GRID (Pinterest-style masonry) ====== */
 .masonry {
-  columns: 1;
-  column-gap: 12px;
+  display: flex;
+  gap: 12px;
   padding: 0 40px;
   max-width: 1300px;
   margin: 0 auto;
 }
-.masonry > * {
-  break-inside: avoid;
-  margin-bottom: 12px;
+.masonry-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-@media (min-width: 768px) {
-  .masonry {
-    columns: 2;
-  }
-}
-@media (min-width: 1024px) {
-  .masonry {
-    columns: 3;
-  }
+
+/* ====== ADMIN GRID ====== */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 
 /* ====== GALLERY LABEL ====== */
@@ -202,7 +201,10 @@ main {
 @media (max-width: 1024px) {
   .masonry {
     padding: 0 24px;
-    column-gap: 10px;
+    gap: 10px;
+  }
+  .masonry-col {
+    gap: 10px;
   }
 }
 
@@ -210,7 +212,10 @@ main {
 @media (max-width: 768px) {
   .masonry {
     padding: 0 16px;
-    column-gap: 8px;
+    gap: 8px;
+  }
+  .masonry-col {
+    gap: 8px;
   }
 }
 
