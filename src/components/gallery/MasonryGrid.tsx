@@ -7,7 +7,7 @@ import VideoLightbox from "./VideoLightbox";
 import GalleryItem from "./GalleryItem";
 
 function useColumns() {
-  const [cols, setCols] = useState(1);
+  const [cols, setCols] = useState(0);
 
   useEffect(() => {
     function update() {
@@ -27,18 +27,21 @@ export default function MasonryGrid({ items }: { items: MediaItem[] }) {
   const [videoState, setVideoState] = useState<{ embedUrl: string; blobUrl?: string | null } | null>(null);
   const cols = useColumns();
 
+  const ready = cols > 0;
+
   const columns = useMemo(() => {
-    const result: MediaItem[][] = Array.from({ length: cols }, () => []);
+    const c = ready ? cols : 1;
+    const result: MediaItem[][] = Array.from({ length: c }, () => []);
     items.forEach((item, i) => {
-      result[i % cols].push(item);
+      result[i % c].push(item);
     });
     return result;
-  }, [items, cols]);
+  }, [items, cols, ready]);
 
   return (
     <>
       <PhotoSwipeGallery galleryId="pswp-gallery" />
-      <div className="masonry" id="pswp-gallery">
+      <div className="masonry" id="pswp-gallery" style={ready ? undefined : { visibility: "hidden" }}>
         {columns.map((colItems, colIndex) => (
           <div className="masonry-col" key={colIndex}>
             {colItems.map((item) => (
