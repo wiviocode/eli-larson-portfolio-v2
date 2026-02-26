@@ -6,6 +6,7 @@ import UploadDropzone from "@/components/admin/UploadDropzone";
 import AdminMediaGrid from "@/components/admin/AdminMediaGrid";
 import AddVideoModal from "@/components/admin/AddVideoModal";
 import GenerateCaptionModal from "@/components/admin/GenerateCaptionModal";
+import CropModal from "@/components/admin/CropModal";
 
 export default function AdminDashboard() {
   const [items, setItems] = useState<MediaItem[]>([]);
@@ -14,7 +15,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState(false);
-  const [fixingColors, setFixingColors] = useState(false);
+  const [cropItemId, setCropItemId] = useState<number | null>(null);
+
 
   const fetchItems = useCallback(async () => {
     try {
@@ -180,25 +182,6 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={async () => {
-                setFixingColors(true);
-                try {
-                  const res = await fetch("/api/media/fix-colors", { method: "POST" });
-                  const result = await res.json();
-                  alert(`Fixed ${result.fixed} of ${result.total} missing colors`);
-                  fetchItems();
-                } catch {
-                  alert("Failed to fix colors");
-                } finally {
-                  setFixingColors(false);
-                }
-              }}
-              disabled={fixingColors}
-              className="text-[10px] font-bold uppercase tracking-[.15em] bg-white text-[#666] px-4 py-2 rounded border border-black/10 hover:border-[#111] transition-colors cursor-pointer disabled:opacity-50"
-            >
-              {fixingColors ? "Fixing..." : "Fix Colors"}
-            </button>
-            <button
               onClick={() => setShowVideoModal(true)}
               className="text-[10px] font-bold uppercase tracking-[.15em] bg-[#111] text-white px-4 py-2 rounded hover:bg-brand transition-colors cursor-pointer"
             >
@@ -258,6 +241,7 @@ export default function AdminDashboard() {
             onSendToBottom={handleSendToBottom}
             onUpdateAltText={handleUpdateAltText}
             onGenerateCaption={(id) => setCaptionItemId(id)}
+            onCrop={(id) => setCropItemId(id)}
           />
         )}
       </div>
@@ -278,6 +262,22 @@ export default function AdminDashboard() {
             item={captionItem}
             onClose={() => setCaptionItemId(null)}
             onSave={handleSaveCaption}
+          />
+        ) : null;
+      })()}
+
+      {/* Crop Modal */}
+      {cropItemId !== null && (() => {
+        const cropItem = items.find((i) => i.id === cropItemId);
+        return cropItem ? (
+          <CropModal
+            item={cropItem}
+            onClose={() => setCropItemId(null)}
+            onCropped={(updated) => {
+              setItems((prev) =>
+                prev.map((i) => (i.id === updated.id ? updated : i))
+              );
+            }}
           />
         ) : null;
       })()}

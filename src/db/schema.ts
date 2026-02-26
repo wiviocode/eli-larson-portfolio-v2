@@ -20,6 +20,7 @@ export const mediaItems = pgTable("media_items", {
   caption: text("caption"),
   dominantColor: text("dominant_color"),
   hqBlobUrl: text("hq_blob_url"),
+  cropData: text("crop_data"),
   isFeatured: boolean("is_featured").default(false).notNull(),
   sortOrder: integer("sort_order").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

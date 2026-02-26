@@ -1,7 +1,7 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/gallery/HeroSection";
-import MasonryGrid from "@/components/gallery/MasonryGrid";
+import JustifiedGrid from "@/components/gallery/JustifiedGrid";
 import AboutSection from "@/components/sections/AboutSection";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
@@ -36,11 +36,8 @@ export default async function Home() {
           className="py-[60px] pb-20 overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,.12)] max-md:py-10 max-md:pb-[50px]"
           id="work"
         >
-          <div className="gallery-label max-w-[1300px] mx-auto px-10 pb-8 text-[10px] font-extrabold uppercase tracking-[.25em] text-brand max-lg:px-6 max-lg:pb-6 max-md:px-4 max-md:pb-5">
-            Selected Work
-          </div>
           {items.length > 0 ? (
-            <MasonryGrid items={items} />
+            <JustifiedGrid items={items} />
           ) : (
             <div className="max-w-[1300px] mx-auto px-10 text-center text-[#999] py-20">
               <p className="text-sm">

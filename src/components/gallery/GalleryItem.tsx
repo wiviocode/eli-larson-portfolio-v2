@@ -14,9 +14,11 @@ function cleanFileName(name: string | null) {
 
 export default function GalleryItem({
   item,
+  justified,
   onVideoClick,
 }: {
   item: MediaItem;
+  justified?: boolean;
   onVideoClick?: (embedUrl: string, blobUrl?: string | null) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -33,7 +35,10 @@ export default function GalleryItem({
     return (
       <div
         className="p-card group"
-        style={{ aspectRatio: "3/2", background: "#000" }}
+        style={justified
+          ? { width: "100%", height: "100%", background: "#000" }
+          : { aspectRatio: "3/2", background: "#000" }
+        }
         onClick={() => onVideoClick?.(item.videoEmbedUrl || "", item.blobUrl)}
         onMouseEnter={() => {
           if (videoRef.current && hasDirectVideo) {
@@ -89,7 +94,10 @@ export default function GalleryItem({
   return (
     <a
       className="p-card group"
-      style={{ aspectRatio: `${w}/${h}`, background: item.dominantColor || "#e8e8e8" }}
+      style={justified
+        ? { width: "100%", height: "100%", background: item.dominantColor || "#e8e8e8" }
+        : { aspectRatio: `${w}/${h}`, background: item.dominantColor || "#e8e8e8" }
+      }
       href={item.blobUrl || "#"}
       data-pswp-width={w}
       data-pswp-height={h}

@@ -26,6 +26,7 @@ export default function SortableMediaCard({
   onSendToBottom,
   onUpdateAltText,
   onGenerateCaption,
+  onCrop,
 }: {
   item: MediaItem;
   index: number;
@@ -38,6 +39,7 @@ export default function SortableMediaCard({
   onSendToBottom: (id: number) => void;
   onUpdateAltText: (id: number, altText: string) => void;
   onGenerateCaption: (id: number) => void;
+  onCrop: (id: number) => void;
 }) {
   const {
     attributes,
@@ -206,6 +208,23 @@ export default function SortableMediaCard({
               <path d="M18 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z" />
             </svg>
           </button>
+
+          {/* Crop (photos only) */}
+          {item.type === "photo" && (
+            <button
+              onClick={() => onCrop(item.id)}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="w-6 h-6 flex items-center justify-center rounded text-[#999] hover:text-[#111] hover:bg-black/5 transition-colors cursor-pointer relative"
+              title={item.cropData ? "Edit crop (cropped)" : "Crop image"}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2v4H2M6 6h12v12h4M18 22v-4h4M18 18H6V6" />
+              </svg>
+              {item.cropData && (
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-brand rounded-full" />
+              )}
+            </button>
+          )}
 
           {/* Edit title */}
           <button

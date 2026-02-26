@@ -88,7 +88,7 @@ export function publicUrl(key: string): string {
 }
 
 /** Extract the object key from an R2 public URL. Returns null for non-R2 URLs. */
-function keyFromUrl(url: string): string | null {
+export function keyFromUrl(url: string): string | null {
   if (!url.startsWith(R2_PUBLIC_URL)) return null;
   return url.slice(R2_PUBLIC_URL.length + 1); // +1 for the /
 }
