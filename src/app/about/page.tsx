@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    images: ["/opengraph-image"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -22,7 +27,7 @@ export default function AboutPage() {
   return (
     <>
       <Header variant="dark" />
-      <main className="pt-[60px] bg-[#111]">
+      <main id="main" className="pt-[60px] bg-[#111]">
         <AboutSection />
 
         {/* Resume Content */}

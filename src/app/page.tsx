@@ -7,7 +7,7 @@ import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { asc, eq } from "drizzle-orm";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 async function getData() {
   try {
@@ -29,7 +29,7 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <main>
+      <main id="main">
         <HeroSection featuredImage={featured} />
 
         <div

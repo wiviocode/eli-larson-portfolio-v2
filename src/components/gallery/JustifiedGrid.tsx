@@ -120,6 +120,16 @@ export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
     blobUrl?: string | null;
   } | null>(null);
   const [filter, setFilter] = useState<FilterType>("photo");
+  const [fadeIn, setFadeIn] = useState(true);
+
+  function handleFilterChange(value: FilterType) {
+    if (value === filter) return;
+    setFadeIn(false);
+    setTimeout(() => {
+      setFilter(value);
+      setFadeIn(true);
+    }, 250);
+  }
   const containerRef = useRef<HTMLDivElement>(null);
   const containerWidth = useContainerWidth(containerRef);
   const { mode, targetHeight, gap } = useLayoutParams();
@@ -148,14 +158,22 @@ export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
 
       {/* Gallery header - uses original 1300px width */}
       <div className="gallery-header max-w-[1300px] mx-auto px-10 pb-14 max-lg:px-6 max-lg:pb-10 max-md:px-4 max-md:pb-7">
-        <span className="gallery-label">Selected Work</span>
+        <h2 className="gallery-label">Selected Work</h2>
         {hasVideos && (
           <nav className="filter-bar" aria-label="Filter media">
+            <div
+              className="filter-bar-slider"
+              style={{
+                width: `calc(${100 / FILTERS.length}% - 0px)`,
+                transform: `translateX(${FILTERS.findIndex((f) => f.value === filter) * 100}%)`,
+              }}
+            />
             {FILTERS.map((f) => (
               <button
                 key={f.value}
                 className={`filter-tab${filter === f.value ? " active" : ""}`}
-                onClick={() => setFilter(f.value)}
+                style={{ width: `${100 / FILTERS.length}%` }}
+                onClick={() => handleFilterChange(f.value)}
               >
                 {f.label}
               </button>
@@ -164,7 +182,11 @@ export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
         )}
       </div>
 
-      <div className="justified-grid" ref={containerRef}>
+      <div
+        className="justified-grid"
+        ref={containerRef}
+        style={{ opacity: fadeIn ? 1 : 0.5, transition: "opacity 0.35s ease-in-out" }}
+      >
 
         <div id="pswp-gallery">
           {mode === "mobile" || containerWidth === 0 ? (

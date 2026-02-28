@@ -1,8 +1,31 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import Cropper, { type Area } from "react-easy-crop";
+import { useState, useCallback, useRef } from "react";
+import Cropper, { type Area, type MediaSize } from "react-easy-crop";
 import type { MediaItem } from "@/db/schema";
+
+// "original" is a sentinel — replaced at runtime with the image's natural ratio
+const ORIGINAL_SENTINEL = -1;
+
+type AspectOption = { label: string; value: number };
+
+const ASPECT_OPTIONS: AspectOption[] = [
+  { label: "Original", value: ORIGINAL_SENTINEL },
+  { label: "1:1", value: 1 },
+  { label: "4:3", value: 4 / 3 },
+  { label: "3:2", value: 3 / 2 },
+  { label: "16:9", value: 16 / 9 },
+  { label: "3:4", value: 3 / 4 },
+  { label: "2:3", value: 2 / 3 },
+  { label: "9:16", value: 9 / 16 },
+];
+
+interface CropState {
+  crop: { x: number; y: number };
+  zoom: number;
+  rotation: number;
+  aspect: number;
+}
 
 export default function CropModal({
   item,
@@ -15,17 +38,89 @@ export default function CropModal({
 }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [aspect, setAspect] = useState<number>(ORIGINAL_SENTINEL);
+  const [naturalAspect, setNaturalAspect] = useState(4 / 3);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [applying, setApplying] = useState(false);
   const [reverting, setReverting] = useState(false);
   const [error, setError] = useState("");
 
+  // Undo/redo history
+  const [history, setHistory] = useState<CropState[]>([
+    { crop: { x: 0, y: 0 }, zoom: 1, rotation: 0, aspect: ORIGINAL_SENTINEL },
+  ]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const suppressHistoryRef = useRef(false);
+
   const imageUrl = item.hqBlobUrl || item.blobUrl || "";
   const hasCrop = !!item.cropData;
 
-  const onCropComplete = useCallback((_: Area, pixels: Area) => {
-    setCroppedAreaPixels(pixels);
+  // Resolve the sentinel to the actual image aspect ratio
+  const resolvedAspect = aspect === ORIGINAL_SENTINEL ? naturalAspect : aspect;
+
+  const onMediaLoaded = useCallback((mediaSize: MediaSize) => {
+    if (mediaSize.naturalWidth && mediaSize.naturalHeight) {
+      setNaturalAspect(mediaSize.naturalWidth / mediaSize.naturalHeight);
+    }
   }, []);
+
+  function pushHistory(state: CropState) {
+    if (suppressHistoryRef.current) return;
+    setHistory((prev) => {
+      const truncated = prev.slice(0, historyIndex + 1);
+      return [...truncated, state];
+    });
+    setHistoryIndex((i) => i + 1);
+  }
+
+  function restoreState(state: CropState) {
+    suppressHistoryRef.current = true;
+    setCrop(state.crop);
+    setZoom(state.zoom);
+    setRotation(state.rotation);
+    setAspect(state.aspect);
+    suppressHistoryRef.current = false;
+  }
+
+  function handleUndo() {
+    if (historyIndex <= 0) return;
+    const newIndex = historyIndex - 1;
+    setHistoryIndex(newIndex);
+    restoreState(history[newIndex]);
+  }
+
+  function handleRedo() {
+    if (historyIndex >= history.length - 1) return;
+    const newIndex = historyIndex + 1;
+    setHistoryIndex(newIndex);
+    restoreState(history[newIndex]);
+  }
+
+  const onCropComplete = useCallback(
+    (_: Area, pixels: Area) => {
+      setCroppedAreaPixels(pixels);
+      pushHistory({ crop, zoom, rotation, aspect });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [crop, zoom, rotation, aspect, historyIndex]
+  );
+
+  function handleAspectChange(value: number) {
+    setAspect(value);
+    pushHistory({ crop, zoom, rotation, aspect: value });
+  }
+
+  function handleRotationChange(value: number) {
+    setRotation(value);
+    pushHistory({ crop, zoom, rotation: value, aspect });
+  }
+
+  function handleRotate90(direction: 1 | -1) {
+    const next = Math.max(-180, Math.min(180, rotation + direction * 90));
+    setRotation(next);
+    pushHistory({ crop, zoom, rotation: next, aspect });
+  }
 
   async function handleApply() {
     if (!croppedAreaPixels) return;
@@ -35,7 +130,7 @@ export default function CropModal({
       const res = await fetch(`/api/media/${item.id}/crop`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(croppedAreaPixels),
+        body: JSON.stringify({ ...croppedAreaPixels, rotation }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -73,6 +168,11 @@ export default function CropModal({
   }
 
   const busy = applying || reverting;
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+
+  const labelClass =
+    "text-[10px] font-bold uppercase tracking-[.15em] text-[#999] shrink-0 w-16";
 
   return (
     <div
@@ -100,6 +200,9 @@ export default function CropModal({
             image={imageUrl}
             crop={crop}
             zoom={zoom}
+            rotation={rotation}
+            aspect={resolvedAspect}
+            onMediaLoaded={onMediaLoaded}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
@@ -107,11 +210,29 @@ export default function CropModal({
           />
         </div>
 
+        {/* Aspect ratio selector */}
+        <div className="flex items-center gap-3 mb-3">
+          <label className={labelClass}>Aspect</label>
+          <div className="flex flex-wrap gap-1.5">
+            {ASPECT_OPTIONS.map((opt) => (
+              <button
+                key={opt.label}
+                onClick={() => handleAspectChange(opt.value)}
+                className={`text-[10px] font-bold uppercase tracking-[.1em] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
+                  aspect === opt.value
+                    ? "bg-brand text-white border-brand"
+                    : "border-[#ddd] text-[#999] hover:border-[#999] hover:text-[#666]"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Zoom slider */}
-        <div className="flex items-center gap-3 mb-4">
-          <label className="text-[10px] font-bold uppercase tracking-[.15em] text-[#999] shrink-0">
-            Zoom
-          </label>
+        <div className="flex items-center gap-3 mb-3">
+          <label className={labelClass}>Zoom</label>
           <input
             type="range"
             min={1}
@@ -123,20 +244,67 @@ export default function CropModal({
           />
         </div>
 
+        {/* Rotation slider + quick buttons */}
+        <div className="flex items-center gap-3 mb-4">
+          <label className={labelClass}>Rotate</label>
+          <input
+            type="range"
+            min={-180}
+            max={180}
+            step={1}
+            value={rotation}
+            onChange={(e) => handleRotationChange(Number(e.target.value))}
+            className="flex-1 accent-brand"
+          />
+          <span className="text-[10px] font-mono text-[#999] w-10 text-right shrink-0">
+            {rotation}°
+          </span>
+          <button
+            onClick={() => handleRotate90(-1)}
+            title="Rotate -90°"
+            className="text-sm text-[#999] hover:text-brand transition-colors cursor-pointer px-1"
+          >
+            ↺
+          </button>
+          <button
+            onClick={() => handleRotate90(1)}
+            title="Rotate +90°"
+            className="text-sm text-[#999] hover:text-brand transition-colors cursor-pointer px-1"
+          >
+            ↻
+          </button>
+        </div>
+
         {/* Actions */}
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex gap-2">
             {hasCrop && (
               <button
                 onClick={handleRevert}
                 disabled={busy}
                 className="text-[10px] font-bold uppercase tracking-[.15em] text-[#999] px-4 py-2 hover:text-brand transition-colors cursor-pointer disabled:opacity-50"
               >
-                {reverting ? "Reverting..." : "Revert to Original"}
+                {reverting ? "Reverting..." : "Revert"}
               </button>
             )}
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 items-center">
+            <button
+              onClick={handleUndo}
+              disabled={!canUndo || busy}
+              title="Undo"
+              className="text-[10px] font-bold uppercase tracking-[.15em] text-[#999] px-2 py-2 hover:text-brand transition-colors cursor-pointer disabled:opacity-30"
+            >
+              Undo
+            </button>
+            <button
+              onClick={handleRedo}
+              disabled={!canRedo || busy}
+              title="Redo"
+              className="text-[10px] font-bold uppercase tracking-[.15em] text-[#999] px-2 py-2 hover:text-brand transition-colors cursor-pointer disabled:opacity-30"
+            >
+              Redo
+            </button>
             <button
               type="button"
               onClick={onClose}

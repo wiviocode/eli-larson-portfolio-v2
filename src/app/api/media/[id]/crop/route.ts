@@ -15,7 +15,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const { x, y, width, height } = await req.json();
+  const { x, y, width, height, rotation = 0 } = await req.json();
 
   const [item] = await db
     .select()
@@ -38,9 +38,12 @@ export async function POST(
 
   const sourceBuffer = await fetchBuffer(key);
 
-  // Crop then resize
-  let pipeline = sharp(sourceBuffer)
-    .extract({ left: Math.round(x), top: Math.round(y), width: Math.round(width), height: Math.round(height) });
+  // Rotate first (so crop coordinates align with rotated image), then crop
+  let pipeline = sharp(sourceBuffer);
+  if (rotation !== 0) {
+    pipeline = pipeline.rotate(rotation);
+  }
+  pipeline = pipeline.extract({ left: Math.round(x), top: Math.round(y), width: Math.round(width), height: Math.round(height) });
 
   if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
     pipeline = pipeline.resize(MAX_DIMENSION, MAX_DIMENSION, {
@@ -72,7 +75,7 @@ export async function POST(
   }
 
   // Update DB
-  const cropData = JSON.stringify({ x, y, width, height });
+  const cropData = JSON.stringify({ x, y, width, height, rotation });
   const [updated] = await db
     .update(mediaItems)
     .set({

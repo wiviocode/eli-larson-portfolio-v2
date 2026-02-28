@@ -8,6 +8,13 @@ export default function Header({ variant = "light" }: HeaderProps) {
   const isDark = variant === "dark";
 
   return (
+    <>
+    <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:bg-brand focus:text-white focus:px-4 focus:py-2 focus:rounded focus:text-xs focus:font-bold"
+      >
+        Skip to main content
+      </a>
     <header
       className={`fixed top-0 left-0 right-0 z-100 backdrop-blur-[8px] border-b ${
         isDark
@@ -46,5 +53,6 @@ export default function Header({ variant = "light" }: HeaderProps) {
         </div>
       </nav>
     </header>
+    </>
   );
 }
