@@ -27,6 +27,8 @@ interface CropState {
   aspect: number;
 }
 
+const MAX_HISTORY = 50;
+
 export default function CropModal({
   item,
   onClose,
@@ -47,7 +49,6 @@ export default function CropModal({
   const [error, setError] = useState("");
 
   // Undo/redo history — use refs to avoid stale closures
-  const MAX_HISTORY = 50;
   const historyRef = useRef<CropState[]>([
     { crop: { x: 0, y: 0 }, zoom: 1, rotation: 0, aspect: ORIGINAL_SENTINEL },
   ]);
@@ -86,19 +87,16 @@ export default function CropModal({
     suppressHistoryRef.current = false;
   }
 
-  function handleUndo() {
-    if (historyIndexRef.current <= 0) return;
-    historyIndexRef.current -= 1;
-    restoreState(historyRef.current[historyIndexRef.current]);
+  function navigateHistory(delta: -1 | 1) {
+    const next = historyIndexRef.current + delta;
+    if (next < 0 || next >= historyRef.current.length) return;
+    historyIndexRef.current = next;
+    restoreState(historyRef.current[next]);
     forceUpdate((n) => n + 1);
   }
 
-  function handleRedo() {
-    if (historyIndexRef.current >= historyRef.current.length - 1) return;
-    historyIndexRef.current += 1;
-    restoreState(historyRef.current[historyIndexRef.current]);
-    forceUpdate((n) => n + 1);
-  }
+  const handleUndo = () => navigateHistory(-1);
+  const handleRedo = () => navigateHistory(1);
 
   const onCropComplete = useCallback((_: Area, pixels: Area) => {
     setCroppedAreaPixels(pixels);
