@@ -46,11 +46,13 @@ export default function CropModal({
   const [reverting, setReverting] = useState(false);
   const [error, setError] = useState("");
 
-  // Undo/redo history
-  const [history, setHistory] = useState<CropState[]>([
+  // Undo/redo history — use refs to avoid stale closures
+  const MAX_HISTORY = 50;
+  const historyRef = useRef<CropState[]>([
     { crop: { x: 0, y: 0 }, zoom: 1, rotation: 0, aspect: ORIGINAL_SENTINEL },
   ]);
-  const [historyIndex, setHistoryIndex] = useState(0);
+  const historyIndexRef = useRef(0);
+  const [, forceUpdate] = useState(0);
   const suppressHistoryRef = useRef(false);
 
   const imageUrl = item.hqBlobUrl || item.blobUrl || "";
@@ -67,11 +69,12 @@ export default function CropModal({
 
   function pushHistory(state: CropState) {
     if (suppressHistoryRef.current) return;
-    setHistory((prev) => {
-      const truncated = prev.slice(0, historyIndex + 1);
-      return [...truncated, state];
-    });
-    setHistoryIndex((i) => i + 1);
+    const truncated = historyRef.current.slice(0, historyIndexRef.current + 1);
+    truncated.push(state);
+    if (truncated.length > MAX_HISTORY) truncated.shift();
+    historyRef.current = truncated;
+    historyIndexRef.current = truncated.length - 1;
+    forceUpdate((n) => n + 1);
   }
 
   function restoreState(state: CropState) {
@@ -84,27 +87,28 @@ export default function CropModal({
   }
 
   function handleUndo() {
-    if (historyIndex <= 0) return;
-    const newIndex = historyIndex - 1;
-    setHistoryIndex(newIndex);
-    restoreState(history[newIndex]);
+    if (historyIndexRef.current <= 0) return;
+    historyIndexRef.current -= 1;
+    restoreState(historyRef.current[historyIndexRef.current]);
+    forceUpdate((n) => n + 1);
   }
 
   function handleRedo() {
-    if (historyIndex >= history.length - 1) return;
-    const newIndex = historyIndex + 1;
-    setHistoryIndex(newIndex);
-    restoreState(history[newIndex]);
+    if (historyIndexRef.current >= historyRef.current.length - 1) return;
+    historyIndexRef.current += 1;
+    restoreState(historyRef.current[historyIndexRef.current]);
+    forceUpdate((n) => n + 1);
   }
 
-  const onCropComplete = useCallback(
-    (_: Area, pixels: Area) => {
-      setCroppedAreaPixels(pixels);
-      pushHistory({ crop, zoom, rotation, aspect });
-    },
+  const onCropComplete = useCallback((_: Area, pixels: Area) => {
+    setCroppedAreaPixels(pixels);
+  }, []);
+
+  // Push history snapshot after a crop/zoom drag ends (not on every micro-movement)
+  const onInteractionEnd = useCallback(() => {
+    pushHistory({ crop, zoom, rotation, aspect });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [crop, zoom, rotation, aspect, historyIndex]
-  );
+  }, [crop, zoom, rotation, aspect]);
 
   function handleAspectChange(value: number) {
     setAspect(value);
@@ -168,8 +172,8 @@ export default function CropModal({
   }
 
   const busy = applying || reverting;
-  const canUndo = historyIndex > 0;
-  const canRedo = historyIndex < history.length - 1;
+  const canUndo = historyIndexRef.current > 0;
+  const canRedo = historyIndexRef.current < historyRef.current.length - 1;
 
   const labelClass =
     "text-[10px] font-bold uppercase tracking-[.15em] text-[#999] shrink-0 w-16";
@@ -206,6 +210,7 @@ export default function CropModal({
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
+            onInteractionEnd={onInteractionEnd}
             showGrid
           />
         </div>

@@ -121,15 +121,21 @@ export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
   } | null>(null);
   const [filter, setFilter] = useState<FilterType>("photo");
   const [fadeIn, setFadeIn] = useState(true);
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   function handleFilterChange(value: FilterType) {
     if (value === filter) return;
+    clearTimeout(fadeTimerRef.current);
     setFadeIn(false);
-    setTimeout(() => {
+    fadeTimerRef.current = setTimeout(() => {
       setFilter(value);
       setFadeIn(true);
     }, 250);
   }
+
+  useEffect(() => {
+    return () => clearTimeout(fadeTimerRef.current);
+  }, []);
   const containerRef = useRef<HTMLDivElement>(null);
   const containerWidth = useContainerWidth(containerRef);
   const { mode, targetHeight, gap } = useLayoutParams();
@@ -164,7 +170,7 @@ export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
             <div
               className="filter-bar-slider"
               style={{
-                width: `calc(${100 / FILTERS.length}% - 0px)`,
+                width: `calc(${100 / FILTERS.length}% - 2px)`,
                 transform: `translateX(${FILTERS.findIndex((f) => f.value === filter) * 100}%)`,
               }}
             />
