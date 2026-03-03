@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { MediaItem } from "@/db/schema";
 import UploadDropzone from "@/components/admin/UploadDropzone";
 import AdminMediaGrid from "@/components/admin/AdminMediaGrid";
@@ -16,6 +16,8 @@ export default function AdminDashboard() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState(false);
   const [cropItemId, setCropItemId] = useState<number | null>(null);
+  const [csvImporting, setCsvImporting] = useState(false);
+  const csvInputRef = useRef<HTMLInputElement>(null);
 
 
   const fetchItems = useCallback(async () => {
@@ -117,6 +119,47 @@ export default function AdminDashboard() {
     }
   }
 
+  async function handleExportCsv() {
+    const link = document.createElement("a");
+    link.href = "/api/media/csv";
+    link.download = "captions.csv";
+    link.click();
+  }
+
+  async function handleImportCsv(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCsvImporting(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/media/csv", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await res.json();
+
+      if (!res.ok) {
+        alert(`Import failed: ${result.error}`);
+      } else {
+        const msg = `Updated ${result.updated} item(s).`;
+        if (result.errors?.length > 0) {
+          alert(`${msg}\n\nWarnings:\n${result.errors.join("\n")}`);
+        } else {
+          alert(msg);
+        }
+        fetchItems();
+      }
+    } catch {
+      alert("Import failed. Please check the file format.");
+    } finally {
+      setCsvImporting(false);
+      if (csvInputRef.current) csvInputRef.current.value = "";
+    }
+  }
+
   async function handleSendToTop(id: number) {
     const idx = items.findIndex((i) => i.id === id);
     if (idx <= 0) return;
@@ -181,6 +224,26 @@ export default function AdminDashboard() {
             Media Library — {items.length} items
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportCsv}
+              className="text-[10px] font-bold uppercase tracking-[.15em] bg-white text-[#666] px-4 py-2 rounded border border-black/10 hover:border-[#111] transition-colors cursor-pointer"
+            >
+              Export CSV
+            </button>
+            <button
+              onClick={() => csvInputRef.current?.click()}
+              disabled={csvImporting}
+              className="text-[10px] font-bold uppercase tracking-[.15em] bg-white text-[#666] px-4 py-2 rounded border border-black/10 hover:border-[#111] transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {csvImporting ? "Importing..." : "Import CSV"}
+            </button>
+            <input
+              ref={csvInputRef}
+              type="file"
+              accept=".csv"
+              onChange={handleImportCsv}
+              className="hidden"
+            />
             <button
               onClick={() => setShowVideoModal(true)}
               className="text-[10px] font-bold uppercase tracking-[.15em] bg-[#111] text-white px-4 py-2 rounded hover:bg-brand transition-colors cursor-pointer"
