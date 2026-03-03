@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { asc, max } from "drizzle-orm";
@@ -124,5 +125,6 @@ export async function POST(req: NextRequest) {
     .values(finalValues)
     .returning();
 
+  revalidatePath("/");
   return NextResponse.json(item, { status: 201 });
 }

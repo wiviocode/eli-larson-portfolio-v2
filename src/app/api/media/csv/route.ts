@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { normalizeQuotes } from "@/lib/utils";
 
 function escapeCsvField(value: string): string {
@@ -127,6 +128,10 @@ export async function POST(req: NextRequest) {
     } else {
       errors.push(`Row ${i + 1}: no item with id ${id}`);
     }
+  }
+
+  if (updated > 0) {
+    revalidatePath("/");
   }
 
   return NextResponse.json({ updated, errors });
