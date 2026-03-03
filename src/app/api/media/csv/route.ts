@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
+import { normalizeQuotes } from "@/lib/utils";
 
 function escapeCsvField(value: string): string {
   if (value.includes(",") || value.includes('"') || value.includes("\n")) {
@@ -62,7 +63,7 @@ export async function GET() {
 
   return new NextResponse(csv, {
     headers: {
-      "Content-Type": "text/csv",
+      "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": 'attachment; filename="captions.csv"',
     },
   });
@@ -107,10 +108,10 @@ export async function POST(req: NextRequest) {
     const updates: Record<string, string | Date> = { updatedAt: new Date() };
 
     if (captionIdx !== -1 && fields[captionIdx] !== undefined) {
-      updates.caption = fields[captionIdx].trim();
+      updates.caption = normalizeQuotes(fields[captionIdx].trim());
     }
     if (altTextIdx !== -1 && fields[altTextIdx] !== undefined) {
-      updates.altText = fields[altTextIdx].trim();
+      updates.altText = normalizeQuotes(fields[altTextIdx].trim());
     }
 
     if (Object.keys(updates).length <= 1) continue; // only updatedAt

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { normalizeQuotes } from "@/lib/utils";
 
 const client = new Anthropic();
 
@@ -142,7 +143,7 @@ export async function POST(req: NextRequest) {
       .filter((t) => t.length > 0)
       .join(" ");
 
-    return NextResponse.json({ caption });
+    return NextResponse.json({ caption: normalizeQuotes(caption) });
   } catch (error) {
     console.error("Caption generation error:", error);
     return NextResponse.json(
