@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import AboutSection from "@/components/sections/AboutSection";
+import AboutHero from "@/components/about/AboutHero";
+import AboutIntro from "@/components/about/AboutIntro";
+import ContactCTA from "@/components/about/ContactCTA";
+import ScrollFadeIn from "@/components/gallery/ScrollFadeIn";
 
 export const metadata: Metadata = {
   title: "About",
@@ -23,185 +26,192 @@ export const metadata: Metadata = {
   },
 };
 
+const experience = [
+  {
+    title: "Media Assistant & Photographer",
+    subtitle: "Men\u2019s Basketball",
+    org: "University of Nebraska Athletics (Huskers)",
+    dates: "2023 \u2014 Present",
+    summary:
+      "I capture photography and video for Nebraska Men\u2019s Basketball, creating game-day and social content that reaches over 500K followers. I work closely with the creative staff on content strategy and deliver time-sensitive edits during live events.",
+  },
+  {
+    title: "Social Media Manager",
+    subtitle: "Track & Field",
+    org: "University of Nebraska Athletics (Huskers)",
+    dates: "2023 \u2014 Present",
+    summary:
+      "I run the social accounts for Nebraska Track & Field\u2014planning content calendars, shooting meets and practices, and turning raw footage into polished posts that build the program\u2019s brand.",
+  },
+  {
+    title: "Freelance Sports Photographer",
+    subtitle: "",
+    org: "Self-Employed",
+    dates: "2021 \u2014 Present",
+    summary:
+      "I provide professional photography for sporting events and athletic portraits, managing every step from shoot to delivery while building long-term relationships with coaches, athletes, and organizations.",
+  },
+];
+
+const skillCategories = [
+  {
+    name: "Photography",
+    skills: ["Photography", "Portrait Photography", "Event Coverage"],
+  },
+  {
+    name: "Video",
+    skills: ["Videography", "Video Editing"],
+  },
+  {
+    name: "Post-Production",
+    skills: [
+      "Adobe Lightroom",
+      "Photoshop",
+      "Premiere Pro",
+      "After Effects",
+      "Color Grading",
+    ],
+  },
+  {
+    name: "Content & Social",
+    skills: ["Social Media", "Content Creation"],
+  },
+];
+
+const awards = [
+  "College Photographer of the Year \u2014 Honorable Mention",
+  "Nebraska Press Photographers Association \u2014 Best Sports Feature",
+];
+
 export default function AboutPage() {
   return (
     <>
       <Header variant="dark" />
-      <main id="main" className="pt-[60px] bg-[#111]">
-        <AboutSection />
+      <main id="main" className="bg-[#111]">
+        {/* 1. Cinematic Hero */}
+        <AboutHero />
 
-        {/* Resume Content */}
-        <div className="bg-[#111] text-white">
-          <div className="max-w-[1300px] mx-auto px-10 pb-[100px] max-lg:px-6 max-md:px-4">
-            {/* Experience */}
-            <div className="border-t border-white/[.06] pt-12 mb-16">
-              <h3 className="about-col-heading text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-8">
+        {/* 2. Personal Intro */}
+        <AboutIntro />
+
+        {/* 3. Experience Cards */}
+        <section className="bg-[#111] text-white">
+          <div className="max-w-[1300px] mx-auto px-10 py-20 max-lg:px-6 max-lg:py-14 max-md:px-4 max-md:py-10">
+            <ScrollFadeIn>
+              <h3 className="about-col-heading text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-10">
                 Experience
               </h3>
+            </ScrollFadeIn>
 
-              <div className="mb-10">
-                <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
-                  <div>
-                    <h4 className="text-[13px] font-bold uppercase tracking-[.1em] text-white">
-                      Media Assistant & Photographer — Men&apos;s Basketball
-                    </h4>
-                    <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mt-1">
-                      University of Nebraska Athletics (Huskers)
+            <div className="flex flex-col gap-8">
+              {experience.map((role, i) => (
+                <ScrollFadeIn key={role.title} delay={i * 100}>
+                  <div className="border border-white/[.08] rounded-lg p-8 max-md:p-5 transition-colors duration-300 hover:border-white/[.15]">
+                    <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
+                      <div>
+                        <h4
+                          className="text-[22px] text-white leading-tight max-md:text-[19px]"
+                          style={{
+                            fontFamily: "'Instrument Serif', serif",
+                          }}
+                        >
+                          {role.title}
+                          {role.subtitle && (
+                            <>
+                              {" "}
+                              <span className="text-white/40">&mdash;</span>{" "}
+                              {role.subtitle}
+                            </>
+                          )}
+                        </h4>
+                        <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mt-1.5">
+                          {role.org}
+                        </p>
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-[.15em] text-white/30 shrink-0">
+                        {role.dates}
+                      </span>
+                    </div>
+                    <p className="text-white/60 text-[14px] leading-[1.7] mt-4 max-md:text-[13px]">
+                      {role.summary}
                     </p>
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-[.15em] text-white/30">
-                    2023 — Present
-                  </span>
-                </div>
-                <ul className="list-none space-y-2 mt-4">
-                  {[
-                    "Capture high-quality photography and videography for Nebraska Men's Basketball",
-                    "Create engaging content for social media platforms reaching 500K+ followers",
-                    "Collaborate with creative directors on game day content strategy",
-                    "Edit and deliver time-sensitive content during live events",
-                  ].map((item) => (
-                    <li
-                      key={item}
-                      className="text-white/60 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mb-10">
-                <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
-                  <div>
-                    <h4 className="text-[13px] font-bold uppercase tracking-[.1em] text-white">
-                      Social Media Manager — Track & Field
-                    </h4>
-                    <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mt-1">
-                      University of Nebraska Athletics (Huskers)
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-[.15em] text-white/30">
-                    2023 — Present
-                  </span>
-                </div>
-                <ul className="list-none space-y-2 mt-4">
-                  {[
-                    "Manage social media accounts for Nebraska Track & Field",
-                    "Plan and execute content strategy across platforms",
-                    "Produce photo and video content for meets and events",
-                  ].map((item) => (
-                    <li
-                      key={item}
-                      className="text-white/60 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mb-10">
-                <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
-                  <div>
-                    <h4 className="text-[13px] font-bold uppercase tracking-[.1em] text-white">
-                      Freelance Sports Photographer
-                    </h4>
-                    <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mt-1">
-                      Self-Employed
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-[.15em] text-white/30">
-                    2021 — Present
-                  </span>
-                </div>
-                <ul className="list-none space-y-2 mt-4">
-                  {[
-                    "Provide professional photography services for sporting events and athletic portraits",
-                    "Build and maintain client relationships with coaches, athletes, and organizations",
-                    "Manage end-to-end workflow from shoot to delivery",
-                  ].map((item) => (
-                    <li
-                      key={item}
-                      className="text-white/60 text-[10px] font-bold uppercase tracking-[.15em] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[6px] before:w-1.5 before:h-[1px] before:bg-brand"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Education */}
-            <div className="border-t border-white/[.06] pt-12 mb-16">
-              <h3 className="about-col-heading text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-8">
-                Education
-              </h3>
-              <div className="flex justify-between items-start flex-wrap gap-2">
-                <div>
-                  <h4 className="text-[13px] font-bold uppercase tracking-[.1em] text-white">
-                    University of Nebraska–Lincoln
-                  </h4>
-                  <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mt-1">
-                    Advertising & Public Relations
-                  </p>
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-[.15em] text-white/30">
-                  2024 — 2028
-                </span>
-              </div>
-            </div>
-
-            {/* Skills */}
-            <div className="border-t border-white/[.06] pt-12 mb-16">
-              <h3 className="about-col-heading text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-8">
-                Skills
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "Photography",
-                  "Videography",
-                  "Adobe Lightroom",
-                  "Adobe Premiere Pro",
-                  "Adobe Photoshop",
-                  "Adobe After Effects",
-                  "Video Editing",
-                  "Color Grading",
-                  "Social Media",
-                  "Content Creation",
-                  "Event Coverage",
-                  "Portrait Photography",
-                ].map((skill) => (
-                  <span
-                    key={skill}
-                    className="text-[9px] font-bold uppercase tracking-[.15em] text-white/50 border border-white/10 rounded px-3 py-1.5"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Awards */}
-            <div className="border-t border-white/[.06] pt-12">
-              <h3 className="about-col-heading text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-8">
-                Awards
-              </h3>
-              <ul className="list-none space-y-3">
-                {[
-                  "College Photographer of the Year — Honorable Mention",
-                  "Nebraska Press Photographers Association — Best Sports Feature",
-                ].map((award) => (
-                  <li
-                    key={award}
-                    className="text-white/60 text-[10px] font-bold uppercase tracking-[.15em]"
-                  >
-                    {award}
-                  </li>
-                ))}
-              </ul>
+                </ScrollFadeIn>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* 4. Education & Awards */}
+        <section className="bg-[#111] text-white">
+          <div className="max-w-[1300px] mx-auto px-10 pb-20 max-lg:px-6 max-lg:pb-14 max-md:px-4 max-md:pb-10">
+            <ScrollFadeIn>
+              <div className="border-t border-white/[.06] pt-12 grid grid-cols-2 gap-16 max-lg:gap-10 max-md:grid-cols-1 max-md:gap-8">
+                {/* Education */}
+                <div>
+                  <h3 className="about-col-heading text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-6">
+                    Education
+                  </h3>
+                  <p
+                    className="text-[20px] text-white leading-tight"
+                    style={{ fontFamily: "'Instrument Serif', serif" }}
+                  >
+                    University of Nebraska&ndash;Lincoln
+                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mt-1.5">
+                    Advertising &amp; Public Relations &middot; 2024 &ndash; 2028
+                  </p>
+                </div>
+
+                {/* Awards */}
+                <div>
+                  <h3 className="about-col-heading text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-6">
+                    Awards
+                  </h3>
+                  <ul className="list-none space-y-3">
+                    {awards.map((award) => (
+                      <li
+                        key={award}
+                        className="text-white/60 text-[13px] leading-[1.5] pl-7 relative before:content-[''] before:absolute before:left-0 before:top-[9px] before:w-4 before:h-[2px] before:bg-brand"
+                      >
+                        {award}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </ScrollFadeIn>
+          </div>
+        </section>
+
+        {/* 5. Skills — Categorized Grid */}
+        <section className="bg-[#111] text-white">
+          <div className="max-w-[1300px] mx-auto px-10 pb-20 max-lg:px-6 max-lg:pb-14 max-md:px-4 max-md:pb-10">
+            <ScrollFadeIn>
+              <h3 className="about-col-heading text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-10">
+                Skills
+              </h3>
+            </ScrollFadeIn>
+
+            <div className="grid grid-cols-2 gap-5 max-md:grid-cols-1">
+              {skillCategories.map((cat, i) => (
+                <ScrollFadeIn key={cat.name} delay={i * 80}>
+                  <div className="border border-white/[.08] rounded-lg p-6 transition-colors duration-300 hover:border-white/20">
+                    <h4 className="text-[14px] font-bold text-white mb-3">
+                      {cat.name}
+                    </h4>
+                    <p className="text-white/40 text-[12px] leading-[1.8]">
+                      {cat.skills.join(" \u00B7 ")}
+                    </p>
+                  </div>
+                </ScrollFadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 6. Closing CTA */}
+        <ContactCTA />
       </main>
       <Footer />
     </>

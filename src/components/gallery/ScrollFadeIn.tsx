@@ -2,14 +2,18 @@
 
 import { useEffect, useRef } from "react";
 
+type Variant = "fade-in-up" | "fade-in-left" | "fade-in-right" | "fade-in-scale";
+
 export default function ScrollFadeIn({
   children,
   delay = 0,
   className = "",
+  variant = "fade-in-up",
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  variant?: Variant;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,7 +38,7 @@ export default function ScrollFadeIn({
   }, [delay]);
 
   return (
-    <div ref={ref} className={`fade-in-up ${className}`}>
+    <div ref={ref} className={`${variant} ${className}`}>
       {children}
     </div>
   );
