@@ -23,7 +23,7 @@ export default function AboutHero({ images }: { images: string[] }) {
         <img
           src={imageUrl}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover object-top"
         />
       )}
 
