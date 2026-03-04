@@ -41,6 +41,7 @@ export default function HeroSection({
               height={featuredImage.height || 533}
               priority
               quality={95}
+              sizes="(max-width: 768px) 100vw, (max-width: 1300px) 50vw, 610px"
               className="w-full h-auto block"
               onError={() => setImgError(true)}
             />

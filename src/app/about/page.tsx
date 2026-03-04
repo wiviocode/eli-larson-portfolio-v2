@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import V9 from "@/components/about/variants/V9";
+import AboutContent from "@/components/about/AboutContent";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq, and, sql, asc } from "drizzle-orm";
@@ -52,7 +52,7 @@ export default async function AboutPage() {
     <>
       <Header variant="dark" />
       <main id="main" className="bg-[#111]">
-        <V9 heroImages={heroImages} />
+        <AboutContent heroImages={heroImages} />
       </main>
       <Footer />
     </>

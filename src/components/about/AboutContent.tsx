@@ -1,12 +1,12 @@
-// V9: Bento Grid — Everything in a bento-style grid layout
+import Image from "next/image";
 import AboutHero from "@/components/about/AboutHero";
 import ContactCTA from "@/components/about/ContactCTA";
 import CountUp from "@/components/about/CountUp";
 import SocialIcons from "@/components/about/SocialIcons";
 import ScrollFadeIn from "@/components/gallery/ScrollFadeIn";
-import { experience, skillCategories, awards, stats, bio, email, phone, phoneHref, serif } from "../data";
+import { experience, skillCategories, awards, stats, bio, email, phone, phoneHref, serif } from "./data";
 
-export default function V9({ heroImages }: { heroImages: string[] }) {
+export default function AboutContent({ heroImages }: { heroImages: string[] }) {
   return (
     <>
       <AboutHero images={heroImages} />
@@ -18,9 +18,8 @@ export default function V9({ heroImages }: { heroImages: string[] }) {
           {/* Row 1: Headshot + Bio + Stats */}
           <div className="grid grid-cols-12 gap-4 mb-4 max-md:grid-cols-1">
             <ScrollFadeIn variant="fade-in-left" className="col-span-3 max-md:col-span-1">
-              <div className="bg-[#1a1a1a] rounded-xl overflow-hidden h-full border border-white/[.06]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/eli-headshot.png" alt="Eli Larson" className="w-full h-full min-h-[280px] object-cover object-[center_10%]" />
+              <div className="bg-[#1a1a1a] rounded-xl overflow-hidden h-full border border-white/[.06] relative min-h-[280px]">
+                <Image src="/eli-headshot.png" alt="Eli Larson" fill sizes="(max-width: 768px) 100vw, 25vw" quality={85} className="object-cover object-[center_10%]" />
               </div>
             </ScrollFadeIn>
             <ScrollFadeIn variant="fade-in-up" delay={100} className="col-span-5 max-md:col-span-1">

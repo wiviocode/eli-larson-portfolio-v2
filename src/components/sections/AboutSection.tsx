@@ -1,19 +1,11 @@
 export default function AboutSection() {
   return (
     <div className="bg-[#111] text-white overflow-hidden">
-      <div className="max-w-[1300px] mx-auto px-10 pt-[100px] pb-[60px] grid grid-cols-3 gap-10 items-end max-lg:px-6 max-lg:pt-[60px] max-lg:pb-10 max-lg:gap-8 max-md:grid-cols-1 max-md:px-4 max-md:pt-[60px] max-md:pb-8 max-md:gap-6">
-        <h2 className="text-[clamp(36px,6vw,80px)] leading-[1.05] text-white col-span-2 max-md:col-span-1" style={{ fontFamily: "'Instrument Serif', serif" }}>
+      <div className="max-w-[1300px] mx-auto px-10 pt-[100px] pb-[60px] max-lg:px-6 max-lg:pt-[60px] max-lg:pb-10 max-md:px-4 max-md:pt-[60px] max-md:pb-8">
+        <h2 className="text-[clamp(36px,6vw,80px)] leading-[1.05] text-white" style={{ fontFamily: "'Instrument Serif', serif" }}>
           Capturing Moments<br />
           That <span className="text-brand">Matter</span>.
         </h2>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/eli-headshot.png"
-          alt="Eli Larson"
-          width={640}
-          height={640}
-          className="h-[120px] rounded-lg object-cover object-[center_10%] scale-[1.15] overflow-hidden max-lg:h-[100px] max-md:w-full max-md:h-auto max-md:max-w-[320px] max-md:aspect-square max-md:scale-100"
-        />
       </div>
 
       <div className="max-w-[1300px] mx-auto px-10 pt-12 pb-[100px] grid grid-cols-3 gap-10 border-t border-white/[.06] max-lg:px-6 max-lg:pt-10 max-lg:pb-[60px] max-lg:gap-8 max-md:grid-cols-1 max-md:px-4 max-md:pt-8 max-md:pb-[60px] max-md:gap-8">

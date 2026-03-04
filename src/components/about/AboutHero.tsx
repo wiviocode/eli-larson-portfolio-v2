@@ -1,29 +1,32 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 const STORAGE_KEY = "about-hero-index";
 
 export default function AboutHero({ images }: { images: string[] }) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
     if (images.length === 0) return;
-    let idx = 0;
     const stored = sessionStorage.getItem(STORAGE_KEY);
-    idx = stored !== null ? (parseInt(stored, 10) + 1) % images.length : 0;
+    const idx = stored !== null ? (parseInt(stored, 10) + 1) % images.length : 0;
     sessionStorage.setItem(STORAGE_KEY, String(idx));
-    setImageUrl(images[idx]);
+    setImageIndex(idx);
   }, [images]);
 
   return (
     <section className="relative w-full h-[70vh] max-md:h-[50vh] overflow-hidden bg-[#111]">
-      {imageUrl && (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img
-          src={imageUrl}
+      {images.length > 0 && (
+        <Image
+          src={images[imageIndex]}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover object-top"
+          fill
+          priority
+          sizes="100vw"
+          quality={90}
+          className="object-cover object-top"
         />
       )}
 
