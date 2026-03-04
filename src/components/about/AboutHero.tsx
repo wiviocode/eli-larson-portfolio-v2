@@ -1,21 +1,19 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 
 const STORAGE_KEY = "about-hero-index";
 
 export default function AboutHero({ images }: { images: string[] }) {
-  const imageUrl = useMemo(() => {
-    if (images.length === 0) return null;
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (images.length === 0) return;
     let idx = 0;
-    try {
-      const stored = sessionStorage.getItem(STORAGE_KEY);
-      idx = stored !== null ? (parseInt(stored, 10) + 1) % images.length : 0;
-      sessionStorage.setItem(STORAGE_KEY, String(idx));
-    } catch {
-      // SSR or sessionStorage unavailable
-    }
-    return images[idx];
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    idx = stored !== null ? (parseInt(stored, 10) + 1) % images.length : 0;
+    sessionStorage.setItem(STORAGE_KEY, String(idx));
+    setImageUrl(images[idx]);
   }, [images]);
 
   return (
