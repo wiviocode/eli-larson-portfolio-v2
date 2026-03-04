@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eli Larson — Brand Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fafafa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      background: #111;
+      padding: 80px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header .brand-name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 56px;
+      color: #fff;
+    }
+    .header .brand-name .dot { color: #E31616; }
+    .header .badge {
+      font-size: 14px;
+      font-weight: 400;
+      color: #666;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      border: 1px solid #333;
+      padding: 10px 20px;
+      border-radius: 4px;
+    }
+
+    /* Sections */
+    .section {
+      padding: 60px;
+      border-bottom: 1px solid #eee;
+    }
+    .section:last-child { border-bottom: none; }
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 40px;
+    }
+
+    /* Colors */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .color-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .color-swatch {
+      height: 140px;
+    }
+    .color-info {
+      background: #fff;
+      padding: 16px 20px;
+    }
+    .color-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #111;
+    }
+    .color-hex {
+      font-size: 13px;
+      color: #999;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      margin-top: 4px;
+    }
+    .color-usage {
+      font-size: 12px;
+      color: #bbb;
+      margin-top: 6px;
+    }
+
+    /* Typography */
+    .type-specimen {
+      margin-bottom: 48px;
+    }
+    .type-specimen:last-child { margin-bottom: 0; }
+    .type-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .type-family {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111;
+    }
+    .type-weight {
+      font-size: 12px;
+      color: #999;
+    }
+    .type-sample-serif {
+      font-family: 'Instrument Serif', serif;
+      font-size: 64px;
+      color: #111;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .type-sample-sans {
+      font-family: 'Inter', sans-serif;
+      color: #111;
+      margin-bottom: 8px;
+    }
+    .type-sample-sans.heading {
+      font-size: 32px;
+      font-weight: 600;
+    }
+    .type-sample-sans.body {
+      font-size: 16px;
+      font-weight: 400;
+      color: #555;
+      max-width: 600px;
+    }
+    .type-sample-sans.small {
+      font-size: 12px;
+      font-weight: 300;
+      color: #999;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .type-alphabet {
+      font-size: 20px;
+      color: #ccc;
+      letter-spacing: 2px;
+      margin-top: 12px;
+    }
+    .type-alphabet.serif { font-family: 'Instrument Serif', serif; }
+    .type-alphabet.sans { font-family: 'Inter', sans-serif; font-weight: 300; }
+
+    /* Logo / Icon */
+    .logo-row {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .logo-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      padding: 32px;
+    }
+    .logo-preview.on-light {
+      background: #f5f5f5;
+      border: 1px solid #eee;
+      width: 200px;
+      height: 200px;
+    }
+    .logo-preview.on-dark {
+      background: #111;
+      width: 200px;
+      height: 200px;
+    }
+    .logo-preview.full-lockup {
+      background: #111;
+      width: 400px;
+      height: 120px;
+      gap: 20px;
+    }
+    .icon-box {
+      width: 80px;
+      height: 80px;
+      background: #E31616;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-box svg {
+      width: 44px;
+      height: 44px;
+    }
+    .icon-box.small {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+    }
+    .icon-box.small svg {
+      width: 22px;
+      height: 22px;
+    }
+    .logo-label {
+      font-size: 12px;
+      color: #999;
+    }
+    .lockup-name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 36px;
+      color: #fff;
+    }
+    .lockup-name .dot { color: #E31616; }
+
+    /* Red Dot Pattern */
+    .pattern-examples {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .pattern-example {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+    .pattern-demo {
+      font-family: 'Instrument Serif', serif;
+      color: #111;
+    }
+    .pattern-demo .dot { color: #E31616; }
+    .pattern-demo.large { font-size: 56px; }
+    .pattern-demo.medium { font-size: 36px; }
+    .pattern-demo.small-text { font-size: 24px; }
+    .pattern-note {
+      font-size: 13px;
+      color: #999;
+      max-width: 300px;
+    }
+
+    /* Tagline */
+    .tagline-display {
+      text-align: center;
+      padding: 60px 0;
+    }
+    .tagline-text {
+      font-family: 'Instrument Serif', serif;
+      font-size: 48px;
+      color: #111;
+      line-height: 1.3;
+    }
+    .tagline-note {
+      font-size: 13px;
+      color: #bbb;
+      margin-top: 20px;
+    }
+
+    /* Contact Reference */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .contact-item {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .contact-item-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #999;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .contact-item-value {
+      font-size: 15px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand-name">Eli Larson<span class="dot">.</span></div>
+    <div class="badge">Brand Guide</div>
+  </div>
+
+  <!-- COLORS -->
+  <div class="section">
+    <div class="section-title">Color Palette</div>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #E31616;"></div>
+        <div class="color-info">
+          <div class="color-name">Brand Red</div>
+          <div class="color-hex">#E31616</div>
+          <div class="color-usage">Accent, dot, CTA, icon</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #111;"></div>
+        <div class="color-info">
+          <div class="color-name">Dark</div>
+          <div class="color-hex">#111111</div>
+          <div class="color-usage">Backgrounds, text</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #f5f5f5; border-bottom: 1px solid #eee;"></div>
+        <div class="color-info">
+          <div class="color-name">Light</div>
+          <div class="color-hex">#F5F5F5</div>
+          <div class="color-usage">Light backgrounds</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #ffffff; border-bottom: 1px solid #eee;"></div>
+        <div class="color-info">
+          <div class="color-name">White</div>
+          <div class="color-hex">#FFFFFF</div>
+          <div class="color-usage">Text on dark, cards</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <div class="section">
+    <div class="section-title">Typography</div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <div class="type-family">Instrument Serif</div>
+        <div class="type-weight">Regular 400 — Display / Headlines</div>
+      </div>
+      <div class="type-sample-serif">Let's create something worth watching.</div>
+      <div class="type-alphabet serif">ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+      <div class="type-alphabet serif">abcdefghijklmnopqrstuvwxyz 0123456789</div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <div class="type-family">Inter</div>
+        <div class="type-weight">300–700 — Body / UI / Captions</div>
+      </div>
+      <div class="type-sample-sans heading">Headings &amp; Subheadings</div>
+      <div class="type-sample-sans body">Body text for descriptions, paragraphs, and general content. Inter provides excellent readability at all sizes with a clean, modern aesthetic.</div>
+      <div class="type-sample-sans small" style="margin-top: 16px;">Captions &amp; Labels</div>
+      <div class="type-alphabet sans" style="margin-top: 16px;">ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+      <div class="type-alphabet sans">abcdefghijklmnopqrstuvwxyz 0123456789</div>
+    </div>
+  </div>
+
+  <!-- LOGO / ICON -->
+  <div class="section">
+    <div class="section-title">Logo &amp; Icon</div>
+    <div class="logo-row">
+      <div class="logo-card">
+        <div class="logo-preview on-light">
+          <div class="icon-box">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <text x="50" y="74" text-anchor="middle" font-family="'Instrument Serif', serif" font-size="70" fill="white">E</text>
+            </svg>
+          </div>
+        </div>
+        <div class="logo-label">Icon — Light background</div>
+      </div>
+      <div class="logo-card">
+        <div class="logo-preview on-dark">
+          <div class="icon-box">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <text x="50" y="74" text-anchor="middle" font-family="'Instrument Serif', serif" font-size="70" fill="white">E</text>
+            </svg>
+          </div>
+        </div>
+        <div class="logo-label">Icon — Dark background</div>
+      </div>
+      <div class="logo-card">
+        <div class="logo-preview full-lockup">
+          <div class="icon-box small">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <text x="50" y="74" text-anchor="middle" font-family="'Instrument Serif', serif" font-size="70" fill="white">E</text>
+            </svg>
+          </div>
+          <div class="lockup-name">Eli Larson<span class="dot">.</span></div>
+        </div>
+        <div class="logo-label">Full lockup — Dark background</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RED DOT PATTERN -->
+  <div class="section">
+    <div class="section-title">The Red Dot</div>
+    <div class="pattern-examples">
+      <div class="pattern-example">
+        <div class="pattern-demo large">Eli Larson<span class="dot">.</span></div>
+        <div class="pattern-note">The signature red period is always present after the name. It uses #E31616 regardless of surrounding text color.</div>
+      </div>
+      <div class="pattern-example">
+        <div class="pattern-demo medium">Let's create something worth watching<span class="dot">.</span></div>
+        <div class="pattern-note">Can optionally be applied to the tagline's closing period for emphasis.</div>
+      </div>
+      <div class="pattern-example">
+        <div class="pattern-demo small-text" style="color: #fff; background: #111; padding: 16px 24px; border-radius: 8px;">Eli Larson<span class="dot">.</span></div>
+        <div class="pattern-note">On dark backgrounds, white text with red dot creates the highest contrast and most recognizable brand mark.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAGLINE -->
+  <div class="section">
+    <div class="section-title">Tagline</div>
+    <div class="tagline-display">
+      <div class="tagline-text">Let's create something worth watching.</div>
+      <div class="tagline-note">Set in Instrument Serif. Used across portfolio hero, social profiles, and closing CTAs.</div>
+    </div>
+  </div>
+
+  <!-- CONTACT REFERENCE -->
+  <div class="section">
+    <div class="section-title">Contact Reference</div>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-item-label">Website</div>
+        <div class="contact-item-value">eli-larson.com</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-label">Email</div>
+        <div class="contact-item-value">eli.s.landerson@gmail.com</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-label">Phone</div>
+        <div class="contact-item-value">(402) 975-5981</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-label">Instagram</div>
+        <div class="contact-item-value">@strike_lnk</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-label">LinkedIn</div>
+        <div class="contact-item-value">/in/eli-larson</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-label">Location</div>
+        <div class="contact-item-value">Lincoln, NE</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

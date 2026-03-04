@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eli Larson — Business Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 60px;
+      padding: 60px;
+      font-family: 'Inter', sans-serif;
+    }
+    .card-label {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .card-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card-dims {
+      color: #555;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    /* 3.5" x 2" at 300dpi = 1050 x 600 */
+    .card {
+      width: 1050px;
+      height: 600px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    /* ── FRONT ── */
+    .card-front {
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 80px;
+    }
+    .card-front .name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 64px;
+      color: #111;
+      line-height: 1;
+    }
+    .card-front .name .dot {
+      color: #E31616;
+    }
+    .card-front .subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 300;
+      color: #777;
+      margin-top: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    .card-front .accent-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: #E31616;
+    }
+    .card-front .url-corner {
+      position: absolute;
+      bottom: 40px;
+      right: 80px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #bbb;
+      letter-spacing: 1px;
+    }
+    .card-front .icon-corner {
+      position: absolute;
+      top: 40px;
+      right: 80px;
+    }
+    .card-front .icon-corner .icon-box {
+      width: 40px;
+      height: 40px;
+      background: #E31616;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-front .icon-corner .icon-box svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* ── BACK ── */
+    .card-back {
+      background: #111;
+      display: flex;
+      align-items: center;
+      padding: 0 80px;
+      justify-content: space-between;
+    }
+    .card-back .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card-back .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .card-back .contact-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-back .contact-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: #E31616;
+    }
+    .card-back .contact-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 300;
+      color: #ccc;
+    }
+    .card-back .contact-text.muted {
+      color: #666;
+      font-size: 14px;
+    }
+    .card-back .right-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 20px;
+    }
+    .card-back .icon-box-back {
+      width: 56px;
+      height: 56px;
+      background: #E31616;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-back .icon-box-back svg {
+      width: 30px;
+      height: 30px;
+    }
+    .card-back .social-handles {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .card-back .social-handle {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: #555;
+      letter-spacing: 0.5px;
+    }
+    .card-back .accent-bar {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: #E31616;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FRONT -->
+  <div class="card-wrapper">
+    <div class="card-label">Front</div>
+    <div class="card card-front">
+      <div class="accent-bar"></div>
+      <div class="icon-corner">
+        <div class="icon-box">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <text x="50" y="74" text-anchor="middle" font-family="'Instrument Serif', serif" font-size="70" fill="white">E</text>
+          </svg>
+        </div>
+      </div>
+      <div class="name">Eli Larson<span class="dot">.</span></div>
+      <div class="subtitle">Visual Storyteller</div>
+      <div class="url-corner">eli-larson.com</div>
+    </div>
+    <div class="card-dims">1050 &times; 600 px &mdash; 3.5&Prime; &times; 2&Prime; at 300 dpi</div>
+  </div>
+
+  <!-- BACK -->
+  <div class="card-wrapper">
+    <div class="card-label">Back</div>
+    <div class="card card-back">
+      <div class="contact-info">
+        <div class="contact-row">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          </div>
+          <div class="contact-text">eli.s.landerson@gmail.com</div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          </div>
+          <div class="contact-text">(402) 975-5981</div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </div>
+          <div class="contact-text">Lincoln, NE</div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+          </div>
+          <div class="contact-text">eli-larson.com</div>
+        </div>
+      </div>
+      <div class="right-block">
+        <div class="icon-box-back">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <text x="50" y="74" text-anchor="middle" font-family="'Instrument Serif', serif" font-size="70" fill="white">E</text>
+          </svg>
+        </div>
+        <div class="social-handles">
+          <div class="social-handle">@strike_lnk</div>
+          <div class="social-handle">/in/eli-larson</div>
+        </div>
+      </div>
+      <div class="accent-bar"></div>
+    </div>
+    <div class="card-dims">1050 &times; 600 px &mdash; 3.5&Prime; &times; 2&Prime; at 300 dpi</div>
+  </div>
+
+</body>
+</html>

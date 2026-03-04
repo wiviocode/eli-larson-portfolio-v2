@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eli Larson — LinkedIn Carousel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #222;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      padding: 40px;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+    }
+    .slide-label {
+      color: #888;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+    .slide-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .slide {
+      width: 1080px;
+      height: 1350px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* ── Slide 1: Cover ── */
+    .slide-cover {
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .slide-cover .name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 120px;
+      color: #fff;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .slide-cover .name .dot {
+      color: #E31616;
+    }
+    .slide-cover .subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: #999;
+      margin-top: 24px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    .slide-cover .url {
+      font-family: 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: #E31616;
+      margin-top: 60px;
+      letter-spacing: 2px;
+    }
+    .slide-cover .corner-mark {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border: 2px solid rgba(227,22,22,0.3);
+    }
+    .slide-cover .corner-mark.tl { top: 60px; left: 60px; border-right: none; border-bottom: none; }
+    .slide-cover .corner-mark.tr { top: 60px; right: 60px; border-left: none; border-bottom: none; }
+    .slide-cover .corner-mark.bl { bottom: 60px; left: 60px; border-right: none; border-top: none; }
+    .slide-cover .corner-mark.br { bottom: 60px; right: 60px; border-left: none; border-top: none; }
+    .slide-cover .page-indicator {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+    }
+    .slide-cover .page-indicator .pip {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #333;
+    }
+    .slide-cover .page-indicator .pip.active {
+      background: #E31616;
+    }
+
+    /* ── Slide 2: Homepage Mockup ── */
+    .slide-homepage {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .slide-homepage .slide-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      font-weight: 300;
+      color: #666;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 50px;
+    }
+    .laptop-mockup {
+      width: 900px;
+      position: relative;
+    }
+    .laptop-screen {
+      width: 820px;
+      height: 512px;
+      margin: 0 auto;
+      background: #1a1a1a;
+      border-radius: 12px 12px 0 0;
+      overflow: hidden;
+      border: 3px solid #333;
+      border-bottom: none;
+      position: relative;
+    }
+    .laptop-screen iframe {
+      width: 1440px;
+      height: 900px;
+      border: none;
+      transform: scale(0.569);
+      transform-origin: top left;
+    }
+    .laptop-screen .fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-size: 18px;
+      font-family: 'Inter', sans-serif;
+    }
+    .laptop-base {
+      width: 900px;
+      height: 24px;
+      background: linear-gradient(to bottom, #444, #333);
+      border-radius: 0 0 8px 8px;
+      position: relative;
+    }
+    .laptop-base::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      height: 6px;
+      background: #555;
+      border-radius: 0 0 4px 4px;
+    }
+    .laptop-shadow {
+      width: 960px;
+      height: 20px;
+      margin: 0 auto;
+      background: radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
+    }
+    .slide-homepage .page-indicator {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+    }
+    .slide-homepage .page-indicator .pip {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #333;
+    }
+    .slide-homepage .page-indicator .pip.active {
+      background: #E31616;
+    }
+
+    /* ── Slide 3: About Mockup ── */
+    .slide-about {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+    .slide-about .slide-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      font-weight: 300;
+      color: #666;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+    }
+    .mockup-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 50px;
+    }
+    .phone-mockup {
+      width: 260px;
+      position: relative;
+    }
+    .phone-frame {
+      width: 260px;
+      height: 520px;
+      background: #1a1a1a;
+      border-radius: 28px;
+      border: 3px solid #333;
+      overflow: hidden;
+      position: relative;
+    }
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 24px;
+      background: #1a1a1a;
+      border-radius: 0 0 16px 16px;
+      z-index: 2;
+      border: 2px solid #333;
+      border-top: none;
+    }
+    .phone-frame iframe {
+      width: 390px;
+      height: 844px;
+      border: none;
+      transform: scale(0.615);
+      transform-origin: top left;
+      margin-top: 24px;
+    }
+    .phone-frame .fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .slide-about .laptop-mockup-sm {
+      width: 640px;
+    }
+    .slide-about .laptop-screen-sm {
+      width: 580px;
+      height: 362px;
+      margin: 0 auto;
+      background: #1a1a1a;
+      border-radius: 10px 10px 0 0;
+      overflow: hidden;
+      border: 3px solid #333;
+      border-bottom: none;
+      position: relative;
+    }
+    .slide-about .laptop-screen-sm iframe {
+      width: 1440px;
+      height: 900px;
+      border: none;
+      transform: scale(0.403);
+      transform-origin: top left;
+    }
+    .slide-about .laptop-screen-sm .fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+    }
+    .slide-about .laptop-base-sm {
+      width: 640px;
+      height: 18px;
+      background: linear-gradient(to bottom, #444, #333);
+      border-radius: 0 0 6px 6px;
+      position: relative;
+    }
+    .slide-about .laptop-base-sm::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 5px;
+      background: #555;
+      border-radius: 0 0 3px 3px;
+    }
+    .slide-about .page-indicator {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+    }
+    .slide-about .page-indicator .pip {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #333;
+    }
+    .slide-about .page-indicator .pip.active {
+      background: #E31616;
+    }
+
+    /* ── Slide 4: CTA ── */
+    .slide-cta {
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px;
+    }
+    .stats-row {
+      display: flex;
+      gap: 80px;
+      margin-bottom: 80px;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat .number {
+      font-family: 'Instrument Serif', serif;
+      font-size: 80px;
+      color: #E31616;
+      line-height: 1;
+    }
+    .stat .label {
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      color: #666;
+      margin-top: 12px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+    }
+    .slide-cta .tagline {
+      font-family: 'Instrument Serif', serif;
+      font-size: 72px;
+      color: #fff;
+      line-height: 1.2;
+      max-width: 800px;
+      margin-bottom: 50px;
+    }
+    .slide-cta .divider {
+      width: 60px;
+      height: 3px;
+      background: #E31616;
+      margin-bottom: 50px;
+    }
+    .slide-cta .roles {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      font-weight: 300;
+      color: #888;
+      line-height: 2;
+    }
+    .slide-cta .cta-url {
+      font-family: 'Inter', sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: #E31616;
+      margin-top: 60px;
+      letter-spacing: 2px;
+    }
+    .slide-cta .page-indicator {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+    }
+    .slide-cta .page-indicator .pip {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #333;
+    }
+    .slide-cta .page-indicator .pip.active {
+      background: #E31616;
+    }
+
+    /* Scale for preview */
+    @media (max-width: 1200px) {
+      .slide { transform: scale(0.35); transform-origin: top left; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide-wrapper">
+    <div class="slide-label">Slide 1 — Cover</div>
+    <div class="slide slide-cover">
+      <div class="corner-mark tl"></div>
+      <div class="corner-mark tr"></div>
+      <div class="corner-mark bl"></div>
+      <div class="corner-mark br"></div>
+      <div class="name">Eli Larson<span class="dot">.</span></div>
+      <div class="subtitle">Visual Storyteller</div>
+      <div class="url">eli-larson.com</div>
+      <div class="page-indicator">
+        <div class="pip active"></div>
+        <div class="pip"></div>
+        <div class="pip"></div>
+        <div class="pip"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: HOMEPAGE -->
+  <div class="slide-wrapper">
+    <div class="slide-label">Slide 2 — Homepage</div>
+    <div class="slide slide-homepage">
+      <div class="slide-title">The Gallery</div>
+      <div class="laptop-mockup">
+        <div class="laptop-screen">
+          <iframe src="http://localhost:3001/" loading="lazy" title="eli-larson.com homepage"></iframe>
+          <div class="fallback">Start dev server on :3001 to preview</div>
+        </div>
+        <div class="laptop-base"></div>
+        <div class="laptop-shadow"></div>
+      </div>
+      <div class="page-indicator">
+        <div class="pip"></div>
+        <div class="pip active"></div>
+        <div class="pip"></div>
+        <div class="pip"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: ABOUT -->
+  <div class="slide-wrapper">
+    <div class="slide-label">Slide 3 — About</div>
+    <div class="slide slide-about">
+      <div class="slide-title">The Story</div>
+      <div class="mockup-row">
+        <div class="phone-mockup">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <iframe src="http://localhost:3001/about" loading="lazy" title="About page mobile"></iframe>
+            <div class="fallback">Start dev server on :3001 to preview</div>
+          </div>
+        </div>
+        <div class="laptop-mockup-sm">
+          <div class="laptop-screen-sm">
+            <iframe src="http://localhost:3001/about" loading="lazy" title="About page desktop"></iframe>
+            <div class="fallback">Start dev server on :3001 to preview</div>
+          </div>
+          <div class="laptop-base-sm"></div>
+        </div>
+      </div>
+      <div class="page-indicator">
+        <div class="pip"></div>
+        <div class="pip"></div>
+        <div class="pip active"></div>
+        <div class="pip"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: CTA -->
+  <div class="slide-wrapper">
+    <div class="slide-label">Slide 4 — CTA</div>
+    <div class="slide slide-cta">
+      <div class="stats-row">
+        <div class="stat">
+          <div class="number">5+</div>
+          <div class="label">Years</div>
+        </div>
+        <div class="stat">
+          <div class="number">3.8M+</div>
+          <div class="label">Impressions</div>
+        </div>
+        <div class="stat">
+          <div class="number">10+</div>
+          <div class="label">Sports</div>
+        </div>
+      </div>
+      <div class="tagline">Let's create something worth watching.</div>
+      <div class="divider"></div>
+      <div class="roles">
+        Nebraska Men's Basketball Media Assistant<br>
+        Nebraska Track &amp; Field Social Media Manager<br>
+        Freelance Sports Photographer
+      </div>
+      <div class="cta-url">eli-larson.com</div>
+      <div class="page-indicator">
+        <div class="pip"></div>
+        <div class="pip"></div>
+        <div class="pip"></div>
+        <div class="pip active"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Hide fallback text when iframes load successfully
+    document.querySelectorAll('iframe').forEach(iframe => {
+      iframe.addEventListener('load', () => {
+        const fallback = iframe.parentElement.querySelector('.fallback');
+        if (fallback) fallback.style.display = 'none';
+      });
+      iframe.addEventListener('error', () => {
+        iframe.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>

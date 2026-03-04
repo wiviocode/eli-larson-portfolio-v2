@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eli Larson — Social Media Banners</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 60px;
+      padding: 60px;
+      font-family: 'Inter', sans-serif;
+    }
+    .banner-label {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 10px;
+      font-family: 'Inter', sans-serif;
+    }
+    .banner-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .banner-dims {
+      color: #555;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    /* ── LinkedIn Banner ── */
+    .linkedin-banner {
+      width: 1584px;
+      height: 396px;
+      background: #111;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 0 100px;
+    }
+    .linkedin-banner .bg-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image:
+        radial-gradient(circle at 20% 50%, #E31616 1px, transparent 1px),
+        radial-gradient(circle at 50% 30%, #E31616 1px, transparent 1px),
+        radial-gradient(circle at 80% 60%, #E31616 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+    .linkedin-banner .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      text-align: right;
+    }
+    .linkedin-banner .right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .linkedin-banner .name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 72px;
+      color: #fff;
+      line-height: 1;
+    }
+    .linkedin-banner .name .dot { color: #E31616; }
+    .linkedin-banner .tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 300;
+      color: #888;
+      margin-top: 12px;
+    }
+    .linkedin-banner .url {
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      font-weight: 500;
+      color: #E31616;
+      letter-spacing: 1px;
+      margin-top: 8px;
+    }
+    .linkedin-banner .roles-mini {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: #555;
+      text-align: right;
+      line-height: 1.6;
+      margin-top: 4px;
+    }
+    .linkedin-banner .accent-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, transparent 0%, #E31616 70%, #E31616 100%);
+    }
+
+    /* ── Twitter/X Banner ── */
+    .twitter-banner {
+      width: 1500px;
+      height: 500px;
+      background: #111;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .twitter-banner .bg-grid {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image:
+        linear-gradient(rgba(227,22,22,0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(227,22,22,0.5) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .twitter-banner .content {
+      position: relative;
+      z-index: 1;
+    }
+    .twitter-banner .name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 80px;
+      color: #fff;
+      line-height: 1;
+    }
+    .twitter-banner .name .dot { color: #E31616; }
+    .twitter-banner .tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      font-weight: 300;
+      color: #777;
+      margin-top: 16px;
+    }
+    .twitter-banner .url {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: #E31616;
+      margin-top: 24px;
+      letter-spacing: 2px;
+    }
+    .twitter-banner .side-bar-left {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: #E31616;
+    }
+    .twitter-banner .side-bar-right {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: #E31616;
+    }
+
+    /* ── Instagram Highlight Cover ── */
+    .ig-highlight {
+      width: 1080px;
+      height: 1080px;
+      background: #111;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ig-highlight .monogram-ring {
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      border: 2px solid rgba(227,22,22,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .ig-highlight .monogram-ring::before {
+      content: '';
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      border: 1px solid rgba(227,22,22,0.1);
+    }
+    .ig-highlight .monogram {
+      width: 200px;
+      height: 200px;
+      background: #E31616;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ig-highlight .monogram svg {
+      width: 100px;
+      height: 100px;
+    }
+    .ig-highlight .corner-dots {
+      position: absolute;
+    }
+    .ig-highlight .corner-dots.tl { top: 80px; left: 80px; }
+    .ig-highlight .corner-dots.br { bottom: 80px; right: 80px; }
+    .ig-highlight .corner-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #E31616;
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LINKEDIN BANNER -->
+  <div class="banner-wrapper">
+    <div class="banner-label">LinkedIn Banner</div>
+    <div class="linkedin-banner">
+      <div class="bg-pattern"></div>
+      <div class="content">
+        <div class="right">
+          <div class="name">Eli Larson<span class="dot">.</span></div>
+          <div class="tagline">Let's create something worth watching.</div>
+          <div class="url">eli-larson.com</div>
+          <div class="roles-mini">
+            Sports Media &amp; Photography&ensp;|&ensp;Lincoln, NE
+          </div>
+        </div>
+      </div>
+      <div class="accent-line"></div>
+    </div>
+    <div class="banner-dims">1584 &times; 396 px</div>
+  </div>
+
+  <!-- TWITTER/X BANNER -->
+  <div class="banner-wrapper">
+    <div class="banner-label">Twitter / X Banner</div>
+    <div class="twitter-banner">
+      <div class="bg-grid"></div>
+      <div class="side-bar-left"></div>
+      <div class="side-bar-right"></div>
+      <div class="content">
+        <div class="name">Eli Larson<span class="dot">.</span></div>
+        <div class="tagline">Let's create something worth watching.</div>
+        <div class="url">eli-larson.com</div>
+      </div>
+    </div>
+    <div class="banner-dims">1500 &times; 500 px</div>
+  </div>
+
+  <!-- INSTAGRAM HIGHLIGHT COVER -->
+  <div class="banner-wrapper">
+    <div class="banner-label">Instagram Highlight Cover</div>
+    <div class="ig-highlight">
+      <div class="corner-dots tl"><div class="corner-dot"></div></div>
+      <div class="corner-dots br"><div class="corner-dot"></div></div>
+      <div class="monogram-ring">
+        <div class="monogram">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <text x="50" y="72" text-anchor="middle" font-family="'Instrument Serif', serif" font-size="70" fill="white" font-weight="400">E</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="banner-dims">1080 &times; 1080 px</div>
+  </div>
+
+</body>
+</html>

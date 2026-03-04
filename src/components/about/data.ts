@@ -7,7 +7,7 @@ export const experience = [
     org: "University of Nebraska Athletics (Huskers)",
     dates: "2023 \u2014 Present",
     summary:
-      "I capture photography and video for Nebraska Men\u2019s Basketball, creating game-day and social content that reaches over 500K followers. I work closely with the creative staff on content strategy and deliver time-sensitive edits during live events.",
+      "I capture photography and video for Nebraska Men\u2019s Basketball, creating game-day and social content that reaches over 250K followers. I work closely with the creative staff on content strategy and deliver time-sensitive edits during live events.",
   },
   {
     title: "Social Media Manager",
@@ -64,7 +64,7 @@ export const stats = [
 ];
 
 export const bio =
-  "I'm Eli Larson, a sports photographer and content creator based in Lincoln, Nebraska. Currently serving as a Creative Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field, I've spent over five years creating imagery that connects fans to the moments that matter.";
+  "I'm Eli Larson, a sports photographer and videographer based in Lincoln, Nebraska with over five years of experience in sports media. I specialize in telling stories and creating engaging content under tight deadlines\u2014currently serving as a Creative Media Assistant for the Huskers athletic program, producing photo and video highlights for Men's Basketball and Track & Field. From detailed coverage of Nebraska state championships with Omaha High School Sports to delivering high-quality game-day content that reaches over 250K followers, I thrive on turning raw moments into imagery that connects fans to the action. Skilled in Adobe Creative Suite, social media management, and video editing, I bring a fast, adaptable approach to every project.";
 
 export const email = "eli.s.landerson@gmail.com";
 export const phone = "(402) 975-5981";
