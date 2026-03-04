@@ -5,6 +5,9 @@ import AboutHero from "@/components/about/AboutHero";
 import AboutIntro from "@/components/about/AboutIntro";
 import ContactCTA from "@/components/about/ContactCTA";
 import ScrollFadeIn from "@/components/gallery/ScrollFadeIn";
+import { db } from "@/db";
+import { mediaItems } from "@/db/schema";
+import { eq, and, sql } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "About",
@@ -83,13 +86,36 @@ const awards = [
   "Nebraska Press Photographers Association \u2014 Best Sports Feature",
 ];
 
-export default function AboutPage() {
+export const revalidate = 3600;
+
+async function getHeroImage() {
+  try {
+    const landscape = await db
+      .select({ blobUrl: mediaItems.blobUrl })
+      .from(mediaItems)
+      .where(
+        and(
+          eq(mediaItems.type, "photo"),
+          sql`${mediaItems.width} > ${mediaItems.height}`
+        )
+      )
+      .orderBy(sql`random()`)
+      .limit(1);
+
+    return landscape[0]?.blobUrl ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export default async function AboutPage() {
+  const heroImageUrl = await getHeroImage();
   return (
     <>
       <Header variant="dark" />
       <main id="main" className="bg-[#111]">
         {/* 1. Cinematic Hero */}
-        <AboutHero />
+        <AboutHero imageUrl={heroImageUrl} />
 
         {/* 2. Personal Intro */}
         <AboutIntro />

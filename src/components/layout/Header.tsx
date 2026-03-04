@@ -9,9 +9,9 @@ export default function Header({ variant = "light" }: HeaderProps) {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-100 backdrop-blur-[8px] border-b ${
+      className={`fixed top-0 left-0 right-0 z-100 backdrop-blur-[8px] border-b animate-[header-fade-in_0.5s_ease-out_both] ${
         isDark
-          ? "bg-[rgba(17,17,17,.92)] border-white/[.08] animate-[header-fade-in_0.5s_ease-out_both]"
+          ? "bg-[rgba(17,17,17,.92)] border-white/[.08]"
           : "bg-[rgba(245,245,245,.92)] border-black/[.08]"
       }`}
     >

@@ -1,13 +1,15 @@
-export default function AboutHero() {
+export default function AboutHero({ imageUrl }: { imageUrl: string | null }) {
   return (
-    <section className="relative w-full h-[70vh] max-md:h-[50vh] overflow-hidden">
+    <section className="relative w-full h-[70vh] max-md:h-[50vh] overflow-hidden bg-[#111]">
       {/* Background image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/about-hero.jpg"
-        alt=""
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+      {imageUrl && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={imageUrl}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
 
       {/* Dark gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-[#111]" />
