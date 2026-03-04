@@ -64,7 +64,7 @@ export const stats = [
 ];
 
 export const bio =
-  "I'm Eli Larson, a sports photographer and videographer based in Lincoln, Nebraska with over five years of experience in sports media. I specialize in telling stories and creating engaging content under tight deadlines\u2014currently serving as a Creative Media Assistant for the Huskers athletic program, producing photo and video highlights for Men's Basketball and Track & Field. From detailed coverage of Nebraska state championships with Omaha High School Sports to delivering high-quality game-day content that reaches over 250K followers, I thrive on turning raw moments into imagery that connects fans to the action. Skilled in Adobe Creative Suite, social media management, and video editing, I bring a fast, adaptable approach to every project.";
+  "I'm Eli Larson, a sports photographer and videographer based in Lincoln, Nebraska with over five years of experience in sports media. I specialize in telling stories and creating engaging content under tight deadlines. Currently serving as a Creative Media Assistant for the Huskers athletic program, producing photo and video highlights for Men's Basketball and Track & Field. Skilled in Adobe Creative Suite, social media management, and video editing, I bring a fast, adaptable approach to every project.";
 
 export const email = "eli.s.landerson@gmail.com";
 export const phone = "(402) 975-5981";
