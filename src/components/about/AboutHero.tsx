@@ -1,7 +1,25 @@
-export default function AboutHero({ imageUrl }: { imageUrl: string | null }) {
+"use client";
+
+import { useMemo } from "react";
+
+const STORAGE_KEY = "about-hero-index";
+
+export default function AboutHero({ images }: { images: string[] }) {
+  const imageUrl = useMemo(() => {
+    if (images.length === 0) return null;
+    let idx = 0;
+    try {
+      const stored = sessionStorage.getItem(STORAGE_KEY);
+      idx = stored !== null ? (parseInt(stored, 10) + 1) % images.length : 0;
+      sessionStorage.setItem(STORAGE_KEY, String(idx));
+    } catch {
+      // SSR or sessionStorage unavailable
+    }
+    return images[idx];
+  }, [images]);
+
   return (
     <section className="relative w-full h-[70vh] max-md:h-[50vh] overflow-hidden bg-[#111]">
-      {/* Background image */}
       {imageUrl && (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img

@@ -7,7 +7,7 @@ import ContactCTA from "@/components/about/ContactCTA";
 import ScrollFadeIn from "@/components/gallery/ScrollFadeIn";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, asc } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "About",
@@ -86,11 +86,9 @@ const awards = [
   "Nebraska Press Photographers Association \u2014 Best Sports Feature",
 ];
 
-export const revalidate = 3600;
-
-async function getHeroImage() {
+async function getHeroImages() {
   try {
-    const landscape = await db
+    const photos = await db
       .select({ blobUrl: mediaItems.blobUrl })
       .from(mediaItems)
       .where(
@@ -99,23 +97,22 @@ async function getHeroImage() {
           sql`${mediaItems.width} > ${mediaItems.height}`
         )
       )
-      .orderBy(sql`random()`)
-      .limit(1);
+      .orderBy(asc(mediaItems.id));
 
-    return landscape[0]?.blobUrl ?? null;
+    return photos.map((p) => p.blobUrl).filter(Boolean) as string[];
   } catch {
-    return null;
+    return [];
   }
 }
 
 export default async function AboutPage() {
-  const heroImageUrl = await getHeroImage();
+  const heroImages = await getHeroImages();
   return (
     <>
       <Header variant="dark" />
       <main id="main" className="bg-[#111]">
         {/* 1. Cinematic Hero */}
-        <AboutHero imageUrl={heroImageUrl} />
+        <AboutHero images={heroImages} />
 
         {/* 2. Personal Intro */}
         <AboutIntro />
