@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const secret = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "default-secret-change-me"
-);
+function getSecret() {
+  const key = process.env.AUTH_SECRET;
+  if (!key) throw new Error("AUTH_SECRET environment variable is required");
+  return new TextEncoder().encode(key);
+}
 
 async function isAuthenticated(req: NextRequest) {
   const token = req.cookies.get("auth-token")?.value;
   if (!token) return false;
   try {
-    await jwtVerify(token, secret);
+    await jwtVerify(token, getSecret());
     return true;
   } catch {
     return false;

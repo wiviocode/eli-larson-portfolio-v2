@@ -41,11 +41,7 @@ export default async function Home() {
           ) : (
             <div className="max-w-[1300px] mx-auto px-10 text-center text-[#999] py-20">
               <p className="text-sm">
-                No media items yet. Upload photos in the{" "}
-                <a href="/admin" className="text-brand underline">
-                  admin panel
-                </a>
-                .
+                No media items yet.
               </p>
             </div>
           )}

@@ -21,7 +21,7 @@ export default function AboutHero({ images }: { images: string[] }) {
       {images.length > 0 && (
         <Image
           src={images[imageIndex]}
-          alt=""
+          alt="Sports photography by Eli Larson"
           fill
           priority
           sizes="100vw"
