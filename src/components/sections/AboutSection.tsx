@@ -2,10 +2,10 @@ export default function AboutSection() {
   return (
     <div className="bg-[#111] text-white overflow-hidden">
       <div className="max-w-[1300px] mx-auto px-10 pt-[100px] pb-[60px] grid grid-cols-3 gap-10 items-end max-lg:px-6 max-lg:pt-[60px] max-lg:pb-10 max-lg:gap-8 max-md:grid-cols-1 max-md:px-4 max-md:pt-[60px] max-md:pb-8 max-md:gap-6">
-        <blockquote className="text-[clamp(36px,6vw,80px)] leading-[1.05] text-white col-span-2 max-md:col-span-1" style={{ fontFamily: "'Instrument Serif', serif" }}>
+        <h2 className="text-[clamp(36px,6vw,80px)] leading-[1.05] text-white col-span-2 max-md:col-span-1" style={{ fontFamily: "'Instrument Serif', serif" }}>
           Capturing Moments<br />
           That <span className="text-brand">Matter</span>.
-        </blockquote>
+        </h2>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/eli-headshot.png"

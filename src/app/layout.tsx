@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Eli Larson — Sports Photography & Videography",
     description:
-      "Sports photography and videography by Eli Larson. Lincoln, NE.",
+      "Sports photography and videography by Eli Larson. Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field. Lincoln, NE.",
     type: "website",
     locale: "en_US",
     images: [{ url: "/opengraph-image", width: 1200, height: 630 }],

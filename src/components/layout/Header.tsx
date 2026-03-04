@@ -8,7 +8,8 @@ export default function Header({ variant = "light" }: HeaderProps) {
   const isDark = variant === "dark";
 
   return (
-    <header
+    <>
+      <header
       className={`fixed top-0 left-0 right-0 z-100 backdrop-blur-[8px] border-b animate-[header-fade-in_0.5s_ease-out_both] ${
         isDark
           ? "bg-[rgba(17,17,17,.92)] border-white/[.08]"
@@ -29,22 +30,25 @@ export default function Header({ variant = "light" }: HeaderProps) {
         <div className="flex gap-6 max-md:gap-4">
           <Link
             href="/"
-            className={`text-xs font-semibold no-underline uppercase tracking-[.1em] transition-colors duration-300 hover:text-brand max-md:text-[11px] max-md:tracking-[.06em] ${
+            className={`relative text-xs font-semibold no-underline uppercase tracking-[.1em] transition-colors duration-300 hover:text-brand max-md:text-[11px] max-md:tracking-[.06em] group ${
               isDark ? "text-white" : "text-[#111]"
             }`}
           >
             Work
+            <span className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-brand scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
           </Link>
           <Link
             href="/about"
-            className={`text-xs font-semibold no-underline uppercase tracking-[.1em] transition-colors duration-300 hover:text-brand max-md:text-[11px] max-md:tracking-[.06em] ${
+            className={`relative text-xs font-semibold no-underline uppercase tracking-[.1em] transition-colors duration-300 hover:text-brand max-md:text-[11px] max-md:tracking-[.06em] group ${
               isDark ? "text-white" : "text-[#111]"
             }`}
           >
             About
+            <span className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-brand scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
           </Link>
         </div>
       </nav>
     </header>
+    </>
   );
 }

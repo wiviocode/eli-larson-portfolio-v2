@@ -33,8 +33,10 @@ export default function GalleryItem({
 
   if (item.type === "video") {
     return (
-      <div
-        className="p-card group"
+      <button
+        type="button"
+        aria-label={`Play video: ${label}`}
+        className="p-card group text-left border-none"
         style={justified
           ? { width: "100%", height: "100%", background: "#000" }
           : { aspectRatio: "3/2", background: "#000" }
@@ -87,7 +89,7 @@ export default function GalleryItem({
           </svg>
         </div>
         <div className="card-label">{label}</div>
-      </div>
+      </button>
     );
   }
 
