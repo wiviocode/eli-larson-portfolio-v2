@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Eli Larson — Sports Photography & Videography";
+export const alt = "Eli Larson — Sports Photography & Videography Portfolio";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -9,20 +9,8 @@ const instrumentSerifData = fetch(
   new URL("./fonts/InstrumentSerif-Regular.ttf", import.meta.url)
 ).then((r) => r.arrayBuffer());
 
-const interBoldData = fetch(
-  new URL("./fonts/Inter-Bold.ttf", import.meta.url)
-).then((r) => r.arrayBuffer());
-
-const interSemiBoldData = fetch(
-  new URL("./fonts/Inter-SemiBold.ttf", import.meta.url)
-).then((r) => r.arrayBuffer());
-
 export default async function OGImage() {
-  const [instrumentSerif, interBold, interSemiBold] = await Promise.all([
-    instrumentSerifData,
-    interBoldData,
-    interSemiBoldData,
-  ]);
+  const instrumentSerif = await instrumentSerifData;
 
   return new ImageResponse(
     (
@@ -71,7 +59,6 @@ export default async function OGImage() {
               letterSpacing: "6px",
               textTransform: "uppercase",
               marginTop: "30px",
-              fontFamily: "Inter",
               display: "flex",
             }}
           >
@@ -84,11 +71,22 @@ export default async function OGImage() {
               color: "#999",
               letterSpacing: "2px",
               marginTop: "10px",
-              fontFamily: "Inter",
               display: "flex",
             }}
           >
             Lincoln, NE
+          </div>
+          <div
+            style={{
+              fontSize: 20,
+              color: "#bbb",
+              fontFamily: "Instrument Serif",
+              fontStyle: "italic",
+              marginTop: "28px",
+              display: "flex",
+            }}
+          >
+            Let&apos;s create something worth watching.
           </div>
         </div>
       </div>
@@ -102,8 +100,6 @@ export default async function OGImage() {
           style: "normal",
           weight: 400,
         },
-        { name: "Inter", data: interBold, style: "normal", weight: 700 },
-        { name: "Inter", data: interSemiBold, style: "normal", weight: 600 },
       ],
     }
   );

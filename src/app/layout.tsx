@@ -20,19 +20,19 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.eli-larson.com"),
   title: {
-    default: "Eli Larson — Sports Photography & Videography",
+    default: "Eli Larson — Sports Photography & Videography Portfolio",
     template: "%s — Eli Larson",
   },
   description:
-    "Sports photography and videography by Eli Larson. Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field. Lincoln, NE.",
+    "Sports photography and videography by Eli Larson. Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field.",
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
-    title: "Eli Larson — Sports Photography & Videography",
+    title: "Eli Larson — Sports Photography & Videography Portfolio",
     description:
-      "Sports photography and videography by Eli Larson. Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field. Lincoln, NE.",
+      "Sports photography and videography by Eli Larson. Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field.",
     type: "website",
     locale: "en_US",
     images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
