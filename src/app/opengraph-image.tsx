@@ -5,33 +5,23 @@ export const alt = "Eli Larson — Sports Photography & Videography";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const TTF_UA =
-  "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)";
+const instrumentSerifData = fetch(
+  new URL("./fonts/InstrumentSerif-Regular.ttf", import.meta.url)
+).then((r) => r.arrayBuffer());
 
-async function getInstrumentSerif() {
-  const css = await fetch(
-    "https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap",
-    { headers: { "User-Agent": TTF_UA } }
-  ).then((r) => r.text());
-  const url = css.match(/src: url\((.+?)\)/)?.[1];
-  if (!url) throw new Error("Font URL not found");
-  return fetch(url).then((r) => r.arrayBuffer());
-}
+const interBoldData = fetch(
+  new URL("./fonts/Inter-Bold.ttf", import.meta.url)
+).then((r) => r.arrayBuffer());
 
-async function getInter() {
-  const css = await fetch(
-    "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap",
-    { headers: { "User-Agent": TTF_UA } }
-  ).then((r) => r.text());
-  const url = css.match(/src: url\((.+?)\)/)?.[1];
-  if (!url) throw new Error("Font URL not found");
-  return fetch(url).then((r) => r.arrayBuffer());
-}
+const interSemiBoldData = fetch(
+  new URL("./fonts/Inter-SemiBold.ttf", import.meta.url)
+).then((r) => r.arrayBuffer());
 
 export default async function OGImage() {
-  const [instrumentSerifFont, interFont] = await Promise.all([
-    getInstrumentSerif(),
-    getInter(),
+  const [instrumentSerif, interBold, interSemiBold] = await Promise.all([
+    instrumentSerifData,
+    interBoldData,
+    interSemiBoldData,
   ]);
 
   return new ImageResponse(
@@ -85,7 +75,7 @@ export default async function OGImage() {
               display: "flex",
             }}
           >
-            Sports Photography &amp; Videography
+            Sports Photography & Videography
           </div>
           <div
             style={{
@@ -108,11 +98,12 @@ export default async function OGImage() {
       fonts: [
         {
           name: "Instrument Serif",
-          data: instrumentSerifFont,
+          data: instrumentSerif,
           style: "normal",
           weight: 400,
         },
-        { name: "Inter", data: interFont, style: "normal", weight: 400 },
+        { name: "Inter", data: interBold, style: "normal", weight: 700 },
+        { name: "Inter", data: interSemiBold, style: "normal", weight: 600 },
       ],
     }
   );
