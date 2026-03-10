@@ -5,13 +5,34 @@ export const alt = "Eli Larson — Sports Photography & Videography";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default async function OGImage() {
-  const headshotArrayBuffer = await fetch(
-    new URL("../../public/eli-headshot.jpeg", import.meta.url)
-  ).then((res) => res.arrayBuffer());
+const TTF_UA =
+  "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)";
 
-  const headshotBase64 = Buffer.from(headshotArrayBuffer).toString("base64");
-  const headshotSrc = `data:image/jpeg;base64,${headshotBase64}`;
+async function getInstrumentSerif() {
+  const css = await fetch(
+    "https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap",
+    { headers: { "User-Agent": TTF_UA } }
+  ).then((r) => r.text());
+  const url = css.match(/src: url\((.+?)\)/)?.[1];
+  if (!url) throw new Error("Font URL not found");
+  return fetch(url).then((r) => r.arrayBuffer());
+}
+
+async function getInter() {
+  const css = await fetch(
+    "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap",
+    { headers: { "User-Agent": TTF_UA } }
+  ).then((r) => r.text());
+  const url = css.match(/src: url\((.+?)\)/)?.[1];
+  if (!url) throw new Error("Font URL not found");
+  return fetch(url).then((r) => r.arrayBuffer());
+}
+
+export default async function OGImage() {
+  const [instrumentSerifFont, interFont] = await Promise.all([
+    getInstrumentSerif(),
+    getInter(),
+  ]);
 
   return new ImageResponse(
     (
@@ -20,194 +41,79 @@ export default async function OGImage() {
           width: "100%",
           height: "100%",
           display: "flex",
-          backgroundColor: "#111111",
-          position: "relative",
+          backgroundColor: "#f5f5f5",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {/* Subtle background pattern — diagonal lines */}
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            opacity: 0.03,
-            backgroundImage:
-              "repeating-linear-gradient(45deg, #fff 0px, #fff 1px, transparent 1px, transparent 20px)",
-            display: "flex",
-          }}
-        />
-
-        {/* Left: Headshot */}
-        <div
-          style={{
-            width: "400px",
-            height: "100%",
-            display: "flex",
-            position: "relative",
-            flexShrink: 0,
-          }}
-        >
-          <img
-            src={headshotSrc}
-            width={400}
-            height={630}
-            style={{
-              width: "400px",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center 20%",
-            }}
-          />
-          {/* Gradient overlay for smooth transition into dark bg */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              width: "160px",
-              height: "100%",
-              background:
-                "linear-gradient(to right, rgba(17,17,17,0), #111111)",
-              display: "flex",
-            }}
-          />
-          {/* Bottom gradient */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: "100px",
-              background:
-                "linear-gradient(to top, rgba(17,17,17,0.8), transparent)",
-              display: "flex",
-            }}
-          />
-          {/* Red accent bar on left edge */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "5px",
-              height: "100%",
-              backgroundColor: "#E31616",
-              display: "flex",
-            }}
-          />
-        </div>
-
-        {/* Right: Content */}
-        <div
-          style={{
-            flex: 1,
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center",
-            paddingLeft: "40px",
-            paddingRight: "80px",
-            position: "relative",
+            alignItems: "flex-start",
           }}
         >
-          {/* Red accent line */}
-          <div
+          <span
             style={{
-              width: "50px",
-              height: "4px",
-              backgroundColor: "#E31616",
-              borderRadius: "2px",
-              marginBottom: "28px",
-              display: "flex",
-            }}
-          />
-
-          {/* Name */}
-          <div style={{ display: "flex", alignItems: "baseline" }}>
-            <span
-              style={{
-                fontSize: 76,
-                color: "#ffffff",
-                fontFamily: "Georgia, serif",
-                lineHeight: 1,
-                fontWeight: 400,
-              }}
-            >
-              Eli Larson
-            </span>
-            <span
-              style={{
-                fontSize: 76,
-                color: "#E31616",
-                fontFamily: "Georgia, serif",
-                lineHeight: 1,
-              }}
-            >
-              .
-            </span>
-          </div>
-
-          {/* Subtitle */}
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: "rgba(255,255,255,0.45)",
-              letterSpacing: "5px",
-              textTransform: "uppercase",
-              marginTop: "22px",
-              fontFamily: "Arial, sans-serif",
+              fontSize: 190,
+              fontFamily: "Instrument Serif",
+              color: "#111",
+              lineHeight: 0.9,
               display: "flex",
             }}
           >
-            Sports Photography & Videography
-          </div>
-
-          {/* Divider */}
+            Eli Larson<span style={{ color: "#E31616" }}>.</span>
+          </span>
           <div
             style={{
               width: "100%",
-              height: "1px",
-              backgroundColor: "rgba(255,255,255,0.08)",
-              marginTop: "28px",
-              marginBottom: "28px",
+              height: "5px",
+              backgroundColor: "#E31616",
+              marginTop: "14px",
               display: "flex",
             }}
           />
-
-          {/* Tagline */}
           <div
             style={{
-              fontSize: 22,
-              color: "rgba(255,255,255,0.25)",
-              fontFamily: "Georgia, serif",
-              fontStyle: "italic",
-              lineHeight: 1.5,
-              display: "flex",
-            }}
-          >
-            Let&apos;s create something worth watching.
-          </div>
-
-          {/* Website URL */}
-          <div
-            style={{
-              fontSize: 13,
-              color: "rgba(255,255,255,0.2)",
-              letterSpacing: "3px",
+              fontSize: 18,
+              fontWeight: 700,
+              color: "#666",
+              letterSpacing: "6px",
               textTransform: "uppercase",
-              marginTop: "32px",
-              fontFamily: "Arial, sans-serif",
+              marginTop: "30px",
+              fontFamily: "Inter",
               display: "flex",
             }}
           >
-            eli-larson.com
+            Sports Photography &amp; Videography
+          </div>
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#999",
+              letterSpacing: "2px",
+              marginTop: "10px",
+              fontFamily: "Inter",
+              display: "flex",
+            }}
+          >
+            Lincoln, NE
           </div>
         </div>
       </div>
     ),
-    { ...size }
+    {
+      ...size,
+      fonts: [
+        {
+          name: "Instrument Serif",
+          data: instrumentSerifFont,
+          style: "normal",
+          weight: 400,
+        },
+        { name: "Inter", data: interFont, style: "normal", weight: 400 },
+      ],
+    }
   );
 }
