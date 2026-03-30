@@ -6,7 +6,7 @@ import Image from "next/image";
 const STORAGE_KEY = "about-hero-index";
 
 export default function AboutHero({ images }: { images: string[] }) {
-  const [imageIndex, setImageIndex] = useState(0);
+  const [imageIndex, setImageIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (images.length === 0) return;
@@ -18,7 +18,7 @@ export default function AboutHero({ images }: { images: string[] }) {
 
   return (
     <section className="relative w-full h-[70vh] max-md:h-[50vh] overflow-hidden bg-[#111]">
-      {images.length > 0 && (
+      {imageIndex !== null && images.length > 0 && (
         <Image
           src={images[imageIndex]}
           alt="Sports photography by Eli Larson"
