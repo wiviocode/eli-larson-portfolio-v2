@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import type { MediaItem } from "@/db/schema";
+import type { GalleryMediaItem } from "@/db/schema";
 
 export default function HeroSection({
   featuredImage,
 }: {
-  featuredImage?: MediaItem | null;
+  featuredImage?: GalleryMediaItem | null;
 }) {
   const [imgError, setImgError] = useState(false);
   const showImage = featuredImage?.blobUrl && !imgError;

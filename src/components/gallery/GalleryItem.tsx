@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import type { MediaItem } from "@/db/schema";
+import type { GalleryMediaItem } from "@/db/schema";
 
 function cleanFileName(name: string | null) {
   if (!name) return "Untitled";
@@ -17,7 +17,7 @@ export default function GalleryItem({
   justified,
   onVideoClick,
 }: {
-  item: MediaItem;
+  item: GalleryMediaItem;
   justified?: boolean;
   onVideoClick?: (embedUrl: string, blobUrl?: string | null) => void;
 }) {

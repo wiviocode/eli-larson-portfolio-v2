@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import type { MediaItem } from "@/db/schema";
+import type { GalleryMediaItem } from "@/db/schema";
 import PhotoSwipeGallery from "./PhotoSwipeGallery";
 import VideoLightbox from "./VideoLightbox";
 import GalleryItem from "./GalleryItem";
@@ -51,7 +51,7 @@ function useLayoutParams(): { mode: LayoutMode; targetHeight: number; gap: numbe
 // --- Justified layout algorithm ---
 
 interface LayoutItem {
-  item: MediaItem;
+  item: GalleryMediaItem;
   aspectRatio: number;
 }
 
@@ -62,7 +62,7 @@ interface LayoutRow {
 }
 
 function computeRows(
-  items: MediaItem[],
+  items: GalleryMediaItem[],
   containerWidth: number,
   targetHeight: number,
   gap: number
@@ -114,7 +114,7 @@ const FILTERS: { label: string; value: FilterType }[] = [
 
 // --- Component ---
 
-export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
+export default function JustifiedGrid({ items }: { items: GalleryMediaItem[] }) {
   const [videoState, setVideoState] = useState<{
     embedUrl: string;
     blobUrl?: string | null;

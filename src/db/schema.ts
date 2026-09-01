@@ -29,3 +29,22 @@ export const mediaItems = pgTable("media_items", {
 
 export type MediaItem = typeof mediaItems.$inferSelect;
 export type NewMediaItem = typeof mediaItems.$inferInsert;
+
+// Subset shipped to the public gallery — keeps cropData/timestamps/sortOrder
+// out of the RSC payload.
+export type GalleryMediaItem = Pick<
+  MediaItem,
+  | "id"
+  | "type"
+  | "blobUrl"
+  | "hqBlobUrl"
+  | "fileName"
+  | "videoEmbedUrl"
+  | "videoThumbnailUrl"
+  | "width"
+  | "height"
+  | "altText"
+  | "caption"
+  | "dominantColor"
+  | "isFeatured"
+>;
