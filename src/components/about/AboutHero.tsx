@@ -37,8 +37,7 @@ export default function AboutHero({ images }: { images: string[] }) {
       <div className="absolute bottom-0 left-0 right-0 px-10 pb-12 max-lg:px-6 max-md:px-4 max-md:pb-8">
         <div className="max-w-[1300px] mx-auto">
           <h1
-            className="text-[clamp(40px,7vw,80px)] leading-[1.05] text-white mb-3"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
+            className="font-serif-display text-[clamp(40px,7vw,80px)] leading-[1.05] text-white mb-3"
           >
             Behind The Lens
           </h1>

@@ -186,8 +186,7 @@ export default function CropModal({
         className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-xl"
       >
         <h2
-          className="text-xl mb-4"
-          style={{ fontFamily: "'Instrument Serif', serif" }}
+          className="font-serif-display text-xl mb-4"
         >
           Crop Image<span className="text-brand">.</span>
         </h2>

@@ -1,4 +1,6 @@
-export const serif = { fontFamily: "'Instrument Serif', serif" } as const;
+export const serif = {
+  fontFamily: "var(--font-instrument-serif), 'Instrument Serif', serif",
+} as const;
 
 export const experience = [
   {

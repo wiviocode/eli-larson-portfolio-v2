@@ -6,16 +6,14 @@ export default function ContactCTA() {
       <div className="max-w-[1300px] mx-auto px-10 text-center max-lg:px-6 max-md:px-4">
         <ScrollFadeIn variant="fade-in-scale">
           <h2
-            className="text-[clamp(32px,5vw,56px)] leading-[1.1] text-white mb-6"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
+            className="font-serif-display text-[clamp(32px,5vw,56px)] leading-[1.1] text-white mb-6"
           >
             Let&apos;s Work Together
           </h2>
           <a
             href="mailto:eli.s.landerson@gmail.com"
-            className="text-[clamp(18px,3vw,28px)] text-brand no-underline relative inline-block
+            className="font-serif-display text-[clamp(18px,3vw,28px)] text-brand no-underline relative inline-block
               after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-brand"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             eli.s.landerson@gmail.com
           </a>
