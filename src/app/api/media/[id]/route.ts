@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicPages } from "@/lib/revalidate";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -30,7 +30,7 @@ export async function PUT(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  revalidatePath("/");
+  revalidatePublicPages();
   return NextResponse.json(item);
 }
 
@@ -59,6 +59,6 @@ export async function DELETE(
 
   await db.delete(mediaItems).where(eq(mediaItems.id, parseInt(id)));
 
-  revalidatePath("/");
+  revalidatePublicPages();
   return NextResponse.json({ success: true });
 }

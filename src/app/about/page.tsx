@@ -6,6 +6,8 @@ import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq, and, sql, asc } from "drizzle-orm";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "About",
   description:

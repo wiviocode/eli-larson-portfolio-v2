@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicPages } from "@/lib/revalidate";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest) {
     }
   });
 
-  revalidatePath("/");
+  revalidatePublicPages();
 
   return NextResponse.json({ success: true });
 }
