@@ -23,6 +23,13 @@ export default function CountUp({
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
+
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            setValue(end);
+            observer.unobserve(el);
+            return;
+          }
+
           const start = performance.now();
 
           function tick(now: number) {

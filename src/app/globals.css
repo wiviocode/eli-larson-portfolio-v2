@@ -62,7 +62,7 @@ main {
   left: 0;
   right: 0;
   height: 4px;
-  background: #E31616;
+  background: var(--color-brand);
   transform: scaleX(0);
   transform-origin: left;
   animation: line-in 1.2s 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -117,7 +117,7 @@ main {
   bottom: 2px;
   left: 2px;
   border-radius: 5px;
-  background: #E31616;
+  background: var(--color-brand);
   box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
@@ -141,7 +141,7 @@ main {
   color: #555;
 }
 .filter-tab:focus-visible {
-  outline: 2px solid #E31616;
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
 .filter-tab.active {
@@ -161,7 +161,7 @@ main {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.25em;
-  color: #E31616;
+  color: var(--color-brand);
   margin: 0;
 }
 .gallery-label::before {
@@ -169,7 +169,7 @@ main {
   display: inline-block;
   width: 40px;
   height: 3px;
-  background: #E31616;
+  background: var(--color-brand);
   vertical-align: middle;
   margin-right: 12px;
 }
@@ -180,7 +180,7 @@ main {
   display: inline-block;
   width: 20px;
   height: 2px;
-  background: #E31616;
+  background: var(--color-brand);
   vertical-align: middle;
   margin-right: 8px;
 }
@@ -213,7 +213,7 @@ main {
   object-fit: cover;
 }
 .p-card:focus-visible {
-  outline: 3px solid #E31616;
+  outline: 3px solid var(--color-brand);
   outline-offset: 4px;
 }
 
@@ -379,10 +379,10 @@ main {
   line-height: 1;
 }
 .video-lightbox-close:hover {
-  color: #E31616;
+  color: var(--color-brand);
 }
 .video-lightbox-close:focus-visible {
-  outline: 2px solid #E31616;
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -402,7 +402,7 @@ main {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #E31616;
+  background: var(--color-brand);
   color: #fff;
   padding: 2px 8px;
   font-size: 9px;
@@ -437,4 +437,18 @@ main {
 .p-card:hover .video-play-btn {
   transform: translate(-50%, -50%) scale(1.1);
   background: rgba(227, 22, 22, 0.85);
+}
+
+/* ====== REDUCED MOTION ====== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
 }

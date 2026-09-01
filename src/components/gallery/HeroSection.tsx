@@ -20,7 +20,7 @@ export default function HeroSection({
             className="hero-title font-serif-display text-[clamp(48px,8vw,110px)] leading-[.9] text-[#111] max-md:text-[clamp(40px,12vw,64px)]"
             style={{ WebkitTextStroke: "1.5px #111" }}
           >
-            Eli Larson<span className="text-brand" style={{ WebkitTextStroke: "1.5px #E31616" }}>.</span>
+            Eli Larson<span className="text-brand" style={{ WebkitTextStroke: "1.5px var(--color-brand)" }}>.</span>
           </h1>
           <div className="text-xs font-bold uppercase tracking-[.2em] text-[#666] mt-5 max-md:text-[11px] max-md:tracking-[.15em] max-md:mt-3.5">
             Sports Photography &amp; Videography
