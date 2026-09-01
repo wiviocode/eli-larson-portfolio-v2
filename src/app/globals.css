@@ -85,13 +85,13 @@ main {
   max-width: 1300px;
   margin: 0 auto;
 }
-.justified-row {
-  display: flex;
-}
-.justified-mobile {
+.justified-rows {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+}
+.justified-row {
+  display: flex;
 }
 
 /* ====== GALLERY HEADER ====== */
@@ -139,6 +139,10 @@ main {
 }
 .filter-tab:hover {
   color: #555;
+}
+.filter-tab:focus-visible {
+  outline: 2px solid #E31616;
+  outline-offset: 2px;
 }
 .filter-tab.active {
   color: #fff;
@@ -264,6 +268,9 @@ main {
     padding: 0 24px;
     gap: 8px;
   }
+  .justified-rows {
+    gap: 8px;
+  }
 }
 
 /* ====== MOBILE ====== */
@@ -271,6 +278,18 @@ main {
   .justified-grid {
     padding: 0 16px;
     gap: 8px;
+  }
+  .justified-rows {
+    gap: 8px;
+  }
+  /* Stack justified rows into a single column; aspect-ratio on each cell
+     keeps proportions, so no JS layout is needed on mobile. */
+  .justified-row {
+    flex-direction: column;
+    gap: 8px !important;
+  }
+  .justified-row > * {
+    width: 100% !important;
   }
 }
 
