@@ -11,14 +11,14 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "About",
   description:
-    "About Eli Larson — Media Assistant for Nebraska Men's Basketball, Social Media Manager for Nebraska Track & Field, and freelance sports photographer. Lincoln, NE.",
+    "About Eli Larson — Head Photographer for Nebraska Men's Basketball, Social Media Manager for Nebraska Track & Field, and contract Content Producer for Hurrdat Sports. Lincoln, NE.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
     title: "About — Eli Larson",
     description:
-      "Media Assistant for Nebraska Men's Basketball, Social Media Manager for Nebraska Track & Field, and freelance sports photographer. Lincoln, NE.",
+      "Head Photographer for Nebraska Men's Basketball, Social Media Manager for Nebraska Track & Field, and contract Content Producer for Hurrdat Sports. Lincoln, NE.",
     type: "profile",
     url: "/about",
     images: [{ url: "/opengraph-image", width: 1200, height: 630 }],

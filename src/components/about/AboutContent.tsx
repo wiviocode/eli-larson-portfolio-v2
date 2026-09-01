@@ -4,7 +4,7 @@ import ContactCTA from "@/components/about/ContactCTA";
 import CountUp from "@/components/about/CountUp";
 import SocialIcons from "@/components/about/SocialIcons";
 import ScrollFadeIn from "@/components/gallery/ScrollFadeIn";
-import { experience, skillCategories, awards, stats, bio, email, phone, phoneHref, serif } from "./data";
+import { experience, skillCategories, certifications, stats, bio, email, phone, phoneHref, serif } from "./data";
 
 export default function AboutContent({ heroImages }: { heroImages: string[] }) {
   return (
@@ -63,7 +63,7 @@ export default function AboutContent({ heroImages }: { heroImages: string[] }) {
             ))}
           </div>
 
-          {/* Row 3: Education + Awards + Skills */}
+          {/* Row 3: Education + Certifications + Skills */}
           <div className="grid grid-cols-12 gap-4 max-md:grid-cols-1">
             <ScrollFadeIn className="col-span-3 max-md:col-span-1">
               <div className="bg-[#1a1a1a] rounded-xl p-7 h-full border border-white/[.06] max-md:p-5">
@@ -74,9 +74,9 @@ export default function AboutContent({ heroImages }: { heroImages: string[] }) {
             </ScrollFadeIn>
             <ScrollFadeIn delay={80} className="col-span-4 max-md:col-span-1">
               <div className="bg-[#1a1a1a] rounded-xl p-7 h-full border border-white/[.06] max-md:p-5">
-                <h2 className="text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-4">Awards</h2>
-                {awards.map((a) => (
-                  <p key={a} className="text-white/60 text-[12px] leading-[1.6] pl-5 relative before:content-[''] before:absolute before:left-0 before:top-[8px] before:w-3 before:h-[2px] before:bg-brand mb-2 last:mb-0">{a}</p>
+                <h2 className="text-[10px] font-extrabold uppercase tracking-[.2em] text-brand mb-4">Certifications</h2>
+                {certifications.map((c) => (
+                  <p key={c} className="text-white/60 text-[12px] leading-[1.6] pl-5 relative before:content-[''] before:absolute before:left-0 before:top-[8px] before:w-3 before:h-[2px] before:bg-brand mb-2 last:mb-0">{c}</p>
                 ))}
               </div>
             </ScrollFadeIn>

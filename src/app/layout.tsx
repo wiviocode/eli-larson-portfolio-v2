@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s — Eli Larson",
   },
   description:
-    "Sports photography and videography by Eli Larson. Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field.",
+    "Sports photography and videography by Eli Larson. Head Photographer for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field.",
   alternates: {
     canonical: "/",
   },
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Eli Larson — Sports Photography & Videography Portfolio",
     description:
-      "Sports photography and videography by Eli Larson. Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field.",
+      "Sports photography and videography by Eli Larson. Head Photographer for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field.",
     type: "website",
     locale: "en_US",
     images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
@@ -68,7 +68,7 @@ export default function RootLayout({
               url: "https://www.eli-larson.com",
               jobTitle: "Sports Photographer & Videographer",
               description:
-                "Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field.",
+                "Head Photographer for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field.",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Lincoln",
