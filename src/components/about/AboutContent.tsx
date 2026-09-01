@@ -19,7 +19,7 @@ export default function AboutContent({ heroImages }: { heroImages: string[] }) {
           <div className="grid grid-cols-12 gap-4 mb-4 max-md:grid-cols-1">
             <ScrollFadeIn variant="fade-in-left" className="col-span-3 max-md:col-span-1">
               <div className="bg-[#1a1a1a] rounded-xl overflow-hidden h-full border border-white/[.06] relative min-h-[280px]">
-                <Image src="/eli-headshot.png" alt="Eli Larson" fill sizes="(max-width: 768px) 100vw, 25vw" quality={85} className="object-cover object-[center_10%]" />
+                <Image src="/eli-headshot.jpeg" alt="Eli Larson" fill sizes="(max-width: 768px) 100vw, 25vw" quality={85} className="object-cover object-[center_10%]" />
               </div>
             </ScrollFadeIn>
             <ScrollFadeIn variant="fade-in-up" delay={100} className="col-span-5 max-md:col-span-1">

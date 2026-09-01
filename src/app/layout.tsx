@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   },
   description:
     "Sports photography and videography by Eli Larson. Media Assistant for Nebraska Men's Basketball and Social Media Manager for Nebraska Track & Field.",
+  alternates: {
+    canonical: "/",
+  },
   robots: {
     index: true,
     follow: true,
