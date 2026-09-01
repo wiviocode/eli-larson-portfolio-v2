@@ -42,7 +42,7 @@ export default async function Home() {
 
   return (
     <>
-      <Header />
+      <Header active="work" />
       <main id="main">
         <HeroSection featuredImage={featured} />
 

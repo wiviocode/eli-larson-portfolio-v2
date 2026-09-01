@@ -52,7 +52,7 @@ export default async function AboutPage() {
 
   return (
     <>
-      <Header variant="dark" />
+      <Header variant="dark" active="about" />
       <main id="main" className="bg-[#111]">
         <AboutContent heroImages={heroImages} />
       </main>

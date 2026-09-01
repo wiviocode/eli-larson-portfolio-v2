@@ -9,6 +9,28 @@
   --font-serif-display: var(--font-instrument-serif), "Instrument Serif", ui-serif, serif;
 }
 
+/* ====== SKIP LINK ====== */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 1000;
+  padding: 10px 16px;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border-radius: 0 0 4px 4px;
+}
+.skip-link:focus-visible {
+  top: 0;
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
 /* ====== BASE ====== */
 html {
   overflow-x: hidden;

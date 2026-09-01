@@ -52,6 +52,9 @@ export default function RootLayout({
     <html lang="en" className={`${instrumentSerif.variable} ${inter.variable}`}>
       <head />
       <body className="antialiased">
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

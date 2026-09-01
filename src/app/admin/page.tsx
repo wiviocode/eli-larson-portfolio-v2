@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
 import type { MediaItem } from "@/db/schema";
 import UploadDropzone from "@/components/admin/UploadDropzone";
 import AdminMediaGrid from "@/components/admin/AdminMediaGrid";
@@ -202,12 +203,12 @@ export default function AdminDashboard() {
           Admin Panel<span className="text-brand">.</span>
         </h1>
         <div className="flex items-center gap-4">
-          <a
+          <Link
             href="/"
             className="text-[10px] font-bold uppercase tracking-[.15em] text-[#666] hover:text-brand transition-colors"
           >
             View Site
-          </a>
+          </Link>
           <button
             onClick={handleLogout}
             className="text-[10px] font-bold uppercase tracking-[.15em] text-[#666] hover:text-brand transition-colors cursor-pointer"
