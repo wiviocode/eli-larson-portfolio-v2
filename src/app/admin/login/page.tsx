@@ -39,7 +39,7 @@ export default function AdminLogin() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm bg-white/5 border border-white/10 rounded-lg p-8"
       >
-        <h1 className="text-3xl text-white mb-2" style={{ fontFamily: "'Instrument Serif', serif" }}>
+        <h1 className="font-serif-display text-3xl text-white mb-2">
           Admin<span className="text-brand">.</span>
         </h1>
         <p className="text-[10px] font-bold uppercase tracking-[.15em] text-white/40 mb-8">
@@ -55,6 +55,7 @@ export default function AdminLogin() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
+          aria-label="Password"
           className="w-full bg-white/5 border border-white/10 rounded px-4 py-3 text-white text-sm placeholder-white/30 focus:outline-none focus:border-brand transition-colors"
           autoFocus
         />

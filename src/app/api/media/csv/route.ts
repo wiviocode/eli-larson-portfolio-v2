@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicPages } from "@/lib/revalidate";
 import { normalizeQuotes } from "@/lib/utils";
 
 function escapeCsvField(value: string): string {
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (updated > 0) {
-    revalidatePath("/");
+    revalidatePublicPages();
   }
 
   return NextResponse.json({ updated, errors });

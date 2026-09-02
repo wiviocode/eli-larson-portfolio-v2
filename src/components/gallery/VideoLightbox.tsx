@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 
 function getEmbedUrl(url: string): string | null {
@@ -40,28 +40,53 @@ export default function VideoLightbox({
   const directUrl = !embedUrl && blobUrl ? blobUrl : (!embedUrl && isDirectVideoUrl(videoUrl) ? videoUrl : null);
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleClose = useCallback(() => {
     setClosing(true);
     setTimeout(() => onClose(), 300);
   }, [onClose]);
 
-  const handleEsc = useCallback(
+  const handleKeydown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleClose();
+      if (e.key === "Escape") {
+        handleClose();
+        return;
+      }
+      // Keep Tab focus inside the dialog
+      if (e.key === "Tab" && contentRef.current) {
+        const focusables = contentRef.current.querySelectorAll<HTMLElement>(
+          "button, iframe, video, [tabindex]:not([tabindex='-1'])"
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && (active === first || !contentRef.current.contains(active))) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     },
     [handleClose]
   );
 
   useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     document.body.style.overflow = "hidden";
-    document.addEventListener("keydown", handleEsc);
+    document.addEventListener("keydown", handleKeydown);
     requestAnimationFrame(() => setVisible(true));
+    closeButtonRef.current?.focus();
     return () => {
       document.body.style.overflow = "";
-      document.removeEventListener("keydown", handleEsc);
+      document.removeEventListener("keydown", handleKeydown);
+      previouslyFocused?.focus();
     };
-  }, [handleEsc]);
+  }, [handleKeydown]);
 
   if (!embedUrl && !directUrl) return null;
 
@@ -72,6 +97,10 @@ export default function VideoLightbox({
       onClick={handleClose}
     >
       <div
+        ref={contentRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Video player"
         className="video-lightbox-content"
         style={{
           opacity: visible && !closing ? 1 : 0,
@@ -79,7 +108,7 @@ export default function VideoLightbox({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={handleClose} className="video-lightbox-close" aria-label="Close video">
+        <button ref={closeButtonRef} onClick={handleClose} className="video-lightbox-close" aria-label="Close video">
           &times;
         </button>
         {embedUrl ? (

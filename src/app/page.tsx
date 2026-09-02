@@ -5,14 +5,28 @@ import JustifiedGrid from "@/components/gallery/JustifiedGrid";
 import AboutSection from "@/components/sections/AboutSection";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
-import { asc, eq } from "drizzle-orm";
+import { asc } from "drizzle-orm";
 
 export const revalidate = 3600;
 
 async function getData() {
   try {
     const items = await db
-      .select()
+      .select({
+        id: mediaItems.id,
+        type: mediaItems.type,
+        blobUrl: mediaItems.blobUrl,
+        hqBlobUrl: mediaItems.hqBlobUrl,
+        fileName: mediaItems.fileName,
+        videoEmbedUrl: mediaItems.videoEmbedUrl,
+        videoThumbnailUrl: mediaItems.videoThumbnailUrl,
+        width: mediaItems.width,
+        height: mediaItems.height,
+        altText: mediaItems.altText,
+        caption: mediaItems.caption,
+        dominantColor: mediaItems.dominantColor,
+        isFeatured: mediaItems.isFeatured,
+      })
       .from(mediaItems)
       .orderBy(asc(mediaItems.sortOrder));
 
@@ -28,7 +42,7 @@ export default async function Home() {
 
   return (
     <>
-      <Header />
+      <Header active="work" />
       <main id="main">
         <HeroSection featuredImage={featured} />
 

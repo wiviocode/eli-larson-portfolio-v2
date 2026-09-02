@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import type { MediaItem } from "@/db/schema";
+import type { GalleryMediaItem } from "@/db/schema";
 import PhotoSwipeGallery from "./PhotoSwipeGallery";
 import VideoLightbox from "./VideoLightbox";
 import GalleryItem from "./GalleryItem";
@@ -26,32 +26,15 @@ function useContainerWidth(ref: React.RefObject<HTMLDivElement | null>) {
   return width;
 }
 
-type LayoutMode = "desktop" | "tablet" | "mobile";
-
-function useLayoutParams(): { mode: LayoutMode; targetHeight: number; gap: number } {
-  const [mode, setMode] = useState<LayoutMode>("desktop");
-
-  useEffect(() => {
-    function update() {
-      const w = window.innerWidth;
-      if (w >= 1024) setMode("desktop");
-      else if (w >= 768) setMode("tablet");
-      else setMode("mobile");
-    }
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  if (mode === "desktop") return { mode, targetHeight: 420, gap: 10 };
-  if (mode === "tablet") return { mode, targetHeight: 280, gap: 8 };
-  return { mode, targetHeight: 0, gap: 8 };
-}
+// Content width the server-rendered layout assumes: 1300px max-width minus
+// 2x40px padding. Rows are emitted with relative (calc %) geometry, so the
+// markup stays correct at any real width; measurement only re-groups rows.
+const ASSUMED_CONTENT_WIDTH = 1220;
 
 // --- Justified layout algorithm ---
 
 interface LayoutItem {
-  item: MediaItem;
+  item: GalleryMediaItem;
   aspectRatio: number;
 }
 
@@ -62,7 +45,7 @@ interface LayoutRow {
 }
 
 function computeRows(
-  items: MediaItem[],
+  items: GalleryMediaItem[],
   containerWidth: number,
   targetHeight: number,
   gap: number
@@ -114,7 +97,7 @@ const FILTERS: { label: string; value: FilterType }[] = [
 
 // --- Component ---
 
-export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
+export default function JustifiedGrid({ items }: { items: GalleryMediaItem[] }) {
   const [videoState, setVideoState] = useState<{
     embedUrl: string;
     blobUrl?: string | null;
@@ -138,7 +121,11 @@ export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
   }, []);
   const containerRef = useRef<HTMLDivElement>(null);
   const containerWidth = useContainerWidth(containerRef);
-  const { mode, targetHeight, gap } = useLayoutParams();
+
+  const contentWidth = containerWidth || ASSUMED_CONTENT_WIDTH;
+  const isCompact = contentWidth < 976;
+  const targetHeight = isCompact ? 280 : 420;
+  const gap = isCompact ? 8 : 10;
 
   const hasVideos = useMemo(() => items.some((i) => i.type === "video"), [items]);
 
@@ -147,9 +134,8 @@ export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
   }, [items, filter]);
 
   const rows = useMemo(() => {
-    if (mode === "mobile" || containerWidth === 0) return [];
-    return computeRows(filteredItems, containerWidth, targetHeight, gap);
-  }, [filteredItems, containerWidth, targetHeight, gap, mode]);
+    return computeRows(filteredItems, contentWidth, targetHeight, gap);
+  }, [filteredItems, contentWidth, targetHeight, gap]);
 
   const handleVideoClick = useCallback(
     (embedUrl: string, blobUrl?: string | null) => {
@@ -177,6 +163,8 @@ export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
             {FILTERS.map((f) => (
               <button
                 key={f.value}
+                type="button"
+                aria-pressed={filter === f.value}
                 className={`filter-tab${filter === f.value ? " active" : ""}`}
                 style={{ width: `${100 / FILTERS.length}%` }}
                 onClick={() => handleFilterChange(f.value)}
@@ -194,48 +182,45 @@ export default function JustifiedGrid({ items }: { items: MediaItem[] }) {
         style={{ opacity: fadeIn ? 1 : 0.5, transition: "opacity 0.35s ease-in-out" }}
       >
 
-        <div id="pswp-gallery">
-          {mode === "mobile" || containerWidth === 0 ? (
-            /* Mobile or pre-measurement: single column stack (shows placeholders immediately) */
-            <div className="justified-mobile">
-              {filteredItems.map((item) => (
-                <GalleryItem
-                  key={item.id}
-                  item={item}
-                  onVideoClick={handleVideoClick}
-                />
-              ))}
-            </div>
-          ) : (
-            /* Desktop / Tablet: justified rows */
-            rows.map((row, rowIndex) => (
+        <div id="pswp-gallery" className="justified-rows">
+          {rows.map((row, rowIndex) => {
+            const gapTotal = (row.items.length - 1) * gap;
+            const arSum = row.items.reduce((s, li) => s + li.aspectRatio, 0);
+            return (
               <div
                 className="justified-row"
                 key={rowIndex}
-                style={{ gap: `${gap}px`, marginBottom: rowIndex < rows.length - 1 ? `${gap}px` : undefined }}
+                style={{ gap: `${gap}px` }}
               >
                 {row.items.map((li) => {
-                  const itemWidth = li.aspectRatio * row.height;
+                  // Width as a fraction of the row so the SSR markup scales to
+                  // any real container width; a short last row keeps the size
+                  // it would have at targetHeight instead of stretching.
+                  const frac = row.isLast
+                    ? (li.aspectRatio * row.height) / (contentWidth - gapTotal)
+                    : li.aspectRatio / arSum;
                   return (
                     <div
                       key={li.item.id}
                       style={{
-                        width: `${itemWidth}px`,
-                        height: `${row.height}px`,
+                        width: `calc((100% - ${gapTotal}px) * ${frac.toFixed(6)})`,
+                        aspectRatio: `${li.aspectRatio.toFixed(6)}`,
                         flexShrink: 0,
                       }}
                     >
                       <GalleryItem
                         item={li.item}
-                        justified
+                        sizes={`(max-width: 768px) calc(100vw - 32px), ${Math.round(
+                          frac * (contentWidth - gapTotal)
+                        )}px`}
                         onVideoClick={handleVideoClick}
                       />
                     </div>
                   );
                 })}
               </div>
-            ))
-          )}
+            );
+          })}
         </div>
       </div>
 

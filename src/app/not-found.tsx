@@ -9,8 +9,7 @@ export default function NotFound() {
       <main className="pt-[60px] min-h-[70vh] flex items-center justify-center">
         <div className="text-center px-4">
           <h1
-            className="text-[clamp(64px,15vw,160px)] leading-[.9] text-[#111]"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
+            className="font-serif-display text-[clamp(64px,15vw,160px)] leading-[.9] text-[#111]"
           >
             404<span className="text-brand">.</span>
           </h1>

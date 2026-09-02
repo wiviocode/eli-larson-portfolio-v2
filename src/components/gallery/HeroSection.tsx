@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import type { MediaItem } from "@/db/schema";
+import type { GalleryMediaItem } from "@/db/schema";
 
 export default function HeroSection({
   featuredImage,
 }: {
-  featuredImage?: MediaItem | null;
+  featuredImage?: GalleryMediaItem | null;
 }) {
   const [imgError, setImgError] = useState(false);
   const showImage = featuredImage?.blobUrl && !imgError;
@@ -17,13 +17,10 @@ export default function HeroSection({
       <div className="max-w-[1300px] mx-auto px-10 pt-20 pb-10 grid grid-cols-2 gap-10 items-center max-lg:px-6 max-lg:pt-15 max-lg:pb-8 max-lg:gap-6 max-md:grid-cols-1 max-md:px-4 max-md:pt-10 max-md:pb-6 max-md:gap-5">
         <div>
           <h1
-            className="hero-title text-[clamp(48px,8vw,110px)] leading-[.9] text-[#111] max-md:text-[clamp(40px,12vw,64px)]"
-            style={{
-              fontFamily: "'Instrument Serif', serif",
-              WebkitTextStroke: "1.5px #111",
-            }}
+            className="hero-title font-serif-display text-[clamp(48px,8vw,110px)] leading-[.9] text-[#111] max-md:text-[clamp(40px,12vw,64px)]"
+            style={{ WebkitTextStroke: "1.5px #111" }}
           >
-            Eli Larson<span className="text-brand" style={{ WebkitTextStroke: "1.5px #E31616" }}>.</span>
+            Eli Larson<span className="text-brand" style={{ WebkitTextStroke: "1.5px var(--color-brand)" }}>.</span>
           </h1>
           <div className="text-xs font-bold uppercase tracking-[.2em] text-[#666] mt-5 max-md:text-[11px] max-md:tracking-[.15em] max-md:mt-3.5">
             Sports Photography &amp; Videography
