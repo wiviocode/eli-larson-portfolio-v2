@@ -47,8 +47,8 @@ export default function AboutContent({ heroImages }: { heroImages: string[] }) {
             </ScrollFadeIn>
           </div>
 
-          {/* Row 2: Experience cards */}
-          <div className="grid grid-cols-3 gap-4 mb-4 max-lg:grid-cols-2 max-md:grid-cols-1">
+          {/* Row 2: Experience cards (2x2 — four roles) */}
+          <div className="grid grid-cols-2 gap-4 mb-4 max-md:grid-cols-1">
             {experience.map((role, i) => (
               <ScrollFadeIn key={role.title} delay={i * 80}>
                 <div className="bg-[#1a1a1a] rounded-xl p-7 h-full border border-white/[.06] hover:border-white/[.12] transition-colors max-md:p-5">
