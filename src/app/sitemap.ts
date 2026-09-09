@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { sql } from "drizzle-orm";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
+import { getPortfolio } from "@/lib/public-media";
 
 export const revalidate = 3600;
 
@@ -18,6 +19,7 @@ async function latestMediaUpdate(): Promise<Date> {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = await latestMediaUpdate();
+  const { stories } = await getPortfolio();
 
   return [
     {
@@ -32,5 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    { url: "https://www.eli-larson.com/stories", changeFrequency: "monthly", priority: 0.8 },
+    ...stories.map(story => ({ url: `https://www.eli-larson.com/stories/${story.slug}`, changeFrequency: "monthly" as const, priority: 0.7 })),
   ];
 }

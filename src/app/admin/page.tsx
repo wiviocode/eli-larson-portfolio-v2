@@ -211,6 +211,7 @@ export default function AdminDashboard() {
           Admin Panel<span className="text-brand">.</span>
         </h1>
         <div className="flex items-center gap-4">
+          <Link href="/admin/presentation" className="text-[10px] font-bold uppercase tracking-[.15em] text-[#666] hover:text-brand">Presentation</Link>
           <Link
             href="/"
             className="text-[10px] font-bold uppercase tracking-[.15em] text-[#666] hover:text-brand transition-colors"

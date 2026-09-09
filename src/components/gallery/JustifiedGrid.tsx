@@ -5,6 +5,8 @@ import type { GalleryMediaItem } from "@/db/schema";
 import PhotoSwipeGallery from "./PhotoSwipeGallery";
 import VideoLightbox from "./VideoLightbox";
 import GalleryItem from "./GalleryItem";
+import { resolvePhotos } from "@/lib/presentation";
+import Link from "next/link";
 
 // --- Hooks ---
 
@@ -97,12 +99,14 @@ const FILTERS: { label: string; value: FilterType }[] = [
 
 // --- Component ---
 
-export default function JustifiedGrid({ items }: { items: GalleryMediaItem[] }) {
+export default function JustifiedGrid({ items, editorPhotoIds = [], hasStories = false }: { items: GalleryMediaItem[]; editorPhotoIds?: number[]; hasStories?: boolean }) {
   const [videoState, setVideoState] = useState<{
     embedUrl: string;
     blobUrl?: string | null;
   } | null>(null);
   const [filter, setFilter] = useState<FilterType>("photo");
+  const [selection, setSelection] = useState(false);
+  const editorItems = useMemo(() => resolvePhotos(items, editorPhotoIds), [items, editorPhotoIds]);
   const [fadeIn, setFadeIn] = useState(true);
   const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -130,8 +134,8 @@ export default function JustifiedGrid({ items }: { items: GalleryMediaItem[] }) 
   const hasVideos = useMemo(() => items.some((i) => i.type === "video"), [items]);
 
   const filteredItems = useMemo(() => {
-    return items.filter((i) => i.type === filter);
-  }, [items, filter]);
+    return filter === "photo" && selection && editorItems.length ? editorItems : items.filter((i) => i.type === filter);
+  }, [items, filter, selection, editorItems]);
 
   const rows = useMemo(() => {
     return computeRows(filteredItems, contentWidth, targetHeight, gap);
@@ -149,7 +153,7 @@ export default function JustifiedGrid({ items }: { items: GalleryMediaItem[] }) 
       <PhotoSwipeGallery galleryId="pswp-gallery" />
 
       {/* Gallery header - uses original 1300px width */}
-      <div className="gallery-header max-w-[1300px] mx-auto px-10 pb-14 max-lg:px-6 max-lg:pb-10 max-md:px-4 max-md:pb-7">
+      <div className="gallery-header max-w-[1300px] mx-auto px-10 pb-5 max-lg:px-6 max-md:px-4">
         <h2 className="gallery-label">Selected Work</h2>
         {hasVideos && (
           <nav className="filter-bar" aria-label="Filter media">
@@ -174,6 +178,19 @@ export default function JustifiedGrid({ items }: { items: GalleryMediaItem[] }) 
             ))}
           </nav>
         )}
+      </div>
+
+      <div className="gallery-view-controls">
+        {filter === "photo" && editorItems.length > 0 && (
+          <div className="gallery-view-options" role="group" aria-label="Photograph selection">
+            <button type="button" aria-pressed={!selection} onClick={() => setSelection(false)}>All photographs</button>
+            <button type="button" aria-pressed={selection} onClick={() => setSelection(true)}>Editor’s Selection <span>{editorItems.length}</span></button>
+          </div>
+        )}
+        {hasStories && <Link href="/stories" prefetch={false} className="text-link">Explore photo stories <span aria-hidden="true">↗</span></Link>}
+        <p className="gallery-view-description" aria-live="polite">
+          {filter === "video" ? `${filteredItems.length} films. Select a film to watch.` : selection && editorItems.length ? `${editorItems.length} photographs. A shorter edit across sport, atmosphere and emotion.` : `${filteredItems.length} photographs. Explore the full body of work.`}
+        </p>
       </div>
 
       <div

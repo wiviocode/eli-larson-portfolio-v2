@@ -52,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${instrumentSerif.variable} ${inter.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${instrumentSerif.variable} ${inter.variable}`}>
       <head />
       <body className="antialiased">
         <a href="#main" className="skip-link">

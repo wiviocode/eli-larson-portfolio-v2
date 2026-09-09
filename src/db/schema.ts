@@ -6,6 +6,7 @@ import {
   boolean,
   timestamp,
 } from "drizzle-orm/pg-core";
+import type { PhotoDetails } from "@/lib/presentation";
 
 export const mediaItems = pgTable("media_items", {
   id: serial("id").primaryKey(),
@@ -47,4 +48,4 @@ export type GalleryMediaItem = Pick<
   | "caption"
   | "dominantColor"
   | "isFeatured"
-> & { isCropped?: boolean };
+> & { isCropped?: boolean; details?: PhotoDetails };

@@ -5,5 +5,7 @@ import { revalidatePath } from "next/cache";
 export function revalidatePublicPages() {
   revalidatePath("/");
   revalidatePath("/about");
+  revalidatePath("/stories");
+  revalidatePath("/stories/[slug]", "page");
   revalidatePath("/sitemap.xml");
 }

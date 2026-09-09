@@ -22,6 +22,35 @@ const s3 = new S3Client({
   responseChecksumValidation: "WHEN_REQUIRED",
 });
 
+const PRESENTATION_KEY = "site/presentation-v1.json";
+
+export async function readPresentationObject() {
+  try {
+    const result = await s3.send(new GetObjectCommand({ Bucket: R2_BUCKET, Key: PRESENTATION_KEY }));
+    if (!result.Body || !result.ETag) throw new Error("Incomplete presentation object");
+    return { body: await result.Body.transformToString(), etag: result.ETag };
+  } catch (error) {
+    // Only a missing object means first use. Permission/network failures must
+    // fail regeneration so ISR retains the last successfully published edit.
+    if (error instanceof Error && error.name === "NoSuchKey") return null;
+    throw error;
+  }
+}
+
+export async function writePresentationObject(body: string, revision: string | null) {
+  const result = await s3.send(new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: PRESENTATION_KEY,
+    Body: body,
+    ContentType: "application/json",
+    CacheControl: "no-store",
+    // Conditional writes prevent an older admin tab overwriting a newer edit.
+    ...(revision === null ? { IfNoneMatch: "*" } : { IfMatch: revision }),
+  }));
+  if (!result.ETag) throw new Error("Missing presentation revision");
+  return result.ETag;
+}
+
 /** Generate a presigned PUT URL for direct browser upload (30min expiry) */
 export async function createPresignedUpload(
   key: string,

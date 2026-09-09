@@ -2,7 +2,7 @@ import Link from "next/link";
 
 interface HeaderProps {
   variant?: "light" | "dark";
-  active?: "work" | "about";
+  active?: "work" | "about" | "stories";
 }
 
 export default function Header({ variant = "light", active }: HeaderProps) {
@@ -39,6 +39,14 @@ export default function Header({ variant = "light", active }: HeaderProps) {
           >
             Work
             <span className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-brand scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
+          </Link>
+          <Link
+            href="/stories"
+            prefetch={false}
+            aria-current={active === "stories" ? "page" : undefined}
+            className={`text-xs font-semibold no-underline uppercase tracking-[.1em] hover:text-brand max-md:text-[11px] max-md:tracking-[.06em] ${isDark ? "text-white" : "text-[#111]"}`}
+          >
+            Stories
           </Link>
           <Link
             href="/about"

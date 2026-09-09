@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import type { GalleryMediaItem } from "@/db/schema";
 import { getPhotoSource } from "@/lib/gallery-image";
+import { photoCaption, photoAlt } from "@/lib/presentation";
 
 function cleanFileName(name: string | null) {
   if (!name) return "Untitled";
@@ -17,10 +18,14 @@ function cleanFileName(name: string | null) {
 export default function GalleryItem({
   item,
   sizes,
+  preload = false,
+  quality = 85,
   onVideoClick,
 }: {
   item: GalleryMediaItem;
   sizes?: string;
+  preload?: boolean;
+  quality?: number;
   onVideoClick?: (embedUrl: string, blobUrl?: string | null) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -28,7 +33,7 @@ export default function GalleryItem({
   const w = item.width || 1200;
   const h = item.height || 800;
   const label = item.caption || item.altText || cleanFileName(item.fileName);
-  const altLabel = item.altText || item.caption || cleanFileName(item.fileName);
+  const altLabel = item.type === "photo" ? photoAlt(item) : item.altText || item.caption || cleanFileName(item.fileName);
   const hasDirectVideo = !!item.blobUrl;
   const thumbnail = item.videoThumbnailUrl || null;
 
@@ -123,15 +128,20 @@ export default function GalleryItem({
       href={getPhotoSource(item) || "#"}
       data-pswp-width={w}
       data-pswp-height={h}
-      data-pswp-caption={label}
+      data-pswp-caption={photoCaption(item)}
       data-pswp-alt={altLabel}
+      data-pswp-event={item.details?.event}
+      data-pswp-date={item.details?.date}
+      data-pswp-location={item.details?.location}
+      data-pswp-role={item.details?.role}
     >
       {item.blobUrl && (
         <Image
           src={getPhotoSource(item)!}
           alt={altLabel}
           fill
-          quality={85}
+          quality={quality}
+          preload={preload}
           sizes={sizes || "(max-width: 768px) calc(100vw - 32px), 33vw"}
           className="img-fade"
           ref={(el) => { if (el?.complete) el.classList.add("loaded"); }}
@@ -139,7 +149,7 @@ export default function GalleryItem({
           onError={(e) => { e.currentTarget.style.display = "none"; }}
         />
       )}
-      <div className="card-label">{label}</div>
+      <div className="card-label" aria-hidden="true">{label}</div>
     </a>
   );
 }

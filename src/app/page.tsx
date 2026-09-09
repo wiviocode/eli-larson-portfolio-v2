@@ -3,46 +3,12 @@ import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/gallery/HeroSection";
 import JustifiedGrid from "@/components/gallery/JustifiedGrid";
 import AboutSection from "@/components/sections/AboutSection";
-import { db } from "@/db";
-import { mediaItems } from "@/db/schema";
-import { asc, sql } from "drizzle-orm";
-import { getPublicMediaUrl } from "@/lib/media-url";
+import { getPortfolio } from "@/lib/public-media";
 
 export const revalidate = 3600;
 
-async function getData() {
-  const rows = await db
-    .select({
-      id: mediaItems.id,
-      type: mediaItems.type,
-      blobUrl: mediaItems.blobUrl,
-      hqBlobUrl: mediaItems.hqBlobUrl,
-      fileName: mediaItems.fileName,
-      videoEmbedUrl: mediaItems.videoEmbedUrl,
-      videoThumbnailUrl: mediaItems.videoThumbnailUrl,
-      width: mediaItems.width,
-      height: mediaItems.height,
-      altText: mediaItems.altText,
-      caption: mediaItems.caption,
-      dominantColor: mediaItems.dominantColor,
-      isFeatured: mediaItems.isFeatured,
-      isCropped: sql<boolean>`${mediaItems.cropData} IS NOT NULL AND ${mediaItems.cropData} <> ''`,
-    })
-    .from(mediaItems)
-    .orderBy(asc(mediaItems.sortOrder));
-
-  const items = rows.map((item) => ({
-    ...item,
-    blobUrl: getPublicMediaUrl(item.blobUrl),
-    hqBlobUrl: getPublicMediaUrl(item.hqBlobUrl),
-    videoThumbnailUrl: getPublicMediaUrl(item.videoThumbnailUrl),
-  }));
-  const featured = items.find((i) => i.type === "photo" && i.isFeatured) || null;
-  return { items, featured };
-}
-
 export default async function Home() {
-  const { items, featured } = await getData();
+  const { items, featured, editorPhotoIds, stories } = await getPortfolio();
 
   return (
     <>
@@ -55,7 +21,7 @@ export default async function Home() {
           id="work"
         >
           {items.length > 0 ? (
-            <JustifiedGrid items={items} />
+            <JustifiedGrid items={items} editorPhotoIds={editorPhotoIds} hasStories={stories.length > 0} />
           ) : (
             <div className="max-w-[1300px] mx-auto px-10 text-center text-[#999] py-20">
               <p className="text-sm">
