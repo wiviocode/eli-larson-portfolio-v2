@@ -3,6 +3,8 @@ import { sql } from "drizzle-orm";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 
+export const revalidate = 3600;
+
 async function latestMediaUpdate(): Promise<Date> {
   try {
     const [row] = await db

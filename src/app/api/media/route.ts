@@ -6,6 +6,9 @@ import { asc, max } from "drizzle-orm";
 import sharp from "sharp";
 import { fetchBuffer, uploadBuffer, deleteByUrl, publicUrl } from "@/lib/r2";
 import { randomUUID } from "crypto";
+import { photoDominantColor } from "@/lib/photo-processing";
+
+export const maxDuration = 60;
 
 const MAX_DIMENSION = 2400;
 const WEBP_QUALITY = 82;
@@ -38,7 +41,7 @@ async function optimizePhoto(rawObjectKey: string) {
       withoutEnlargement: true,
     });
   }
-  const hqBuffer = await hqPipeline.webp({ quality: HQ_WEBP_QUALITY }).toBuffer();
+  const hqBuffer = await hqPipeline.webp({ quality: HQ_WEBP_QUALITY, smartSubsample: true }).toBuffer();
 
   // Get standard dimensions
   const finalMeta = await sharp(stdBuffer).metadata();
@@ -46,10 +49,7 @@ async function optimizePhoto(rawObjectKey: string) {
   const height = finalMeta.height || origH;
 
   // Dominant color
-  const { dominant } = await sharp(stdBuffer)
-    .resize(64, 64, { fit: "cover" })
-    .stats();
-  const dominantColor = `#${dominant.r.toString(16).padStart(2, "0")}${dominant.g.toString(16).padStart(2, "0")}${dominant.b.toString(16).padStart(2, "0")}`;
+  const dominantColor = await photoDominantColor(stdBuffer);
 
   // Upload both versions to R2
   const id = randomUUID();
@@ -114,8 +114,7 @@ export async function POST(req: NextRequest) {
       finalValues.blobUrl = publicUrl(body.rawObjectKey);
       try {
         const buf = await fetchBuffer(body.rawObjectKey);
-        const { dominant } = await sharp(buf).resize(64, 64, { fit: "cover" }).stats();
-        finalValues.dominantColor = `#${dominant.r.toString(16).padStart(2, "0")}${dominant.g.toString(16).padStart(2, "0")}${dominant.b.toString(16).padStart(2, "0")}`;
+        finalValues.dominantColor = await photoDominantColor(buf);
       } catch { /* ignore */ }
     }
   }

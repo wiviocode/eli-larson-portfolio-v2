@@ -1,16 +1,14 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const alt = "Eli Larson — Sports Photography & Videography Portfolio";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const instrumentSerifData = fetch(
-  new URL("./fonts/InstrumentSerif-Regular.ttf", import.meta.url)
-).then((r) => r.arrayBuffer());
-
 export default async function OGImage() {
-  const instrumentSerif = await instrumentSerifData;
+  const instrumentSerif = await readFile(join(process.cwd(), "src/app/fonts/InstrumentSerif-Regular.ttf"));
 
   return new ImageResponse(
     (
@@ -96,7 +94,7 @@ export default async function OGImage() {
       fonts: [
         {
           name: "Instrument Serif",
-          data: instrumentSerif,
+          data: new Uint8Array(instrumentSerif).buffer,
           style: "normal",
           weight: 400,
         },

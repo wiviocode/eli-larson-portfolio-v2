@@ -11,13 +11,15 @@ export default function CountUp({
   suffix?: string;
   duration?: number;
 }) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(end);
   const ref = useRef<HTMLSpanElement>(null);
   const hasAnimated = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (!("IntersectionObserver" in window)) return;
+    let frame: number | undefined;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -38,10 +40,10 @@ export default function CountUp({
             // ease-out curve
             const eased = 1 - Math.pow(1 - progress, 3);
             setValue(Math.round(eased * end));
-            if (progress < 1) requestAnimationFrame(tick);
+            if (progress < 1) frame = requestAnimationFrame(tick);
           }
 
-          requestAnimationFrame(tick);
+          frame = requestAnimationFrame(tick);
           observer.unobserve(el);
         }
       },
@@ -49,7 +51,10 @@ export default function CountUp({
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (frame !== undefined) cancelAnimationFrame(frame);
+    };
   }, [end, duration]);
 
   const display =

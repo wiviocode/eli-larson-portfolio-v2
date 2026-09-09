@@ -5,6 +5,7 @@ import {
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { LEGACY_MEDIA_ORIGIN } from "./media-url";
 
 const R2_ENDPOINT = process.env.R2_ENDPOINT!;
 const R2_BUCKET = process.env.R2_BUCKET_NAME!;
@@ -49,6 +50,8 @@ export async function uploadBuffer(
       Key: key,
       Body: buffer,
       ContentType: contentType,
+      // Generated media uses a fresh UUID key for every edit.
+      CacheControl: "public, max-age=31536000, immutable",
     })
   );
   return publicUrl(key);
@@ -89,6 +92,10 @@ export function publicUrl(key: string): string {
 
 /** Extract the object key from an R2 public URL. Returns null for non-R2 URLs. */
 export function keyFromUrl(url: string): string | null {
-  if (!url.startsWith(R2_PUBLIC_URL)) return null;
-  return url.slice(R2_PUBLIC_URL.length + 1); // +1 for the /
+  if (!R2_PUBLIC_URL) return null;
+  for (const base of [R2_PUBLIC_URL, LEGACY_MEDIA_ORIGIN]) {
+    const prefix = `${base.replace(/\/$/, "")}/`;
+    if (url.startsWith(prefix)) return url.slice(prefix.length) || null;
+  }
+  return null;
 }

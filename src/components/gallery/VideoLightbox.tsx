@@ -4,27 +4,46 @@ import { useEffect, useCallback, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 
 function getEmbedUrl(url: string): string | null {
-  // YouTube
-  const ytMatch = url.match(
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/
-  );
-  if (ytMatch) {
-    return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=0&playsinline=1&controls=1&showinfo=0`;
-  }
+  try {
+    const parsed = new URL(url);
+    if (!["https:", "http:"].includes(parsed.protocol)) return null;
+    const host = parsed.hostname.replace(/^www\./, "");
+    const parts = parsed.pathname.split("/").filter(Boolean);
 
-  // Vimeo
-  const vimeoMatch = url.match(
-    /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/
-  );
-  if (vimeoMatch) {
-    return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
-  }
+    if (["youtube.com", "m.youtube.com", "youtube-nocookie.com", "youtu.be"].includes(host)) {
+      const id = host === "youtu.be" ? parts[0]
+        : parsed.pathname === "/watch" ? parsed.searchParams.get("v")
+        : ["embed", "shorts", "live"].includes(parts[0]) ? parts[1] : null;
+      if (id && /^[\w-]+$/.test(id)) {
+        return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&playsinline=1&controls=1`;
+      }
+    }
 
+    if (["vimeo.com", "player.vimeo.com"].includes(host)) {
+      const idIndex = parts[0] === "video" ? 1 : 0;
+      const id = parts[idIndex];
+      if (id && /^\d+$/.test(id)) {
+        const embed = new URL(`https://player.vimeo.com/video/${id}`);
+        embed.searchParams.set("autoplay", "1");
+        const hash = parsed.searchParams.get("h") || parts[idIndex + 1];
+        if (hash) embed.searchParams.set("h", hash);
+        return embed.toString();
+      }
+    }
+  } catch {
+    // Invalid links still open a closable fallback dialog below.
+  }
   return null;
 }
 
 function isDirectVideoUrl(url: string): boolean {
-  return /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url);
+  try {
+    const parsed = new URL(url);
+    return ["https:", "http:"].includes(parsed.protocol)
+      && /\.(mp4|webm|mov|ogg)$/i.test(parsed.pathname);
+  } catch {
+    return false;
+  }
 }
 
 export default function VideoLightbox({
@@ -42,11 +61,19 @@ export default function VideoLightbox({
   const [closing, setClosing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   const handleClose = useCallback(() => {
+    if (closeTimerRef.current !== null) return;
     setClosing(true);
-    setTimeout(() => onClose(), 300);
-  }, [onClose]);
+    const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 300;
+    closeTimerRef.current = setTimeout(() => onCloseRef.current(), delay);
+  }, []);
 
   const handleKeydown = useCallback(
     (e: KeyboardEvent) => {
@@ -57,7 +84,7 @@ export default function VideoLightbox({
       // Keep Tab focus inside the dialog
       if (e.key === "Tab" && contentRef.current) {
         const focusables = contentRef.current.querySelectorAll<HTMLElement>(
-          "button, iframe, video, [tabindex]:not([tabindex='-1'])"
+          "button, a[href], iframe, video[controls], [tabindex]:not([tabindex='-1'])"
         );
         if (focusables.length === 0) return;
         const first = focusables[0];
@@ -77,18 +104,20 @@ export default function VideoLightbox({
 
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", handleKeydown);
-    requestAnimationFrame(() => setVisible(true));
+    const frame = requestAnimationFrame(() => setVisible(true));
     closeButtonRef.current?.focus();
     return () => {
-      document.body.style.overflow = "";
+      cancelAnimationFrame(frame);
+      if (closeTimerRef.current !== null) clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+      document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeydown);
       previouslyFocused?.focus();
     };
   }, [handleKeydown]);
-
-  if (!embedUrl && !directUrl) return null;
 
   const lightbox = (
     <div
@@ -108,23 +137,29 @@ export default function VideoLightbox({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button ref={closeButtonRef} onClick={handleClose} className="video-lightbox-close" aria-label="Close video">
+        <button type="button" ref={closeButtonRef} onClick={handleClose} className="video-lightbox-close" aria-label="Close video">
           &times;
         </button>
         {embedUrl ? (
           <iframe
             src={embedUrl}
+            title="Video by Eli Larson"
             className="video-lightbox-player"
             allow="autoplay; fullscreen"
             allowFullScreen
           />
-        ) : (
+        ) : directUrl ? (
           <video
-            src={directUrl!}
+            src={directUrl}
             className="video-lightbox-player"
             controls
             autoPlay
+            playsInline
           />
+        ) : (
+          <div className="video-lightbox-player flex items-center justify-center p-8 text-center text-white" role="status">
+            This video is unavailable. Please close the player and choose another video.
+          </div>
         )}
       </div>
     </div>

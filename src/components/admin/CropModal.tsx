@@ -105,7 +105,6 @@ export default function CropModal({
   // Push history snapshot after a crop/zoom drag ends (not on every micro-movement)
   const onInteractionEnd = useCallback(() => {
     pushHistory({ crop, zoom, rotation, aspect });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [crop, zoom, rotation, aspect]);
 
   function handleAspectChange(value: number) {

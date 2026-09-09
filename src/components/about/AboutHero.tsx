@@ -1,29 +1,18 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Image from "next/image";
 
-const STORAGE_KEY = "about-hero-index";
-
 export default function AboutHero({ images }: { images: string[] }) {
-  const [imageIndex, setImageIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (images.length === 0) return;
-    const stored = sessionStorage.getItem(STORAGE_KEY);
-    const idx = stored !== null ? (parseInt(stored, 10) + 1) % images.length : 0;
-    sessionStorage.setItem(STORAGE_KEY, String(idx));
-    setImageIndex(idx);
-  }, [images]);
+  // A stable server-rendered hero lets the browser discover its image and
+  // preload immediately, without a second download after hydration.
+  const heroImage = images[0];
 
   return (
     <section className="relative w-full h-[70vh] max-md:h-[50vh] overflow-hidden bg-[#111]">
-      {imageIndex !== null && images.length > 0 && (
+      {heroImage && (
         <Image
-          src={images[imageIndex]}
+          src={heroImage}
           alt="Sports photography by Eli Larson"
           fill
-          priority
+          preload
           sizes="100vw"
           quality={90}
           className="object-cover object-top"

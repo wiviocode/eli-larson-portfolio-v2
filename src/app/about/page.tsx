@@ -5,6 +5,7 @@ import AboutContent from "@/components/about/AboutContent";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq, and, sql, asc } from "drizzle-orm";
+import { getPublicMediaUrl } from "@/lib/media-url";
 
 export const revalidate = 3600;
 
@@ -34,22 +35,29 @@ export const metadata: Metadata = {
 };
 
 async function getHeroImages() {
-  try {
-    const photos = await db
-      .select({ blobUrl: mediaItems.blobUrl })
-      .from(mediaItems)
-      .where(
-        and(
-          eq(mediaItems.type, "photo"),
-          sql`${mediaItems.width} > ${mediaItems.height}`
-        )
+  // Let regeneration fail on a database outage so ISR retains the last good
+  // page instead of caching an empty hero for another hour.
+  const photos = await db
+    .select({
+      blobUrl: mediaItems.blobUrl,
+      hqBlobUrl: mediaItems.hqBlobUrl,
+      cropData: mediaItems.cropData,
+    })
+    .from(mediaItems)
+    .where(
+      and(
+        eq(mediaItems.type, "photo"),
+        sql`${mediaItems.width} > ${mediaItems.height}`
       )
-      .orderBy(asc(mediaItems.id));
+    )
+    .orderBy(asc(mediaItems.id));
 
-    return photos.map((p) => p.blobUrl).filter(Boolean) as string[];
-  } catch {
-    return [];
-  }
+  // The HQ source is uncropped, so keep the saved gallery derivative whenever
+  // the photographer has chosen a crop.
+  return photos
+    .map((photo) => photo.cropData ? photo.blobUrl : photo.hqBlobUrl || photo.blobUrl)
+    .map((url) => getPublicMediaUrl(url))
+    .filter((url): url is string => Boolean(url));
 }
 
 export default async function AboutPage() {

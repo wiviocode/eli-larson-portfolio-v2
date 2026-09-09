@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import type { GalleryMediaItem } from "@/db/schema";
+import { getPhotoSource } from "@/lib/gallery-image";
 
 function cleanFileName(name: string | null) {
   if (!name) return "Untitled";
@@ -23,14 +24,45 @@ export default function GalleryItem({
   onVideoClick?: (embedUrl: string, blobUrl?: string | null) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const playPromise = useRef<Promise<void> | null>(null);
 
   const w = item.width || 1200;
   const h = item.height || 800;
   const label = item.caption || item.altText || cleanFileName(item.fileName);
-  const altLabel = item.altText || cleanFileName(item.fileName);
+  const altLabel = item.altText || item.caption || cleanFileName(item.fileName);
   const hasDirectVideo = !!item.blobUrl;
   const thumbnail = item.videoThumbnailUrl || null;
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || thumbnail || !item.blobUrl) return;
+
+    // Clips without a poster need metadata for a first-frame preview, but only
+    // when their card is approaching the viewport.
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        if (!video.getAttribute("src")) video.src = item.blobUrl!;
+        observer.disconnect();
+      }
+    }, { rootMargin: "200px" });
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [item.blobUrl, thumbnail]);
+
+  function startPreview() {
+    const video = videoRef.current;
+    if (!video || !item.blobUrl || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!video.getAttribute("src")) video.src = item.blobUrl;
+    // Attach the rejection handler immediately: autoplay can be denied, or a
+    // quick pointer exit can interrupt a pending play request.
+    void video.play().catch(() => {});
+  }
+
+  function stopPreview() {
+    const video = videoRef.current;
+    if (!video) return;
+    video.pause();
+    if (video.readyState > 0) video.currentTime = 0;
+  }
 
   if (item.type === "video") {
     return (
@@ -39,48 +71,39 @@ export default function GalleryItem({
         aria-label={`Play video: ${label}`}
         className="p-card group text-left border-none"
         style={{ width: "100%", height: "100%", background: "#000" }}
-        onClick={() => onVideoClick?.(item.videoEmbedUrl || "", item.blobUrl)}
-        onMouseEnter={() => {
-          if (videoRef.current && hasDirectVideo) {
-            playPromise.current = videoRef.current.play();
-          }
+        onClick={() => {
+          stopPreview();
+          onVideoClick?.(item.videoEmbedUrl || "", item.blobUrl);
         }}
-        onMouseLeave={() => {
-          if (videoRef.current && hasDirectVideo) {
-            const p = playPromise.current;
-            if (p) {
-              p.then(() => {
-                videoRef.current?.pause();
-                if (videoRef.current) videoRef.current.currentTime = 0;
-              }).catch(() => {});
-              playPromise.current = null;
-            } else {
-              videoRef.current.pause();
-              videoRef.current.currentTime = 0;
-            }
-          }
-        }}
+        onPointerEnter={(event) => { if (event.pointerType === "mouse") startPreview(); }}
+        onPointerLeave={stopPreview}
+        onFocus={startPreview}
+        onBlur={stopPreview}
       >
         {hasDirectVideo ? (
           <video
             ref={videoRef}
-            src={item.blobUrl || undefined}
             muted
             playsInline
             loop
             preload="metadata"
             className="w-full h-full block object-contain"
             poster={thumbnail || undefined}
+            aria-hidden="true"
           />
-        ) : (
+        ) : thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={thumbnail || ""}
+            src={thumbnail}
             alt={altLabel}
             loading="lazy"
             decoding="async"
             className="w-full h-full block object-contain"
           />
+        ) : (
+          <div className="w-full h-full flex items-end justify-center p-6 pb-12 text-xs text-white/70" aria-hidden="true">
+            {label}
+          </div>
         )}
         <div className="video-badge">Video</div>
         <div className="video-play-btn" aria-hidden="true">
@@ -97,16 +120,18 @@ export default function GalleryItem({
     <a
       className="p-card group"
       style={{ width: "100%", height: "100%", background: item.dominantColor || "#e8e8e8" }}
-      href={item.blobUrl || "#"}
+      href={getPhotoSource(item) || "#"}
       data-pswp-width={w}
       data-pswp-height={h}
       data-pswp-caption={label}
+      data-pswp-alt={altLabel}
     >
       {item.blobUrl && (
         <Image
-          src={item.blobUrl}
+          src={getPhotoSource(item)!}
           alt={altLabel}
           fill
+          quality={85}
           sizes={sizes || "(max-width: 768px) calc(100vw - 32px), 33vw"}
           className="img-fade"
           ref={(el) => { if (el?.complete) el.classList.add("loaded"); }}

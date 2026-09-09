@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { MediaItem } from "@/db/schema";
 import UploadDropzone from "@/components/admin/UploadDropzone";
 import AdminMediaGrid from "@/components/admin/AdminMediaGrid";
@@ -10,6 +11,7 @@ import GenerateCaptionModal from "@/components/admin/GenerateCaptionModal";
 import CropModal from "@/components/admin/CropModal";
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const [items, setItems] = useState<MediaItem[]>([]);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [captionItemId, setCaptionItemId] = useState<number | null>(null);
@@ -55,8 +57,14 @@ export default function AdminDashboard() {
   }
 
   async function handleLogout() {
-    document.cookie = "auth-token=; path=/; max-age=0";
-    window.location.href = "/admin/login";
+    try {
+      const response = await fetch("/api/auth", { method: "DELETE" });
+      if (!response.ok) throw new Error("Logout failed");
+      router.replace("/admin/login");
+      router.refresh();
+    } catch {
+      alert("Unable to log out. Please try again.");
+    }
   }
 
   async function handleDelete(id: number) {

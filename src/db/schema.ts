@@ -47,4 +47,4 @@ export type GalleryMediaItem = Pick<
   | "caption"
   | "dominantColor"
   | "isFeatured"
->;
+> & { isCropped?: boolean };

@@ -234,6 +234,9 @@ main {
   height: 100%;
   object-fit: cover;
 }
+button.p-card img {
+  object-fit: contain;
+}
 .p-card:focus-visible {
   outline: 3px solid var(--color-brand);
   outline-offset: 4px;
@@ -260,7 +263,8 @@ main {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.p-card:hover .card-label {
+.p-card:hover .card-label,
+.p-card:focus-visible .card-label {
   opacity: 1;
   transform: translateY(0);
 }
@@ -297,6 +301,24 @@ main {
 
 /* ====== MOBILE ====== */
 @media (max-width: 768px) {
+  .gallery-header {
+    gap: 8px;
+  }
+  .gallery-label {
+    white-space: nowrap;
+  }
+  .gallery-label::before {
+    width: 20px;
+    margin-right: 8px;
+  }
+  .filter-bar {
+    margin-left: auto;
+  }
+  .filter-tab {
+    min-height: 32px;
+    padding: 4px 10px;
+    letter-spacing: 0.1em;
+  }
   .justified-grid {
     padding: 0 16px;
     gap: 8px;
@@ -355,7 +377,8 @@ main {
 
 /* ====== IMAGE FADE-IN ====== */
 .img-fade {
-  opacity: 0;
+  /* The photography must remain visible before hydration and without JS. */
+  opacity: 1;
   transition: opacity 0.4s ease-out;
 }
 .img-fade.loaded {
@@ -375,7 +398,7 @@ main {
 }
 .video-lightbox-content {
   position: relative;
-  width: 50vw;
+  width: min(50vw, calc((100dvh - 100px) * 1.25));
   aspect-ratio: 5 / 4;
   transition: opacity 0.35s ease-out, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -411,7 +434,7 @@ main {
 
 @media (max-width: 768px) {
   .video-lightbox-content {
-    width: 92vw;
+    width: min(92vw, calc((100dvh - 100px) * 1.25));
   }
   .video-lightbox-close {
     top: -36px;

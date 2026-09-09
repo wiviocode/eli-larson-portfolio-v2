@@ -31,6 +31,7 @@ export async function getSession() {
   return verifyToken(token);
 }
 
-export function checkPassword(password: string) {
-  return password === process.env.ADMIN_PASSWORD;
+export function checkPassword(password: unknown) {
+  const configured = process.env.ADMIN_PASSWORD;
+  return typeof password === "string" && !!configured && password === configured;
 }

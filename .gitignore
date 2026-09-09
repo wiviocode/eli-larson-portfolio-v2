@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/.audit-preview/
+/audit-results/
 
 # next.js
 /.next/

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import type { GalleryMediaItem } from "@/db/schema";
+import { getPhotoSource } from "@/lib/gallery-image";
 
 export default function HeroSection({
   featuredImage,
@@ -32,13 +33,13 @@ export default function HeroSection({
         {showImage && (
           <div className="hero-img-wrapper relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.12)] rounded-[3px] transition-all duration-400 cursor-default">
             <Image
-              src={featuredImage.hqBlobUrl || featuredImage.blobUrl!}
+              src={getPhotoSource(featuredImage)!}
               alt={featuredImage.altText || "Featured sports photograph by Eli Larson"}
               width={featuredImage.width || 800}
               height={featuredImage.height || 533}
-              priority
+              preload
               quality={95}
-              sizes="(max-width: 768px) 100vw, (max-width: 1300px) 50vw, 610px"
+              sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) calc((100vw - 72px) / 2), (max-width: 1300px) calc((100vw - 120px) / 2), 590px"
               className="w-full h-auto block"
               onError={() => setImgError(true)}
             />
@@ -47,7 +48,7 @@ export default function HeroSection({
         {!showImage && (
           <div className="hero-img-wrapper relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.12)] rounded-[3px] transition-all duration-400 cursor-default">
             <div className="bg-[#ddd] w-full aspect-[3/2] flex items-center justify-center text-[#999] text-sm">
-              Upload a featured photo in the admin panel
+              Sports photography by Eli Larson
             </div>
           </div>
         )}

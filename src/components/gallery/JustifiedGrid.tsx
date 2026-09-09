@@ -210,7 +210,7 @@ export default function JustifiedGrid({ items }: { items: GalleryMediaItem[] }) 
                     >
                       <GalleryItem
                         item={li.item}
-                        sizes={`(max-width: 768px) calc(100vw - 32px), ${Math.round(
+                        sizes={`auto, (max-width: 768px) 100vw, ${Math.round(
                           frac * (contentWidth - gapTotal)
                         )}px`}
                         onVideoClick={handleVideoClick}
