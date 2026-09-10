@@ -1,36 +1,17 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import type { GalleryMediaItem } from "@/db/schema";
 import PhotoSwipeGallery from "./PhotoSwipeGallery";
 import VideoLightbox from "./VideoLightbox";
 import GalleryItem from "./GalleryItem";
 import { resolvePhotos } from "@/lib/presentation";
-import Link from "next/link";
-
-// --- Hooks ---
-
-function useContainerWidth(ref: React.RefObject<HTMLDivElement | null>) {
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setWidth(entry.contentBoxSize[0].inlineSize);
-      }
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [ref]);
-
-  return width;
-}
+import WorkNavigation from "./WorkNavigation";
 
 // Content width the server-rendered layout assumes: 1300px max-width minus
 // 2x40px padding. Rows are emitted with relative (calc %) geometry, so the
-// markup stays correct at any real width; measurement only re-groups rows.
+// markup scales at any real width. Keep row membership stable across hydration
+// and navigation; CSS stacks the same photographs on mobile.
 const ASSUMED_CONTENT_WIDTH = 1220;
 
 // --- Justified layout algorithm ---
@@ -90,20 +71,16 @@ function computeRows(
 
 // --- Component ---
 
-export default function JustifiedGrid({ items, editorPhotoIds = [], hasStories = false, mediaType = "photo" }: { items: GalleryMediaItem[]; editorPhotoIds?: number[]; hasStories?: boolean; mediaType?: "photo" | "video" }) {
+export default function JustifiedGrid({ items, editorPhotoIds = [], mediaType = "photo" }: { items: GalleryMediaItem[]; editorPhotoIds?: number[]; mediaType?: "photo" | "video" }) {
   const [videoState, setVideoState] = useState<{
     embedUrl: string;
     blobUrl?: string | null;
   } | null>(null);
   const [selection, setSelection] = useState(true);
   const editorItems = useMemo(() => resolvePhotos(items, editorPhotoIds), [items, editorPhotoIds]);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const containerWidth = useContainerWidth(containerRef);
-
-  const contentWidth = containerWidth || ASSUMED_CONTENT_WIDTH;
-  const isCompact = contentWidth < 976;
-  const targetHeight = isCompact ? 280 : 420;
-  const gap = isCompact ? 8 : 10;
+  const contentWidth = ASSUMED_CONTENT_WIDTH;
+  const targetHeight = 420;
+  const gap = 10;
 
   const filteredItems = useMemo(() => {
     return mediaType === "photo" && selection && editorItems.length ? editorItems : items.filter((i) => i.type === mediaType);
@@ -124,27 +101,18 @@ export default function JustifiedGrid({ items, editorPhotoIds = [], hasStories =
     <>
       {mediaType === "photo" && <PhotoSwipeGallery galleryId="pswp-gallery" />}
 
-      {/* Gallery header - uses original 1300px width */}
-      {mediaType === "photo" && <div className="gallery-header max-w-[1300px] mx-auto px-10 pb-5 max-lg:px-6 max-md:px-4">
-        <h2 className="gallery-label">Photography</h2>
-      </div>}
-
-      <div className="gallery-view-controls">
+      <WorkNavigation active={mediaType}>
         {mediaType === "photo" && editorItems.length > 0 && (
-          <div className="gallery-view-options" role="group" aria-label="Photograph selection">
-            <button type="button" aria-pressed={selection} onClick={() => setSelection(true)}>Editor’s Selection <span>{editorItems.length}</span></button>
-            <button type="button" aria-pressed={!selection} onClick={() => setSelection(false)}>All photographs <span>{items.filter(item => item.type === "photo").length}</span></button>
-          </div>
+          <select className="photo-selection" aria-label="Photograph selection" value={selection ? "selected" : "all"} onChange={event => setSelection(event.target.value === "selected")}>
+            <option value="selected">Selected</option>
+            <option value="all">All photos</option>
+          </select>
         )}
-        {hasStories && <Link href="/stories" prefetch={false} className="text-link">Explore photo stories <span aria-hidden="true">↗</span></Link>}
-        <p className="gallery-view-description" aria-live="polite">
-          {mediaType === "video" ? `${filteredItems.length} films. Select a film to watch.` : selection && editorItems.length ? `${editorItems.length} photographs. An edit across sport, atmosphere and emotion.` : `${filteredItems.length} photographs. Explore the full body of work.`}
-        </p>
-      </div>
+      </WorkNavigation>
+      <p className="sr-only" role="status">{filteredItems.length} {mediaType === "video" ? "videos" : selection && editorItems.length ? "photographs in Editor’s Selection" : "photographs"}.</p>
 
       <div
         className="justified-grid"
-        ref={containerRef}
       >
 
         <div id={mediaType === "photo" ? "pswp-gallery" : "video-gallery"} className="justified-rows">

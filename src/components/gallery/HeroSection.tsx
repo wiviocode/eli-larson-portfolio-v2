@@ -14,7 +14,7 @@ export default function HeroSection({
   const showImage = featuredImage?.blobUrl && !imgError;
 
   return (
-    <section className="pt-20 max-md:pt-[104px]">
+    <section className="pt-20 max-md:pt-16">
       <div className="max-w-[1300px] mx-auto px-10 pt-20 pb-10 grid grid-cols-2 gap-10 items-center max-lg:px-6 max-lg:pt-15 max-lg:pb-8 max-lg:gap-6 max-md:grid-cols-1 max-md:px-4 max-md:pt-10 max-md:pb-6 max-md:gap-5">
         <div>
           <h1

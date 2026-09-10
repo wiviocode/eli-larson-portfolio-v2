@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import GalleryItem from "@/components/gallery/GalleryItem";
 import PhotoSwipeGallery from "@/components/gallery/PhotoSwipeGallery";
 import { getPublicMedia } from "@/lib/public-media";
+import WorkNavigation from "@/components/gallery/WorkNavigation";
 
 export const revalidate = 3600;
 export const metadata: Metadata = {
@@ -18,11 +19,8 @@ export default async function GraphicsPage() {
   return <>
     <Header active="graphics" />
     <main id="main" className="work-page">
-      <div className="work-page-intro">
-        <p className="gallery-label">Design & visual work</p>
-        <h1>Graphics<span>.</span></h1>
-        <p>{graphics.length ? "Select a design to explore it at full size." : "A new space for my design work."}</p>
-      </div>
+      <h1 className="sr-only">Graphics</h1>
+      <WorkNavigation active="graphic" />
       {graphics.length ? <>
         <PhotoSwipeGallery galleryId="graphics-gallery" label="Graphic design" kind="graphic" />
         <div id="graphics-gallery" className="graphics-gallery">
@@ -33,7 +31,7 @@ export default async function GraphicsPage() {
             {(item.altText || item.caption) && <figcaption>{item.altText && <h2>{item.altText}</h2>}{item.caption && item.caption !== item.altText && <p>{item.caption}</p>}</figcaption>}
           </figure>)}
         </div>
-      </> : <div className="work-empty"><p>Graphics will appear here soon.</p><Link href="/#work" className="text-link">Explore the photographs →</Link><Link href="/videos" className="text-link">Watch the films →</Link></div>}
+      </> : <div className="work-empty"><p>Graphics coming soon.</p><Link href="/#work" className="text-link">View photographs →</Link></div>}
     </main>
     <Footer />
   </>;

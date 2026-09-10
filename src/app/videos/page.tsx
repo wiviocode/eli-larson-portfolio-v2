@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import JustifiedGrid from "@/components/gallery/JustifiedGrid";
 import { getPublicMedia } from "@/lib/public-media";
+import WorkNavigation from "@/components/gallery/WorkNavigation";
 
 export const revalidate = 3600;
 export const metadata: Metadata = {
@@ -17,12 +18,8 @@ export default async function VideosPage() {
   return <>
     <Header active="videos" />
     <main id="main" className="work-page">
-      <div className="work-page-intro">
-        <p className="gallery-label">Work in motion</p>
-        <h1>Videos<span>.</span></h1>
-        <p>The atmosphere, the action, and the moments in between.</p>
-      </div>
-      {videos.length ? <JustifiedGrid items={videos} mediaType="video" /> : <div className="work-empty"><p>New films are on the way.</p><Link href="/#work" className="text-link">Explore the photographs →</Link></div>}
+      <h1 className="sr-only">Videos</h1>
+      {videos.length ? <JustifiedGrid items={videos} mediaType="video" /> : <><WorkNavigation active="video" /><div className="work-empty"><p>New films are on the way.</p><Link href="/#work" className="text-link">Explore the photographs →</Link></div></>}
     </main>
     <Footer />
   </>;
