@@ -88,41 +88,15 @@ function computeRows(
   return rows;
 }
 
-// --- Filter types ---
-
-type FilterType = "photo" | "video";
-
-const FILTERS: { label: string; value: FilterType }[] = [
-  { label: "Images", value: "photo" },
-  { label: "Videos", value: "video" },
-];
-
 // --- Component ---
 
-export default function JustifiedGrid({ items, editorPhotoIds = [], hasStories = false }: { items: GalleryMediaItem[]; editorPhotoIds?: number[]; hasStories?: boolean }) {
+export default function JustifiedGrid({ items, editorPhotoIds = [], hasStories = false, mediaType = "photo" }: { items: GalleryMediaItem[]; editorPhotoIds?: number[]; hasStories?: boolean; mediaType?: "photo" | "video" }) {
   const [videoState, setVideoState] = useState<{
     embedUrl: string;
     blobUrl?: string | null;
   } | null>(null);
-  const [filter, setFilter] = useState<FilterType>("photo");
-  const [selection, setSelection] = useState(false);
+  const [selection, setSelection] = useState(true);
   const editorItems = useMemo(() => resolvePhotos(items, editorPhotoIds), [items, editorPhotoIds]);
-  const [fadeIn, setFadeIn] = useState(true);
-  const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-  function handleFilterChange(value: FilterType) {
-    if (value === filter) return;
-    clearTimeout(fadeTimerRef.current);
-    setFadeIn(false);
-    fadeTimerRef.current = setTimeout(() => {
-      setFilter(value);
-      setFadeIn(true);
-    }, 250);
-  }
-
-  useEffect(() => {
-    return () => clearTimeout(fadeTimerRef.current);
-  }, []);
   const containerRef = useRef<HTMLDivElement>(null);
   const containerWidth = useContainerWidth(containerRef);
 
@@ -131,11 +105,9 @@ export default function JustifiedGrid({ items, editorPhotoIds = [], hasStories =
   const targetHeight = isCompact ? 280 : 420;
   const gap = isCompact ? 8 : 10;
 
-  const hasVideos = useMemo(() => items.some((i) => i.type === "video"), [items]);
-
   const filteredItems = useMemo(() => {
-    return filter === "photo" && selection && editorItems.length ? editorItems : items.filter((i) => i.type === filter);
-  }, [items, filter, selection, editorItems]);
+    return mediaType === "photo" && selection && editorItems.length ? editorItems : items.filter((i) => i.type === mediaType);
+  }, [items, mediaType, selection, editorItems]);
 
   const rows = useMemo(() => {
     return computeRows(filteredItems, contentWidth, targetHeight, gap);
@@ -150,56 +122,32 @@ export default function JustifiedGrid({ items, editorPhotoIds = [], hasStories =
 
   return (
     <>
-      <PhotoSwipeGallery galleryId="pswp-gallery" />
+      {mediaType === "photo" && <PhotoSwipeGallery galleryId="pswp-gallery" />}
 
       {/* Gallery header - uses original 1300px width */}
-      <div className="gallery-header max-w-[1300px] mx-auto px-10 pb-5 max-lg:px-6 max-md:px-4">
-        <h2 className="gallery-label">Selected Work</h2>
-        {hasVideos && (
-          <nav className="filter-bar" aria-label="Filter media">
-            <div
-              className="filter-bar-slider"
-              style={{
-                width: `calc(${100 / FILTERS.length}% - 2px)`,
-                transform: `translateX(${FILTERS.findIndex((f) => f.value === filter) * 100}%)`,
-              }}
-            />
-            {FILTERS.map((f) => (
-              <button
-                key={f.value}
-                type="button"
-                aria-pressed={filter === f.value}
-                className={`filter-tab${filter === f.value ? " active" : ""}`}
-                style={{ width: `${100 / FILTERS.length}%` }}
-                onClick={() => handleFilterChange(f.value)}
-              >
-                {f.label}
-              </button>
-            ))}
-          </nav>
-        )}
-      </div>
+      {mediaType === "photo" && <div className="gallery-header max-w-[1300px] mx-auto px-10 pb-5 max-lg:px-6 max-md:px-4">
+        <h2 className="gallery-label">Photography</h2>
+      </div>}
 
       <div className="gallery-view-controls">
-        {filter === "photo" && editorItems.length > 0 && (
+        {mediaType === "photo" && editorItems.length > 0 && (
           <div className="gallery-view-options" role="group" aria-label="Photograph selection">
-            <button type="button" aria-pressed={!selection} onClick={() => setSelection(false)}>All photographs</button>
             <button type="button" aria-pressed={selection} onClick={() => setSelection(true)}>Editor’s Selection <span>{editorItems.length}</span></button>
+            <button type="button" aria-pressed={!selection} onClick={() => setSelection(false)}>All photographs <span>{items.filter(item => item.type === "photo").length}</span></button>
           </div>
         )}
         {hasStories && <Link href="/stories" prefetch={false} className="text-link">Explore photo stories <span aria-hidden="true">↗</span></Link>}
         <p className="gallery-view-description" aria-live="polite">
-          {filter === "video" ? `${filteredItems.length} films. Select a film to watch.` : selection && editorItems.length ? `${editorItems.length} photographs. A shorter edit across sport, atmosphere and emotion.` : `${filteredItems.length} photographs. Explore the full body of work.`}
+          {mediaType === "video" ? `${filteredItems.length} films. Select a film to watch.` : selection && editorItems.length ? `${editorItems.length} photographs. An edit across sport, atmosphere and emotion.` : `${filteredItems.length} photographs. Explore the full body of work.`}
         </p>
       </div>
 
       <div
         className="justified-grid"
         ref={containerRef}
-        style={{ opacity: fadeIn ? 1 : 0.5, transition: "opacity 0.35s ease-in-out" }}
       >
 
-        <div id="pswp-gallery" className="justified-rows">
+        <div id={mediaType === "photo" ? "pswp-gallery" : "video-gallery"} className="justified-rows">
           {rows.map((row, rowIndex) => {
             const gapTotal = (row.items.length - 1) * gap;
             const arSum = row.items.reduce((s, li) => s + li.aspectRatio, 0);

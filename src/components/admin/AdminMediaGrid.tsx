@@ -17,7 +17,7 @@ import SortableMediaCard from "./SortableMediaCard";
 
 export default function AdminMediaGrid({
   items,
-  setItems,
+  onReorder,
   selected,
   onToggleSelect,
   onDelete,
@@ -27,9 +27,10 @@ export default function AdminMediaGrid({
   onUpdateAltText,
   onGenerateCaption,
   onCrop,
+  onChangeType,
 }: {
   items: MediaItem[];
-  setItems: React.Dispatch<React.SetStateAction<MediaItem[]>>;
+  onReorder: (items: MediaItem[]) => Promise<void>;
   selected: Set<number>;
   onToggleSelect: (id: number) => void;
   onDelete: (id: number) => void;
@@ -39,6 +40,7 @@ export default function AdminMediaGrid({
   onUpdateAltText: (id: number, altText: string) => void;
   onGenerateCaption: (id: number) => void;
   onCrop: (id: number) => void;
+  onChangeType: (id: number, type: "photo" | "graphic") => Promise<void>;
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -55,24 +57,13 @@ export default function AdminMediaGrid({
     const reordered = [...items];
     const [moved] = reordered.splice(oldIndex, 1);
     reordered.splice(newIndex, 0, moved);
-    setItems(reordered);
-
-    const updates = reordered.map((item, idx) => ({
-      id: item.id,
-      sortOrder: idx,
-    }));
-
-    await fetch("/api/media/reorder", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updates),
-    });
+    await onReorder(reordered);
   }
 
   if (items.length === 0) {
     return (
       <div className="text-center py-20 text-[#999] text-sm">
-        No media items yet. Upload some photos or add a video.
+        No items in this view yet. Add work using the controls above.
       </div>
     );
   }
@@ -103,6 +94,7 @@ export default function AdminMediaGrid({
               onUpdateAltText={onUpdateAltText}
               onGenerateCaption={onGenerateCaption}
               onCrop={onCrop}
+              onChangeType={onChangeType}
             />
           ))}
         </div>

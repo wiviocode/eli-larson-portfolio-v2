@@ -18,22 +18,32 @@ function getImageDimensions(
 
 export default function UploadDropzone({
   onUploadComplete,
+  mediaType = "photo",
+  onBusyChange,
 }: {
   onUploadComplete: () => void;
+  mediaType?: "photo" | "graphic";
+  onBusyChange?: (busy: boolean) => void;
 }) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const inputRef = useRef<HTMLInputElement>(null);
+  const busy = useRef(false);
+  const [errors, setErrors] = useState<string[]>([]);
 
   const upload = useCallback(
     async (files: FileList | File[]) => {
+      if (busy.current) return;
       const fileArr = Array.from(files).filter((f) =>
         f.type.startsWith("image/")
       );
-      if (fileArr.length === 0) return;
+      if (fileArr.length === 0) { setErrors(["Choose image files to upload."]); return; }
 
+      busy.current = true;
       setUploading(true);
+      onBusyChange?.(true);
+      setErrors([]);
       setProgress({ done: 0, total: fileArr.length });
 
       for (const file of fileArr) {
@@ -70,11 +80,11 @@ export default function UploadDropzone({
           }
 
           // 3. Create media item with the R2 object key
-          await fetch("/api/media", {
+          const created = await fetch("/api/media", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              type: "photo",
+              type: mediaType,
               rawObjectKey: objectKey,
               fileName: file.name,
               width: dims.width,
@@ -83,20 +93,33 @@ export default function UploadDropzone({
             }),
           });
 
+          if (!created.ok) {
+            const result = await created.json();
+            throw new Error(result.error || "Unable to add this image to the library.");
+          }
+
           setProgress((prev) => ({ ...prev, done: prev.done + 1 }));
         } catch (err) {
-          console.error("Upload failed:", err);
+          setErrors(previous => [...previous, `${file.name}: ${err instanceof Error ? err.message : "Upload failed. Please try again."}`]);
         }
       }
 
       setUploading(false);
+      busy.current = false;
+      onBusyChange?.(false);
+      if (inputRef.current) inputRef.current.value = "";
       onUploadComplete();
     },
-    [onUploadComplete]
+    [onUploadComplete, mediaType, onBusyChange]
   );
 
   return (
+    <>
     <div
+      role="button"
+      tabIndex={uploading ? -1 : 0}
+      aria-label={mediaType === "graphic" ? "Upload graphics" : "Upload photographs"}
+      aria-disabled={uploading}
       className={`border-2 border-dashed rounded-lg p-8 mb-8 text-center transition-colors cursor-pointer ${
         dragging
           ? "border-brand bg-brand/5"
@@ -112,13 +135,15 @@ export default function UploadDropzone({
         setDragging(false);
         upload(e.dataTransfer.files);
       }}
-      onClick={() => inputRef.current?.click()}
+      onClick={(event) => { if (event.target !== inputRef.current && !busy.current) inputRef.current?.click(); }}
+      onKeyDown={(event) => { if ((event.key === "Enter" || event.key === " ") && !busy.current) { event.preventDefault(); inputRef.current?.click(); } }}
     >
       <input
         ref={inputRef}
         type="file"
         multiple
-        accept="image/*"
+        accept={mediaType === "graphic" ? "image/png,image/jpeg,image/webp,image/avif" : "image/jpeg,image/png,image/webp,image/gif,image/avif"}
+        disabled={uploading}
         className="hidden"
         onChange={(e) => e.target.files && upload(e.target.files)}
       />
@@ -138,14 +163,16 @@ export default function UploadDropzone({
         </div>
       ) : (
         <>
-          <div className="text-[10px] font-bold uppercase tracking-[.15em] text-[#999] mb-1">
-            Drop photos here
+          <div className="text-[11px] font-bold uppercase tracking-[.15em] text-[#666] mb-1">
+            {mediaType === "graphic" ? "Drop graphics here" : "Drop photos here"}
           </div>
-          <div className="text-[10px] text-[#ccc]">
-            or click to browse
+          <div className="text-xs text-[#666]">
+            {mediaType === "graphic" ? "PNG, JPEG, WebP or AVIF · original export preserved · click to browse" : "or click to browse"}
           </div>
         </>
       )}
     </div>
+    {errors.length > 0 && <div role="alert" className="mb-6 text-sm text-brand"><p>Some files could not be uploaded:</p><ul className="list-disc pl-5">{errors.map((error, index) => <li key={index}>{error}</li>)}</ul></div>}
+    </>
   );
 }

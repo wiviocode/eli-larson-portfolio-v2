@@ -7,6 +7,8 @@ import sharp from "sharp";
 import { fetchBuffer, uploadBuffer, deleteByUrl, publicUrl } from "@/lib/r2";
 import { randomUUID } from "crypto";
 import { photoDominantColor } from "@/lib/photo-processing";
+import { prepareGraphic } from "@/lib/graphic-processing";
+import { isMediaType } from "@/lib/media-library";
 
 export const maxDuration = 60;
 
@@ -80,12 +82,18 @@ export async function GET() {
       .orderBy(asc(mediaItems.sortOrder));
     return NextResponse.json(items);
   } catch {
-    return NextResponse.json([]);
+    return NextResponse.json({ error: "Unable to load media." }, { status: 503 });
   }
 }
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+  if (!isMediaType(body.type)) {
+    return NextResponse.json({ error: "Choose Photos, Videos or Graphics." }, { status: 400 });
+  }
+  if (body.type === "graphic" && (typeof body.rawObjectKey !== "string" || !/^uploads\/[a-f0-9-]+\.[a-z0-9]+$/.test(body.rawObjectKey))) {
+    return NextResponse.json({ error: "Upload a graphic before adding it to the library." }, { status: 400 });
+  }
 
   const [result] = await db
     .select({ maxOrder: max(mediaItems.sortOrder) })
@@ -96,6 +104,25 @@ export async function POST(req: NextRequest) {
 
   // Remove rawObjectKey from the DB values — it's only used for processing
   delete finalValues.rawObjectKey;
+
+  if (body.type === "graphic") {
+    try {
+      const source = await fetchBuffer(body.rawObjectKey);
+      const { preview, width, height, extension, contentType } = await prepareGraphic(source);
+      const graphicId = randomUUID();
+      const blobUrl = await uploadBuffer(`graphics/${graphicId}.webp`, preview, "image/webp");
+      const hqBlobUrl = await uploadBuffer(`graphics/${graphicId}-original.${extension}`, source, contentType);
+      finalValues = {
+        ...finalValues, blobUrl, width, height,
+        // Preserve the original export, its transparency and native resolution.
+        hqBlobUrl,
+        dominantColor: "#f0f0f0", isFeatured: false,
+      };
+    } catch (error) {
+      console.error("Graphic processing failed:", error);
+      return NextResponse.json({ error: "Unable to process this graphic. Use a still PNG, JPEG, WebP or AVIF and try again." }, { status: 422 });
+    }
+  }
 
   if (body.type === "photo" && body.rawObjectKey) {
     try {
@@ -123,6 +150,10 @@ export async function POST(req: NextRequest) {
     .insert(mediaItems)
     .values(finalValues)
     .returning();
+
+  // Graphics retain a byte-for-byte original under an immutable graphics key.
+  // Only remove the temporary upload once both files and the DB row exist.
+  if (body.type === "graphic") await deleteByUrl(publicUrl(body.rawObjectKey));
 
   revalidatePublicPages();
   return NextResponse.json(item, { status: 201 });

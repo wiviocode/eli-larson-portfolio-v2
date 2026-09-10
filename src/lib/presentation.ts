@@ -34,9 +34,9 @@ export function photoCaption(item: { caption: string | null; altText: string | n
   return alt && alt !== fileLabel ? alt : "";
 }
 
-export function photoAlt(item: { caption: string | null; altText: string | null; fileName: string | null }): string {
+export function photoAlt(item: { caption: string | null; altText: string | null; fileName: string | null; type?: string }): string {
   // Prefer manually written alt text; old uploads often used only a filename.
-  return photoCaption({ ...item, caption: null }) || item.caption?.trim() || "Photograph by Eli Larson";
+  return photoCaption({ ...item, caption: null }) || item.caption?.trim() || (item.type === "graphic" ? "Graphic design by Eli Larson" : "Photograph by Eli Larson");
 }
 
 /** Bound and normalize admin input before it reaches storage or public pages. */

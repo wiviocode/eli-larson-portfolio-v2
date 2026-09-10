@@ -2,7 +2,7 @@ import Link from "next/link";
 
 interface HeaderProps {
   variant?: "light" | "dark";
-  active?: "work" | "about" | "stories";
+  active?: "work" | "videos" | "graphics" | "about" | "stories";
 }
 
 export default function Header({ variant = "light", active }: HeaderProps) {
@@ -18,7 +18,7 @@ export default function Header({ variant = "light", active }: HeaderProps) {
     >
       <nav
         aria-label="Primary"
-        className="max-w-[1300px] mx-auto px-10 py-[18px] flex items-center justify-between max-lg:px-6 max-lg:py-3.5 max-md:px-4 max-md:py-3"
+        className={`site-navigation ${isDark ? "site-navigation-dark" : ""}`}
       >
         <Link
           href="/"
@@ -29,17 +29,21 @@ export default function Header({ variant = "light", active }: HeaderProps) {
           Eli Larson<span className="text-brand">.</span>
           <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
         </Link>
-        <div className="flex gap-6 max-md:gap-4">
+        <div className="site-work-links">
           <Link
-            href="/"
+            href="/#work"
             aria-current={active === "work" ? "page" : undefined}
             className={`relative text-xs font-semibold no-underline uppercase tracking-[.1em] transition-colors duration-300 hover:text-brand max-md:text-[11px] max-md:tracking-[.06em] group ${
               isDark ? "text-white" : "text-[#111]"
             }`}
           >
-            Work
+            Photos
             <span className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-brand scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
           </Link>
+          <Link href="/videos" prefetch={false} aria-current={active === "videos" ? "page" : undefined}>Videos</Link>
+          <Link href="/graphics" prefetch={false} aria-current={active === "graphics" ? "page" : undefined}>Graphics</Link>
+        </div>
+        <div className="site-more-links">
           <Link
             href="/stories"
             prefetch={false}

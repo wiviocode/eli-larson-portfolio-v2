@@ -10,7 +10,7 @@ export default function GenerateCaptionModal({
 }: {
   item: MediaItem;
   onClose: () => void;
-  onSave: (id: number, caption: string) => void;
+  onSave: (id: number, caption: string) => void | Promise<void>;
 }) {
   const [note, setNote] = useState("");
   const [caption, setCaption] = useState(item.caption || "");
@@ -53,11 +53,13 @@ export default function GenerateCaptionModal({
   }
 
   async function handleSave() {
-    if (!caption.trim()) return;
     setSaving(true);
+    setError("");
     try {
-      onSave(item.id, caption.trim());
+      await onSave(item.id, caption.trim());
       onClose();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Unable to save. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -75,7 +77,7 @@ export default function GenerateCaptionModal({
         <h2
           className="font-serif-display text-xl mb-4"
         >
-          Generate Caption<span className="text-brand">.</span>
+          {item.type === "graphic" ? "Edit description" : "Edit caption"}<span className="text-brand">.</span>
         </h2>
 
         {/* Image preview */}
@@ -93,6 +95,7 @@ export default function GenerateCaptionModal({
         )}
 
         {/* Note input */}
+        {item.type !== "graphic" && <>
         <label className="block text-[10px] font-bold uppercase tracking-[.15em] text-[#999] mb-1.5">
           Context Note
         </label>
@@ -112,15 +115,17 @@ export default function GenerateCaptionModal({
         >
           {generating ? "Generating..." : "Generate Caption"}
         </button>
+        </>}
 
         {/* Caption review/edit */}
         <label className="block text-[10px] font-bold uppercase tracking-[.15em] text-[#999] mb-1.5">
-          Caption
+          {item.type === "graphic" ? "Description" : "Caption"}
         </label>
         <textarea
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
-          placeholder="Generated caption will appear here..."
+          aria-label={item.type === "graphic" ? "Description" : "Caption"}
+          placeholder={item.type === "graphic" ? "Describe this design, the project, and your role..." : "Write or generate a caption..."}
           rows={5}
           className="w-full border border-black/10 rounded px-4 py-3 text-sm placeholder-[#ccc] focus:outline-none focus:border-brand transition-colors resize-y mb-1"
         />
@@ -136,10 +141,10 @@ export default function GenerateCaptionModal({
           </button>
           <button
             onClick={handleSave}
-            disabled={saving || !caption.trim()}
+            disabled={saving}
             className="text-[10px] font-bold uppercase tracking-[.15em] bg-brand text-white px-4 py-2 rounded hover:bg-brand/90 transition-colors disabled:opacity-50 cursor-pointer"
           >
-            {saving ? "Saving..." : "Save Caption"}
+            {saving ? "Saving..." : item.type === "graphic" ? "Save description" : "Save caption"}
           </button>
         </div>
       </div>

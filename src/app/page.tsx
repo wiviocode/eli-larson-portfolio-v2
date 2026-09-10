@@ -21,7 +21,7 @@ export default async function Home() {
           id="work"
         >
           {items.length > 0 ? (
-            <JustifiedGrid items={items} editorPhotoIds={editorPhotoIds} hasStories={stories.length > 0} />
+            <JustifiedGrid items={items.filter(item => item.type === "photo")} editorPhotoIds={editorPhotoIds} hasStories={stories.length > 0} />
           ) : (
             <div className="max-w-[1300px] mx-auto px-10 text-center text-[#999] py-20">
               <p className="text-sm">

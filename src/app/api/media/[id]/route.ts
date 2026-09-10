@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { deleteByUrl } from "@/lib/r2";
+import { isMediaType, canChangeMediaType } from "@/lib/media-library";
 
 export async function PUT(
   req: NextRequest,
@@ -11,6 +12,16 @@ export async function PUT(
 ) {
   const { id } = await params;
   const body = await req.json();
+  const [existing] = await db.select().from(mediaItems).where(eq(mediaItems.id, Number(id)));
+  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (body.type !== undefined && (!isMediaType(body.type) || !canChangeMediaType(existing.type, body.type))) {
+    return NextResponse.json({ error: "Only photographs and graphics can switch categories." }, { status: 400 });
+  }
+  const nextType = body.type ?? existing.type;
+  if (body.isFeatured && nextType !== "photo") {
+    return NextResponse.json({ error: "The homepage hero must be a photograph." }, { status: 400 });
+  }
+  if (nextType !== "photo") body.isFeatured = false;
 
   // If setting featured, unset all others first
   if (body.isFeatured) {

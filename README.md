@@ -14,7 +14,9 @@ Portfolio site for Eli Larson — sports photography and videography, Lincoln, N
 
 ## Pages
 
-- `/` — hero with featured photo, justified gallery grid (photos/videos filter), about section. ISR, revalidated hourly and on every media mutation.
+- `/` — hero with featured photo, justified photo gallery opening on Editor’s Selection, optional All photographs view, about section. ISR, revalidated hourly and on every media mutation.
+- `/videos` — dedicated film gallery and on-demand playback.
+- `/graphics` — full-frame design gallery with titles, descriptions and original-file viewing.
 - `/about` — server-rendered landscape hero, bio/experience/certifications/skills bento grid, contact CTA.
 - `/stories` and `/stories/[slug]` — short editorial photo sequences with full-frame images and captions.
 - `/admin` — password-protected dashboard (JWT cookie via `src/proxy.ts`): drag-and-drop uploads, reordering, cropping, AI caption generation (Anthropic API), CSV caption import/export.
@@ -48,7 +50,7 @@ Data-backed production builds require `POSTGRES_URL` and the R2 credentials abov
 
 ## Presentation
 
-The full photo gallery remains the default. Editor’s Selection is an optional 16-frame initial edit. The two initial stories, “Beyond the score” and “At the line,” each contain eight existing photographs and explicitly span different games or sessions. These are initial editorial choices that can be revised in admin. Existing factual captions are retained, not independently rewritten or verified by this release.
+Editor’s Selection is the default Photos view, starting with a 16-frame edit. All photographs remains available alongside it. Photos, Videos and Graphics have persistent navigation links; the mobile header keeps all three visible on a separate row. The two initial stories, “Beyond the score” and “At the line,” each contain eight existing photographs and explicitly span different games or sessions. These are initial editorial choices that can be revised in admin. Existing factual captions are retained, not independently rewritten or verified by this release.
 
 The viewer uses a dark background, keyboard navigation, zoom, and an optional **Info** panel. Press **I** to toggle information and **Escape** to close. The fitted image makes room beside the panel on desktop and above it on mobile. Only populated event/date/location/role fields appear; captions stay in the existing media library. There are no new photo-sharing or collection-sharing features.
 
@@ -56,7 +58,15 @@ Presentation settings are stored at `site/presentation-v1.json` in the existing 
 
 Missing images are omitted from the selected views. A story with fewer than six surviving photographs is hidden until repaired. The editor displays missing frames so they can be removed or replaced. Empty Editor’s Selection hides its toggle. Stories can be drafted, published, reordered, or removed without deleting their photographs. Keep published story addresses stable.
 
-For review, verify the production preview with the actual database and R2 credentials before merging. Local validation used a separate copy with public media fixtures and an S3-compatible storage fixture: production build, type checking, lint, 12 regression tests, authenticated save/readback, stale-tab rejection, and browser checks at desktop/mobile widths. This does not verify the deployed bucket’s permissions or real-device network performance.
+For review, verify the production preview with the actual database and R2 credentials before merging. Local validation used a separate copy with public media fixtures and an S3-compatible storage fixture: production build, type checking, lint, 18 regression tests, authenticated save/readback, stale-tab rejection, and browser checks at desktop/mobile widths. This does not verify the deployed bucket’s permissions or real-device network performance.
+
+## Managing graphics and the media library
+
+In **Admin → Graphics**, upload still PNG, JPEG, WebP or AVIF exports. New uploads generate a lossless WebP library preview up to 1600px and retain a byte-for-byte original under an immutable `graphics/` key. The public page uses responsive, quality-95 previews; the full-size viewer uses the original, preserving transparency and native resolution. Original uploads are removed from the temporary `uploads/` location only after the permanent files and database row exist. Graphics are never included in photography stories, Editor’s Selection, or the homepage hero.
+
+Use **Edit title** and **Edit description** on a graphics card. Descriptions are written manually; the photojournalism caption generator is not used for designs. The card’s Category selector can move an existing image between Photos and Graphics without recompressing it. Reclassified older photographs retain their existing image quality; re-upload the original design export if it needs better detail. Graphics use the existing text `media_items.type` column, so there is no schema migration. Photo cropping stays in the Photos category.
+
+The Photos, Videos, Graphics and All media filters scope the displayed library and bulk selection. Dragging or moving an item to the top/bottom reorders only the visible category; hidden media keep their relative order. Upload, description, category-change and reorder failures remain visible instead of silently reporting success. The homepage hero star is explicitly labeled and remains separate from Editor’s Selection, which is managed in **Admin → Presentation**.
 
 See [the September 2026 audit](PORTFOLIO_AUDIT.md) for measured findings, validation limits, the production R2-domain migration, and original-file preservation work. Public gallery URLs can move to a verified custom R2 domain through `R2_PUBLIC_URL` without rewriting existing database rows. Keep the legacy hostname available during migration. `hqBlobUrl` is an uncropped master; saved crops must use their display derivative. Existing low-resolution crops require a deliberate regeneration to gain resolution.
 

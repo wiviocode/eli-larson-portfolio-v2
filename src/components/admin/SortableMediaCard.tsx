@@ -27,6 +27,7 @@ export default function SortableMediaCard({
   onUpdateAltText,
   onGenerateCaption,
   onCrop,
+  onChangeType,
 }: {
   item: MediaItem;
   index: number;
@@ -40,6 +41,7 @@ export default function SortableMediaCard({
   onUpdateAltText: (id: number, altText: string) => void;
   onGenerateCaption: (id: number) => void;
   onCrop: (id: number) => void;
+  onChangeType: (id: number, type: "photo" | "graphic") => Promise<void>;
 }) {
   const {
     attributes,
@@ -53,6 +55,7 @@ export default function SortableMediaCard({
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const [changingType, setChangingType] = useState(false);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -108,6 +111,8 @@ export default function SortableMediaCard({
 
         {/* Selection checkbox */}
         <button
+          aria-label={`Select ${label}`}
+          aria-pressed={isSelected}
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -128,7 +133,7 @@ export default function SortableMediaCard({
         </button>
 
         {/* Featured star */}
-        <button
+        {item.type === "photo" && <button
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -140,26 +145,27 @@ export default function SortableMediaCard({
               ? "bg-brand text-white"
               : "bg-black/40 text-white/50 opacity-0 group-hover:opacity-100"
           }`}
-          title={item.isFeatured ? "Remove featured" : "Set as featured"}
+          title={item.isFeatured ? "Remove homepage hero" : "Set as homepage hero"}
         >
           <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
-        </button>
+        </button>}
 
         {/* Video badge */}
         {item.type === "video" && <div className="video-badge">Video</div>}
+        {item.type === "graphic" && <div className="video-badge">Graphic</div>}
 
         {/* Featured badge */}
         {item.isFeatured && (
           <div className="absolute bottom-0 left-0 bg-brand text-white px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-[.15em]">
-            Featured
+            Homepage hero
           </div>
         )}
       </div>
 
       {/* Info bar */}
-      <div className="px-2.5 py-2 flex items-center justify-between gap-1">
+      <div className="px-2.5 py-2 flex flex-wrap items-center justify-between gap-2">
         <div className="min-w-0 flex-1">
           {editing ? (
             <input
@@ -195,13 +201,13 @@ export default function SortableMediaCard({
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+        <div className="admin-card-actions flex items-center gap-0.5 transition-opacity shrink-0">
           {/* Generate caption */}
           <button
             onClick={() => onGenerateCaption(item.id)}
             onPointerDown={(e) => e.stopPropagation()}
             className="w-6 h-6 flex items-center justify-center rounded text-[#999] hover:text-[#111] hover:bg-black/5 transition-colors cursor-pointer"
-            title="Generate caption"
+            title={item.type === "graphic" ? "Edit description" : "Edit caption"}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z" />
@@ -279,6 +285,17 @@ export default function SortableMediaCard({
           </button>
         </div>
       </div>
+      {item.type !== "video" && <label className="admin-category-label">
+        Category
+        <select aria-label={`Category for ${label}`} value={item.type} disabled={changingType} onChange={async event => {
+          const type = event.target.value as "photo" | "graphic";
+          setChangingType(true);
+          try { await onChangeType(item.id, type); } finally { setChangingType(false); }
+        }}>
+          <option value="photo">Photo</option>
+          <option value="graphic">Graphic</option>
+        </select>
+      </label>}
     </div>
   );
 }

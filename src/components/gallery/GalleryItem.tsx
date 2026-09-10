@@ -33,7 +33,7 @@ export default function GalleryItem({
   const w = item.width || 1200;
   const h = item.height || 800;
   const label = item.caption || item.altText || cleanFileName(item.fileName);
-  const altLabel = item.type === "photo" ? photoAlt(item) : item.altText || item.caption || cleanFileName(item.fileName);
+  const altLabel = item.type !== "video" ? photoAlt(item) : item.altText || item.caption || cleanFileName(item.fileName);
   const hasDirectVideo = !!item.blobUrl;
   const thumbnail = item.videoThumbnailUrl || null;
 

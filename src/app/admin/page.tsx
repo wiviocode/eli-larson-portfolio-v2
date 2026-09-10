@@ -9,6 +9,7 @@ import AdminMediaGrid from "@/components/admin/AdminMediaGrid";
 import AddVideoModal from "@/components/admin/AddVideoModal";
 import GenerateCaptionModal from "@/components/admin/GenerateCaptionModal";
 import CropModal from "@/components/admin/CropModal";
+import { filterMedia, mergeMediaOrder, type LibraryFilter } from "@/lib/media-library";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -21,15 +22,23 @@ export default function AdminDashboard() {
   const [cropItemId, setCropItemId] = useState<number | null>(null);
   const [csvImporting, setCsvImporting] = useState(false);
   const csvInputRef = useRef<HTMLInputElement>(null);
+  const [libraryFilter, setLibraryFilter] = useState<LibraryFilter>("photo");
+  const [uploadType, setUploadType] = useState<"photo" | "graphic">("photo");
+  const [uploading, setUploading] = useState(false);
+  const [libraryError, setLibraryError] = useState("");
+  const [ordering, setOrdering] = useState(false);
+  const orderBusy = useRef(false);
+  const visibleItems = filterMedia(items, libraryFilter);
 
 
   const fetchItems = useCallback(async () => {
     try {
       const res = await fetch("/api/media");
+      if (!res.ok) throw new Error("Unable to load the media library. Please reload and try again.");
       const data = await res.json();
       setItems(data);
-    } catch {
-      // ignore
+    } catch (error) {
+      setLibraryError((error as Error).message);
     } finally {
       setLoading(false);
     }
@@ -49,10 +58,10 @@ export default function AdminDashboard() {
   }
 
   function selectAll() {
-    if (selected.size === items.length) {
+    if (selected.size === visibleItems.length) {
       setSelected(new Set());
     } else {
-      setSelected(new Set(items.map((i) => i.id)));
+      setSelected(new Set(visibleItems.map((i) => i.id)));
     }
   }
 
@@ -121,6 +130,7 @@ export default function AdminDashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ caption }),
     });
+    if (!res.ok) throw new Error("Unable to save. Your text is still here; please try again.");
     if (res.ok) {
       setItems((prev) =>
         prev.map((i) => (i.id === id ? { ...i, caption } : i))
@@ -170,43 +180,66 @@ export default function AdminDashboard() {
   }
 
   async function handleSendToTop(id: number) {
-    const idx = items.findIndex((i) => i.id === id);
+    const idx = visibleItems.findIndex((i) => i.id === id);
     if (idx <= 0) return;
-    const reordered = [...items];
+    const reordered = [...visibleItems];
     const [moved] = reordered.splice(idx, 1);
     reordered.unshift(moved);
-    setItems(reordered);
-    await persistOrder(reordered);
+    await handleReorder(reordered);
   }
 
   async function handleSendToBottom(id: number) {
-    const idx = items.findIndex((i) => i.id === id);
-    if (idx === -1 || idx === items.length - 1) return;
-    const reordered = [...items];
+    const idx = visibleItems.findIndex((i) => i.id === id);
+    if (idx === -1 || idx === visibleItems.length - 1) return;
+    const reordered = [...visibleItems];
     const [moved] = reordered.splice(idx, 1);
     reordered.push(moved);
-    setItems(reordered);
-    await persistOrder(reordered);
+    await handleReorder(reordered);
   }
 
-  async function persistOrder(reordered: MediaItem[]) {
-    const updates = reordered.map((item, idx) => ({
-      id: item.id,
-      sortOrder: idx,
-    }));
-    await fetch("/api/media/reorder", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updates),
-    });
+  async function handleReorder(visibleOrder: MediaItem[]) {
+    if (orderBusy.current) return;
+    orderBusy.current = true;
+    setOrdering(true);
+    setLibraryError("");
+    const previous = items;
+    try {
+      const reordered = mergeMediaOrder(items, visibleOrder);
+      setItems(reordered);
+      const response = await fetch("/api/media/reorder", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reordered.map((item, sortOrder) => ({ id: item.id, sortOrder }))),
+      });
+      if (!response.ok) throw new Error("Unable to save the order. Please try again.");
+    } catch (error) {
+      setItems(previous);
+      setLibraryError((error as Error).message);
+    } finally {
+      orderBusy.current = false;
+      setOrdering(false);
+    }
   }
 
-  const allSelected = items.length > 0 && selected.size === items.length;
+  async function handleChangeType(id: number, type: "photo" | "graphic") {
+    setLibraryError("");
+    try {
+      const response = await fetch(`/api/media/${id}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Unable to move this item.");
+      setItems(previous => previous.map(item => item.id === id ? result : item));
+      setSelected(previous => new Set([...previous].filter(value => value !== id)));
+    } catch (error) { setLibraryError((error as Error).message); }
+  }
+
+  const allSelected = visibleItems.length > 0 && selected.size === visibleItems.length;
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-white border-b border-black/[.08] px-6 py-4 flex items-center justify-between">
+      <div className="sticky top-0 z-50 bg-white border-b border-black/[.08] px-6 py-4 flex flex-wrap gap-3 items-center justify-between">
         <h1 className="font-serif-display text-xl">
           Admin Panel<span className="text-brand">.</span>
         </h1>
@@ -228,12 +261,19 @@ export default function AdminDashboard() {
       </div>
 
       <div className="max-w-[1200px] mx-auto px-6 py-8">
+        <div className="admin-library-nav" role="group" aria-label="Media library view">
+          {([{ value: "photo", label: "Photos" }, { value: "video", label: "Videos" }, { value: "graphic", label: "Graphics" }, { value: "all", label: "All media" }] as const).map(filter => <button key={filter.value} type="button" aria-pressed={libraryFilter === filter.value} disabled={uploading || ordering} onClick={() => { setLibraryFilter(filter.value); setSelected(new Set()); }}>
+            {filter.label} <span>{filterMedia(items, filter.value).length}</span>
+          </button>)}
+        </div>
+        <p className="admin-library-help">{libraryFilter === "graphic" ? "Upload design exports, edit titles and descriptions, and arrange your Graphics page." : libraryFilter === "video" ? "Add films and arrange the Videos page." : "Manage the full photo library here. The homepage opens on Editor’s Selection."} <Link href="/admin/presentation">Edit Editor’s Selection, stories & photo information →</Link></p>
+        {libraryError && <p role="alert" className="text-sm text-brand mb-5">{libraryError}</p>}
         {/* Stats + Actions */}
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="text-[10px] font-bold uppercase tracking-[.15em] text-[#999]">
             Media Library — {items.length} items
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center flex-wrap gap-2">
             <button
               onClick={handleExportCsv}
               className="text-[10px] font-bold uppercase tracking-[.15em] bg-white text-[#666] px-4 py-2 rounded border border-black/10 hover:border-[#111] transition-colors cursor-pointer"
@@ -264,10 +304,13 @@ export default function AdminDashboard() {
         </div>
 
         {/* Upload */}
-        <UploadDropzone onUploadComplete={fetchItems} />
+        {libraryFilter === "all" && <label className="admin-upload-target">Upload images as
+          <select value={uploadType} disabled={uploading} onChange={event => setUploadType(event.target.value as "photo" | "graphic")}><option value="photo">Photos</option><option value="graphic">Graphics</option></select>
+        </label>}
+        {libraryFilter !== "video" && <UploadDropzone mediaType={libraryFilter === "graphic" ? "graphic" : libraryFilter === "all" ? uploadType : "photo"} onUploadComplete={fetchItems} onBusyChange={setUploading} />}
 
         {/* Selection toolbar */}
-        {items.length > 0 && (
+        {visibleItems.length > 0 && (
           <div className="flex items-center gap-3 mb-4 flex-wrap">
             <button
               onClick={selectAll}
@@ -303,9 +346,10 @@ export default function AdminDashboard() {
             Loading...
           </div>
         ) : (
+          <fieldset disabled={ordering || uploading}>
           <AdminMediaGrid
-            items={items}
-            setItems={setItems}
+            items={visibleItems}
+            onReorder={handleReorder}
             selected={selected}
             onToggleSelect={toggleSelect}
             onDelete={handleDelete}
@@ -315,7 +359,9 @@ export default function AdminDashboard() {
             onUpdateAltText={handleUpdateAltText}
             onGenerateCaption={(id) => setCaptionItemId(id)}
             onCrop={(id) => setCropItemId(id)}
+            onChangeType={handleChangeType}
           />
+          </fieldset>
         )}
       </div>
 

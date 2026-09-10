@@ -35,6 +35,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     { url: "https://www.eli-larson.com/stories", changeFrequency: "monthly", priority: 0.8 },
+    { url: "https://www.eli-larson.com/videos", changeFrequency: "monthly", priority: 0.8 },
+    { url: "https://www.eli-larson.com/graphics", changeFrequency: "monthly", priority: 0.8 },
     ...stories.map(story => ({ url: `https://www.eli-larson.com/stories/${story.slug}`, changeFrequency: "monthly" as const, priority: 0.7 })),
   ];
 }

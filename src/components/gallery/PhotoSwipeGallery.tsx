@@ -8,9 +8,11 @@ import "photoswipe/style.css";
 export default function PhotoSwipeGallery({
   galleryId,
   label = "Selected photography",
+  kind = "photo",
 }: {
   galleryId: string;
   label?: string;
+  kind?: "photo" | "graphic";
 }) {
   useEffect(() => {
     let lightbox: PhotoSwipeLightbox | null = null;
@@ -75,8 +77,8 @@ export default function PhotoSwipeGallery({
           name: "photo-info",
           order: 8,
           isButton: true,
-          title: "Photo information (I)",
-          ariaLabel: "Photo information",
+          title: kind === "graphic" ? "Graphic information (I)" : "Photo information (I)",
+          ariaLabel: kind === "graphic" ? "Graphic information" : "Photo information",
           html: "Info",
           onInit: el => {
             infoButton = el;
@@ -94,7 +96,7 @@ export default function PhotoSwipeGallery({
             panel = el;
             el.id = `${galleryId}-info`;
             el.hidden = true;
-            el.setAttribute("aria-label", "Photo details");
+            el.setAttribute("aria-label", kind === "graphic" ? "Graphic details" : "Photo details");
             // Keep scrolling and selecting text inside the panel independent
             // from PhotoSwipe's image drag/zoom gestures.
             el.addEventListener("pointerdown", event => event.stopPropagation());
@@ -105,13 +107,13 @@ export default function PhotoSwipeGallery({
             close.textContent = "Close info ×";
             close.onclick = () => { setInfo(false); infoButton.focus(); };
             const heading = document.createElement("h2");
-            heading.textContent = "Behind the frame";
+            heading.textContent = kind === "graphic" ? "About this design" : "Behind the frame";
             const caption = document.createElement("p");
             caption.className = "photo-details-caption";
             const details = document.createElement("dl");
             const credit = document.createElement("p");
             credit.className = "photo-details-credit";
-            credit.textContent = "Photography by Eli Larson";
+            credit.textContent = kind === "graphic" ? "Design by Eli Larson" : "Photography by Eli Larson";
             el.append(close, heading, caption, details, credit);
             const update = () => {
               const data = pswp.currSlide?.data?.element?.dataset;
@@ -155,7 +157,7 @@ export default function PhotoSwipeGallery({
       reducedMotion.removeEventListener("change", updateMotion);
       lightbox?.destroy();
     };
-  }, [galleryId, label]);
+  }, [galleryId, label, kind]);
 
   return null;
 }

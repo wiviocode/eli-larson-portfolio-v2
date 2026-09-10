@@ -7,10 +7,11 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 import type { PhotoDetails } from "@/lib/presentation";
+import type { MediaType } from "@/lib/media-library";
 
 export const mediaItems = pgTable("media_items", {
   id: serial("id").primaryKey(),
-  type: text("type").notNull().$type<"photo" | "video">(),
+  type: text("type").notNull().$type<MediaType>(),
   blobUrl: text("blob_url"),
   fileName: text("file_name"),
   videoEmbedUrl: text("video_embed_url"),

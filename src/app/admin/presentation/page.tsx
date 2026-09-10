@@ -96,7 +96,7 @@ export default function PresentationEditor() {
     <p className="curation-help">Choose the photographs and the order people see them in. Changes go live when you save. {dirty && "You have unsaved changes."}</p>
     <p role="status" className="curation-status">{status}</p>
     {!config ? <p>{status ? "Reload the page to try again." : "Loading your presentation…"}</p> : <fieldset disabled={saving} className="curation-form">
-      <section className="curation-section"><h2>Editor’s Selection</h2><p className="curation-help">A short edit of up to 18 photographs. All photographs remains the default gallery view. Leave this empty to hide the option.</p>
+      <section className="curation-section"><h2>Editor’s Selection</h2><p className="curation-help">The default Photos view: a short edit of up to 18 photographs. Visitors can also browse all photographs. Leave this empty to show all photographs by default.</p>
         <PhotoPicker items={items} ids={config.editorPhotoIds} max={18} onChange={editorPhotoIds => setConfig({ ...config, editorPhotoIds })} />
       </section>
       <section className="curation-section"><h2>Photo stories</h2><p className="curation-help">Build a sequence of 6–10 frames. Unpublished stories stay out of the public site.</p>
