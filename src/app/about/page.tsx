@@ -6,7 +6,8 @@ import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { eq, and, sql, asc } from "drizzle-orm";
 
-export const revalidate = 3600;
+// Static; regenerated on demand by revalidatePublicPages(). See src/app/page.tsx.
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "About",
@@ -34,22 +35,19 @@ export const metadata: Metadata = {
 };
 
 async function getHeroImages() {
-  try {
-    const photos = await db
-      .select({ blobUrl: mediaItems.blobUrl })
-      .from(mediaItems)
-      .where(
-        and(
-          eq(mediaItems.type, "photo"),
-          sql`${mediaItems.width} > ${mediaItems.height}`
-        )
+  // Throw on failure so ISR keeps the last good page (see src/app/page.tsx).
+  const photos = await db
+    .select({ blobUrl: mediaItems.blobUrl })
+    .from(mediaItems)
+    .where(
+      and(
+        eq(mediaItems.type, "photo"),
+        sql`${mediaItems.width} > ${mediaItems.height}`
       )
-      .orderBy(asc(mediaItems.id));
+    )
+    .orderBy(asc(mediaItems.id));
 
-    return photos.map((p) => p.blobUrl).filter(Boolean) as string[];
-  } catch {
-    return [];
-  }
+  return photos.map((p) => p.blobUrl).filter(Boolean) as string[];
 }
 
 export default async function AboutPage() {

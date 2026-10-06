@@ -7,34 +7,35 @@ import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
 import { asc } from "drizzle-orm";
 
-export const revalidate = 3600;
+// Static page: admin mutations regenerate it on demand via
+// revalidatePublicPages(). The daily revalidate is only a safety net for
+// out-of-band DB edits (scripts), so visitors don't wake the database.
+export const revalidate = 86400;
 
 async function getData() {
-  try {
-    const items = await db
-      .select({
-        id: mediaItems.id,
-        type: mediaItems.type,
-        blobUrl: mediaItems.blobUrl,
-        hqBlobUrl: mediaItems.hqBlobUrl,
-        fileName: mediaItems.fileName,
-        videoEmbedUrl: mediaItems.videoEmbedUrl,
-        videoThumbnailUrl: mediaItems.videoThumbnailUrl,
-        width: mediaItems.width,
-        height: mediaItems.height,
-        altText: mediaItems.altText,
-        caption: mediaItems.caption,
-        dominantColor: mediaItems.dominantColor,
-        isFeatured: mediaItems.isFeatured,
-      })
-      .from(mediaItems)
-      .orderBy(asc(mediaItems.sortOrder));
+  // Let a failed regeneration throw so ISR keeps serving the last good page
+  // instead of caching an empty gallery.
+  const items = await db
+    .select({
+      id: mediaItems.id,
+      type: mediaItems.type,
+      blobUrl: mediaItems.blobUrl,
+      hqBlobUrl: mediaItems.hqBlobUrl,
+      fileName: mediaItems.fileName,
+      videoEmbedUrl: mediaItems.videoEmbedUrl,
+      videoThumbnailUrl: mediaItems.videoThumbnailUrl,
+      width: mediaItems.width,
+      height: mediaItems.height,
+      altText: mediaItems.altText,
+      caption: mediaItems.caption,
+      dominantColor: mediaItems.dominantColor,
+      isFeatured: mediaItems.isFeatured,
+    })
+    .from(mediaItems)
+    .orderBy(asc(mediaItems.sortOrder));
 
-    const featured = items.find((i) => i.isFeatured) || null;
-    return { items, featured };
-  } catch {
-    return { items: [], featured: null };
-  }
+  const featured = items.find((i) => i.isFeatured) || null;
+  return { items, featured };
 }
 
 export default async function Home() {
