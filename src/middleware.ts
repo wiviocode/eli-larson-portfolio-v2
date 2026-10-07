@@ -29,8 +29,9 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Protect non-GET API media routes
-  if (pathname.startsWith("/api/media") && req.method !== "GET") {
+  // Protect API media routes. GETs are admin-only too (full rows, CSV export)
+  // and uncached, so leaving them public lets anyone hit the database.
+  if (pathname.startsWith("/api/media")) {
     const authed = await isAuthenticated(req);
     if (!authed) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

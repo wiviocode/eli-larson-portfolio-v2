@@ -77,7 +77,11 @@ export default function AdminDashboard() {
 
     setDeleting(true);
     const ids = Array.from(selected);
-    await Promise.all(ids.map((id) => fetch(`/api/media/${id}`, { method: "DELETE" })));
+    await fetch("/api/media", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids }),
+    });
     setItems((prev) => prev.filter((i) => !selected.has(i.id)));
     setSelected(new Set());
     setDeleting(false);
@@ -90,7 +94,11 @@ export default function AdminDashboard() {
       body: JSON.stringify({ isFeatured: !current }),
     });
     if (res.ok) {
-      fetchItems();
+      // Only one item can be featured, so mirror the server locally instead
+      // of refetching the whole library.
+      setItems((prev) =>
+        prev.map((i) => ({ ...i, isFeatured: i.id === id ? !current : current ? i.isFeatured : false }))
+      );
     }
   }
 

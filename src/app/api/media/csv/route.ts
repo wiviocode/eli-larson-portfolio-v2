@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
-import { eq, asc } from "drizzle-orm";
+import { asc, sql } from "drizzle-orm";
 import { revalidatePublicPages } from "@/lib/revalidate";
 import { normalizeQuotes } from "@/lib/utils";
 
@@ -94,8 +94,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "CSV must contain an 'id' column" }, { status: 400 });
   }
 
-  let updated = 0;
+  // Collect rows first (last row wins for duplicate ids), then apply them all
+  // in a single UPDATE instead of one statement per row.
   const errors: string[] = [];
+  const rows = new Map<
+    number,
+    { row: number; caption: string | null; altText: string | null }
+  >();
 
   for (let i = 1; i < lines.length; i++) {
     const fields = parseCsvLine(lines[i]);
@@ -106,27 +111,46 @@ export async function POST(req: NextRequest) {
       continue;
     }
 
-    const updates: Record<string, string | Date> = { updatedAt: new Date() };
+    const caption =
+      captionIdx !== -1 && fields[captionIdx] !== undefined
+        ? normalizeQuotes(fields[captionIdx].trim())
+        : null;
+    const altText =
+      altTextIdx !== -1 && fields[altTextIdx] !== undefined
+        ? normalizeQuotes(fields[altTextIdx].trim())
+        : null;
 
-    if (captionIdx !== -1 && fields[captionIdx] !== undefined) {
-      updates.caption = normalizeQuotes(fields[captionIdx].trim());
-    }
-    if (altTextIdx !== -1 && fields[altTextIdx] !== undefined) {
-      updates.altText = normalizeQuotes(fields[altTextIdx].trim());
-    }
+    if (caption === null && altText === null) continue;
 
-    if (Object.keys(updates).length <= 1) continue; // only updatedAt
+    rows.delete(id);
+    rows.set(id, { row: i + 1, caption, altText });
+  }
 
-    const [item] = await db
-      .update(mediaItems)
-      .set(updates)
-      .where(eq(mediaItems.id, id))
-      .returning();
+  let updated = 0;
 
-    if (item) {
-      updated++;
-    } else {
-      errors.push(`Row ${i + 1}: no item with id ${id}`);
+  if (rows.size > 0) {
+    const values = sql.join(
+      [...rows].map(
+        ([id, r]) =>
+          sql`(${id}::int, ${r.caption}::text, ${r.altText}::text, ${r.caption !== null}::boolean, ${r.altText !== null}::boolean)`
+      ),
+      sql`, `
+    );
+    const result = await db.execute<{ id: number }>(sql`
+      UPDATE media_items AS m
+      SET
+        caption = CASE WHEN v.set_caption THEN v.caption ELSE m.caption END,
+        alt_text = CASE WHEN v.set_alt THEN v.alt_text ELSE m.alt_text END,
+        updated_at = now()
+      FROM (VALUES ${values}) AS v(id, caption, alt_text, set_caption, set_alt)
+      WHERE m.id = v.id
+      RETURNING m.id
+    `);
+
+    const matched = new Set(result.rows.map((r) => Number(r.id)));
+    updated = matched.size;
+    for (const [id, r] of rows) {
+      if (!matched.has(id)) errors.push(`Row ${r.row}: no item with id ${id}`);
     }
   }
 

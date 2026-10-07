@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
-import { isNull, eq } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
+import { revalidatePublicPages } from "@/lib/revalidate";
 import sharp from "sharp";
 
 export async function POST() {
   const items = await db
-    .select()
+    .select({ id: mediaItems.id, blobUrl: mediaItems.blobUrl })
     .from(mediaItems)
     .where(isNull(mediaItems.dominantColor));
 
   const needsFix = items.filter((i) => i.blobUrl);
-  let fixed = 0;
+  const colors: { id: number; color: string }[] = [];
 
   for (const item of needsFix) {
     try {
@@ -24,15 +25,26 @@ export async function POST() {
         .map((c) => c.toString(16).padStart(2, "0"))
         .join("")}`;
 
-      await db
-        .update(mediaItems)
-        .set({ dominantColor: color })
-        .where(eq(mediaItems.id, item.id));
-      fixed++;
+      colors.push({ id: item.id, color });
     } catch {
       // skip failed items
     }
   }
 
-  return NextResponse.json({ fixed, total: needsFix.length });
+  // Write every color in one statement instead of one UPDATE per item.
+  if (colors.length > 0) {
+    const values = sql.join(
+      colors.map((c) => sql`(${c.id}::int, ${c.color}::text)`),
+      sql`, `
+    );
+    await db.execute(sql`
+      UPDATE media_items AS m
+      SET dominant_color = v.color
+      FROM (VALUES ${values}) AS v(id, color)
+      WHERE m.id = v.id
+    `);
+    revalidatePublicPages();
+  }
+
+  return NextResponse.json({ fixed: colors.length, total: needsFix.length });
 }

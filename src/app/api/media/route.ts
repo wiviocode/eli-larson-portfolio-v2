@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePublicPages } from "@/lib/revalidate";
 import { db } from "@/db";
 import { mediaItems } from "@/db/schema";
-import { asc, max } from "drizzle-orm";
+import { asc, inArray, max } from "drizzle-orm";
 import sharp from "sharp";
 import { fetchBuffer, uploadBuffer, deleteByUrl, publicUrl } from "@/lib/r2";
 import { randomUUID } from "crypto";
@@ -82,6 +82,32 @@ export async function GET() {
   } catch {
     return NextResponse.json([]);
   }
+}
+
+/** Bulk delete — one SELECT + one DELETE for the whole selection. */
+export async function DELETE(req: NextRequest) {
+  const { ids } = await req.json();
+  if (!Array.isArray(ids) || ids.some((id) => !Number.isInteger(id))) {
+    return NextResponse.json({ error: "Invalid ids" }, { status: 400 });
+  }
+  if (ids.length === 0) return NextResponse.json({ deleted: 0 });
+
+  const items = await db
+    .select({ blobUrl: mediaItems.blobUrl, hqBlobUrl: mediaItems.hqBlobUrl })
+    .from(mediaItems)
+    .where(inArray(mediaItems.id, ids));
+
+  // Delete both standard and HQ objects (skips non-R2 URLs gracefully)
+  const urls = items.flatMap((i) => [i.blobUrl, i.hqBlobUrl]).filter(Boolean) as string[];
+  await Promise.all(urls.map((url) => deleteByUrl(url)));
+
+  const deleted = await db
+    .delete(mediaItems)
+    .where(inArray(mediaItems.id, ids))
+    .returning({ id: mediaItems.id });
+
+  revalidatePublicPages();
+  return NextResponse.json({ deleted: deleted.length });
 }
 
 export async function POST(req: NextRequest) {
